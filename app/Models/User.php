@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -64,5 +65,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function backlogCards(): HasMany
+    {
+        return $this->hasMany(BacklogCard::class, 'assignee_id');
+    }
+
+    public function backlogTasks(): HasMany
+    {
+        return $this->hasMany(BacklogCardTask::class, 'assignee_id');
+    }
+
+    public function cards(): HasMany
+    {
+        return $this->hasMany(Card::class, 'assignee_id');
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'assignee_id');
     }
 }
