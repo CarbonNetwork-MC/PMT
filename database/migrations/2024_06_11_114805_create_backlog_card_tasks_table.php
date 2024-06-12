@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('backlog_cards', function (Blueprint $table) {
+        Schema::create('backlog_card_tasks', function (Blueprint $table) {
             $table->id();
             $table->integer('backlog_card_id');
             $table->text('description');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('backlog_cards');
+        Schema::dropIfExists('backlog_card_tasks');
     }
 };
