@@ -69,7 +69,7 @@ class User extends Authenticatable
 
     public function role(): HasMany
     {
-        return $this->hasMany(Role::class);
+        return $this->hasMany(Role::class, 'id', 'role_id');
     }
 
     public function projects(): HasMany
