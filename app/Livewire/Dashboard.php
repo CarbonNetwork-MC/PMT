@@ -13,7 +13,7 @@ class Dashboard extends Component
     {
         $this->user = User::find(auth()->id())->with('role')->first();
 
-        dd($this->user);
+        // dd($this->user);
     }
 
     public function render()
