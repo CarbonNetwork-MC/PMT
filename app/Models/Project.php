@@ -29,6 +29,11 @@ class Project extends Model
 
     public function sprints(): HasMany
     {
-        return $this->hasMany(Sprint::class);
+        return $this->hasMany(Sprint::class, 'project_id', 'uuid');
+    }
+
+    public function members(): HasMany 
+    {
+        return $this->hasMany(ProjectMember::class, 'project_id', 'uuid');
     }
 }
