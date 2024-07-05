@@ -15,6 +15,11 @@ class Overview extends Component
 
         $this->user = auth()->user();
         $this->projects = Project::where('owner_id', $this->user->uuid)->with('sprints')->with('members')->get();
+
+        // Clear the selected project
+        if (session()->has('selected_project')) {
+            session()->forget('selected_project');
+        }
     }
 
     public function render()

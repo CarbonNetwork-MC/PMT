@@ -8,7 +8,7 @@
 
     <div class="grid grid-cols-4">
         @foreach ($projects as $project)
-            <a href="{{ route('projects.dashboard.render', ['uuid' => $project->uuid]) }}" class="col-span-1 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <a href="{{ route('projects.board.render', ['uuid' => $project->uuid]) }}" class="col-span-1 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
 
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $project->name }}</h5>
                 <div class="flex gap-x-4">

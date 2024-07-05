@@ -1,9 +1,12 @@
 <?php
 
 use App\Livewire\Dashboard;
+use App\Livewire\Projects\Sprints;
+use App\Livewire\Projects\Backlog;
+use App\Livewire\Projects\Settings;
 use App\Livewire\Projects\Overview;
-use App\Livewire\Projects\Dashboard as ProjectDashboard;
 use App\Livewire\Projects\CreateProject;
+use App\Livewire\Projects\Board as ProjectDashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,7 +23,10 @@ Route::middleware([
 
     // Projects
     Route::get('/projects', Overview::class)->name('projects.overview.render');
-    Route::get('/projects/view/{uuid}', ProjectDashboard::class)->name('projects.dashboard.render');
+    Route::get('/projects/{uuid}', ProjectDashboard::class)->name('projects.board.render');
+    Route::get('/projects/{uuid}/sprints', Sprints::class)->name('projects.sprints.render');
+    Route::get('/projects/{uuid}/backlog', Backlog::class)->name('projects.backlog.render');
+    Route::get('/projects/{uuid}/settings', Settings::class)->name('projects.settings.render');
 
-    Route::get('/projects/create', CreateProject::class)->name('projects.create');
+    Route::get('/project/create', CreateProject::class)->name('projects.create');
 });

@@ -4,7 +4,7 @@ namespace App\Livewire\Projects;
 
 use Livewire\Component;
 
-class Dashboard extends Component
+class Board extends Component
 {
     public $user;
     public $uuid;
@@ -20,6 +20,6 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.projects.dashboard');
+        return view('livewire.projects.board');
     }
 }

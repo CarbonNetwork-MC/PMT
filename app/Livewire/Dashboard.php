@@ -13,7 +13,10 @@ class Dashboard extends Component
     {
         $this->user = User::find(auth()->id())->with('role')->first();
 
-        // dd($this->user);
+        // Clear the selected project session
+        if (session()->has('selected_project')) {
+            session()->forget('selected_project');
+        }
     }
 
     public function render()
