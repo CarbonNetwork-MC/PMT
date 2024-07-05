@@ -3,6 +3,7 @@
 use App\Livewire\Dashboard;
 use App\Livewire\Projects\Overview;
 use App\Livewire\Projects\Dashboard as ProjectDashboard;
+use App\Livewire\Projects\CreateProject;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,5 +20,7 @@ Route::middleware([
 
     // Projects
     Route::get('/projects', Overview::class)->name('projects.overview.render');
-    Route::get('/projects/{uuid}', ProjectDashboard::class)->name('projects.dashboard.render');
+    Route::get('/projects/view/{uuid}', ProjectDashboard::class)->name('projects.dashboard.render');
+
+    Route::get('/projects/create', CreateProject::class)->name('projects.create');
 });

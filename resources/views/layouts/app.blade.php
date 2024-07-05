@@ -31,7 +31,7 @@
     <body class="font-sans antialiased">
         <x-banner />
 
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex overflow-hidden">
+        <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden">
             <!-- Sidebar -->
             <div class="h-screen">
                 @livewire('sidebar')
