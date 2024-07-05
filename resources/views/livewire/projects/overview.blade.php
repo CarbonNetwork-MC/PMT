@@ -13,11 +13,11 @@
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $project->name }}</h5>
                 <div class="flex gap-x-4">
                     <div class="flex">
-                        <i class="fi fi-sr-running text-xl"></i>                  
+                        <i class="fi fi-sr-running text-xl dark:text-white"></i>                  
                         <p class="ml-2 text-gray-800 dark:text-white">{{ $project->sprints->count() }}</p>                    
                     </div>
                     <div class="flex">
-                        <i class="fi fi-sr-users-alt"></i>
+                        <i class="fi fi-sr-users-alt dark:text-white"></i>
                         <p class="ml-2 text-gray-800 dark:text-white">{{ $project->members->count() }}</p>
                     </div>
                 </div>
