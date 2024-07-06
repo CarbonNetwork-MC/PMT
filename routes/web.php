@@ -1,7 +1,7 @@
 <?php
 
 use App\Livewire\Dashboard;
-use App\Livewire\Projects\Sprints;
+use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 use App\Livewire\Projects\Backlog;
 use App\Livewire\Projects\Settings;
 use App\Livewire\Projects\Overview;
@@ -24,7 +24,7 @@ Route::middleware([
     // Projects
     Route::get('/projects', Overview::class)->name('projects.overview.render');
     Route::get('/projects/{uuid}', ProjectDashboard::class)->name('projects.board.render');
-    Route::get('/projects/{uuid}/sprints', Sprints::class)->name('projects.sprints.render');
+    Route::get('/projects/{uuid}/sprints', SprintsOverview::class)->name('projects.sprints.render');
     Route::get('/projects/{uuid}/backlog', Backlog::class)->name('projects.backlog.render');
     Route::get('/projects/{uuid}/settings', Settings::class)->name('projects.settings.render');
 });

@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sprints', function (Blueprint $table) {
-            $table->id();
+            $table->char('id', 36)->primary();
             $table->char('project_id', 36);
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
-            $table->enum('status', ['active', 'inactive', 'done'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'done'])->default('inactive');
             $table->timestamps();
         });
     }
