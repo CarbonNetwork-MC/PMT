@@ -10,6 +10,15 @@ return [
     |
     */
 
-    'create_project' => 'Nieuw project aanmaken',
+    // Title
+    'create_project' => 'Nieuw Project',
+    
+    // Labels
+    'name' => 'Naam',
+    'description' => 'Omschrijving',
+
+    // Buttons
+    'create' => 'Toevoegen',
+    'cancel' => 'Annuleren',
 
 ];

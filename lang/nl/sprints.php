@@ -4,21 +4,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Projects Language Lines
+    | Sprints Language Lines
     |--------------------------------------------------------------------------
     |
     |
     */
 
     // Title
-    'create_project' => 'Create Project',
-    
+    'create_sprint' => 'Nieuwe Sprint',
+
     // Labels
-    'name' => 'Name',
-    'description' => 'Description',
+    'name' => 'Naam',
+    'start_date' => 'Start Datum',
+    'end_date' => 'Eind Datum',
+    'status' => 'Status',
 
     // Buttons
-    'create' => 'Create',
-    'cancel' => 'Cancel',
+    'create' => 'Toevoegen',
+    'cancel' => 'Annuleren',
 
 ];
