@@ -11,13 +11,13 @@
             </div>
 
             <ul class="space-y-2 font-medium">
-                <li>
+                <li class="side-item-container">
                     <x-sidebar-nav-link href="{{ route('dashboard.render') }}" :active="request()->routeIs('dashboard.render')">
                         <i class="fi fi-ss-house-chimney-blank"></i>
                         <span class="navItem ms-3">Dashboard</span>
                      </x-sidebar-nav-link>
                 </li>
-                <li>
+                <li class="side-item-container">
                     <x-sidebar-nav-link href="{{ route('projects.overview.render') }}" :active="request()->routeIs('projects.overview.render')">
                         <i class="fi fi-sr-workflow-setting-alt"></i>                         
                         <span class="navItem ms-3">Projects</span>
@@ -27,25 +27,25 @@
                     <div class="my-24">
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
                     </div>
-                    <li>
+                    <li class="side-item-container">
                         <x-sidebar-nav-link href="{{ route('projects.board.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.board.render')">
                             <i class="fi fi-sr-game-board-alt"></i>
                             <span class="navItem ms-3">Board</span>
                          </x-sidebar-nav-link>
                     </li>
-                    <li>
+                    <li class="side-item-container">
                         <x-sidebar-nav-link href="{{ route('projects.sprints.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.sprints.render')">
                             <i class="fi fi-sr-running"></i>
                             <span class="navItem ms-3">Sprints</span>
                          </x-sidebar-nav-link>
                     </li>
-                    <li>
+                    <li class="side-item-container">
                         <x-sidebar-nav-link href="{{ route('projects.backlog.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.backlog.render')">
                             <i class="fi fi-ss-cubes-stacked"></i>
                             <span class="navItem ms-3">Backlog</span>
                          </x-sidebar-nav-link>
                     </li>
-                    <li>
+                    <li class="side-item-container">
                         <x-sidebar-nav-link href="{{ route('projects.settings.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.settings.render')">
                             <i class="fi fi-sr-settings-sliders"></i>
                             <span class="navItem ms-3">Settings</span>
@@ -61,6 +61,7 @@
         // Sidebar toggle
         $(document).ready(function() {
             var $sidebar = $("#sidebar-navbar");
+            var $sidebarItems = $(".side-item-container");
             var $chevrons = $("#chevrons");
             var $dropdownContent = $("#dropdown-content");
             var $navItems = $(".navItem");
@@ -69,27 +70,31 @@
             // Set initial sidebar state
             if (!$open) {
                 $sidebar.addClass("w-[4rem]").removeClass("w-[18rem]");
+                $sidebarItems.addClass("flex justify-center");
                 $chevrons.hide();
                 $dropdownContent.hide();
                 $navItems.hide();
             } else {
                 $sidebar.addClass("w-[18rem]").removeClass("w-[4rem]");
+                $sidebarItems.removeClass("flex justify-center");
             }
 
             $("#toggleButton").click(function() {
                 if ($open) {
                     $sidebar.addClass("w-[4rem]").removeClass("w-[18rem]");
+                    $sidebarItems.addClass("flex justify-center");
                     $chevrons.hide();
                     $dropdownContent.hide();
                     $open = false;
-                    $navItems.fadeOut(150).delay(100);
+                    $navItems.hide();
                     localStorage.setItem('sidebarState', 'closed');
                     localStorage.setItem('internshipDropdown', false);
                 } else {
                     $sidebar.addClass("w-[18rem]").removeClass("w-[4rem]");
+                    $sidebarItems.removeClass("flex justify-center");
                     $chevrons.show();
                     $open = true;
-                    $navItems.delay(150).fadeIn(500);
+                    $navItems.show();
                     localStorage.setItem('sidebarState', 'open');
                 }
             });
