@@ -14,6 +14,8 @@ return [
     'create_sprint' => 'Create Sprint',
     'edit_sprint' => 'Edit Sprint',
 
+    'no_sprints_found' => 'No sprints found.',
+
     // Labels
     'name' => 'Name',
     'start_date' => 'Start Date',

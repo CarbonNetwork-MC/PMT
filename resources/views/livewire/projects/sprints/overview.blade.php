@@ -31,7 +31,7 @@
     </div>
 
     <div class="w-full grid grid-cols-2 gap-x-2 md:grid-cols-3 lg:grid-cols-4">
-        @foreach ($sprints as $sprint)
+        @forelse ($sprints as $sprint)
             <div class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
                 <div class="flex justify-between items-center">
                     <a href="{{ route('projects.board.render', ['uuid' => $uuid]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
@@ -128,7 +128,11 @@
                     </div>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div class="col-span-2 md:col-span-3 lg:col-span-4 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
+                <p class="text-lg text-center font-bold dark:text-white">{{ __('sprints.no_sprints_found') }}</p>
+            </div>
+        @endforelse
     </div>
 
     {{-- Create Sprint Modal --}}
