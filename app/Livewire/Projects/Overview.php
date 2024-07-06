@@ -10,6 +10,9 @@ class Overview extends Component
 {
     public $user;
     public $projects;
+    public $createProjectModal = false;
+
+    public $name, $description;
 
     public function mount() {
 
@@ -20,6 +23,29 @@ class Overview extends Component
         if (session()->has('selected_project')) {
             session()->forget('selected_project');
         }
+    }
+
+    public function createProject() {
+        $data = $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+        ]);
+
+        $data['uuid'] = Str::uuid()->toString();
+        $data['owner_id'] = auth()->user()->uuid;
+
+        // Create project
+        $project = Project::create($data);
+
+        // Add user as project member
+        $project->members()->create([
+            'project_id' => $project->uuid,
+            'user_id' => auth()->user()->uuid,
+            'role' => 'owner',
+        ]);
+
+        // Redirect to project dashboard
+        return redirect()->route('projects.overview.render');
     }
 
     public function render()

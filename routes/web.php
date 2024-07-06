@@ -27,6 +27,4 @@ Route::middleware([
     Route::get('/projects/{uuid}/sprints', Sprints::class)->name('projects.sprints.render');
     Route::get('/projects/{uuid}/backlog', Backlog::class)->name('projects.backlog.render');
     Route::get('/projects/{uuid}/settings', Settings::class)->name('projects.settings.render');
-
-    Route::get('/project/create', CreateProject::class)->name('projects.create');
 });
