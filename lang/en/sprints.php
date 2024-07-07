@@ -25,6 +25,8 @@ return [
     'days_left' => 'Days Left',
     'days_to_start' => 'Days to Start',
     'done' => 'Done',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
     'cards' => 'Cards',
 
     // Buttons

@@ -18,7 +18,7 @@ class Overview extends Component
     public $editSprintModal = false;
     public $deleteSprintModal = false;
 
-    public $name, $start_date, $end_date;
+    public $name, $start_date, $end_date, $status;
 
     public function mount($uuid)
     {
@@ -63,6 +63,7 @@ class Overview extends Component
         $this->name = $this->sprint->name;
         $this->start_date = $this->sprint->start_date;
         $this->end_date = $this->sprint->end_date;
+        $this->status = $this->sprint->status;
     }
 
     /**
@@ -75,6 +76,7 @@ class Overview extends Component
             'name' => ['required', 'string'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
+            'status' => ['required', 'string'],
         ]);
 
         $sprint = Sprint::find($this->id);

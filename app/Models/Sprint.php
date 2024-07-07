@@ -31,6 +31,6 @@ class Sprint extends Model
 
     public function cards(): HasMany
     {
-        return $this->hasMany(Card::class);
+        return $this->hasMany(Card::class, 'sprint_id', 'id');
     }
 }

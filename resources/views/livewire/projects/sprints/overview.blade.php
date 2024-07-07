@@ -55,7 +55,7 @@
                                 <div class="flex justify-center gap-x-2">
                                     <i class="fi fi-ss-calendar dark:text-white"></i>
                                     @if (\Carbon\Carbon::parse($sprint->end_date)->format('d') - \Carbon\Carbon::now()->format('d') < 0)
-                                        <p class="text-red-300">
+                                        <p class="text-red-600 dark:text-red-400">
                                             {{ \Carbon\Carbon::parse($sprint->end_date)->format('d') - \Carbon\Carbon::now()->format('d') }}
                                         </p>
                                     @else
@@ -69,14 +69,16 @@
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white">{{ __('sprints.days_to_start') }}</p>
                                 </div>
                                 <div class="flex justify-center gap-x-2">
-                                    <i class="fi fi-sr-clock-five"></i>
-                                    <p class="dark:text-white">
-                                        @if (\Carbon\Carbon::parse($sprint->start_date)->format('d') - \Carbon\Carbon::now()->format('d') < 0)
+                                    <i class="fi fi-sr-clock-five dark:text-white"></i>
+                                    @if (\Carbon\Carbon::parse($sprint->start_date)->format('d') - \Carbon\Carbon::now()->format('d') < 0)
+                                        <p class="text-red-600 dark:text-red-400">
                                             {{ \Carbon\Carbon::parse($sprint->start_date)->format('d') - \Carbon\Carbon::now()->format('d') }}
-                                        @else
+                                        </p>
+                                    @else
+                                        <p class="dark:text-white">
                                             {{ \Carbon\Carbon::parse($sprint->start_date)->format('d') - \Carbon\Carbon::now()->format('d') }}
-                                        @endif
-                                    </p>
+                                        </p>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -85,7 +87,7 @@
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white">{{ __('sprints.cards') }}</p>
                             </div>
                             <div class="flex gap-x-2">
-                                <i class="fi fi-sr-list-check"></i>
+                                <i class="fi fi-sr-list-check dark:text-white"></i>
                                 <p class="dark:text-white">{{ count($sprint->cards) }}</p>
                             </div>
                         </div>
@@ -97,14 +99,14 @@
                                 <div class="group">
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.complete') }}</p>
                                     <button wire:click="completeSprint('{{ $sprint->id }}')" class="w-full flex justify-center">
-                                        <i class="fi fi-br-stop-circle group-hover:text-blue-500"></i>
+                                        <i class="fi fi-br-stop-circle group-hover:text-blue-500 dark:text-white     "></i>
                                     </button>
                                 </div>
                             @elseif ($sprint->status == 'inactive')
                                 <div class="group">
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.start') }}</p>
                                     <button wire:click="startSprint('{{ $sprint->id }}')" class="w-full flex justify-center">
-                                        <i class="fi fi-br-play-circle group-hover:text-blue-500"></i>
+                                        <i class="fi fi-br-play-circle group-hover:text-blue-500 dark:text-white     "></i>
                                     </button>
                                 </div>
                             @endif
@@ -113,7 +115,7 @@
                             <div class="group">
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.edit') }}</p>
                                 <button wire:click="editSprintSetId('{{ $sprint->id }}')" class="w-full flex justify-center">
-                                    <i class="fi fi-br-edit group-hover:text-blue-500"></i>
+                                    <i class="fi fi-br-edit group-hover:text-blue-500 dark:text-white     "></i>
                                 </button>
                             </div>
                         </div>
@@ -121,7 +123,7 @@
                             <div class="group">
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-red-500">{{ __('sprints.delete') }}</p>
                                 <button wire:click="deleteSprint('{{ $sprint->id }}')" class="w-full flex justify-center">
-                                    <i class="fi fi-br-trash group-hover:text-red-500"></i>
+                                    <i class="fi fi-br-trash group-hover:text-red-500 dark:text-white     "></i>
                                 </button>
                             </div>
                         </div>
@@ -195,6 +197,15 @@
                     <x-label for="end_date" value="{{ __('sprints.end_date') }}" />
                     <x-input id="end_date" type="date" class="mt-1 block w-full" wire:model.defer="end_date" />
                     <x-input-error for="end_date" class="mt-2" />
+                </div>
+                <div class="col-span-1">
+                    <x-label for="status" value="{{ __('sprints.status') }}" />
+                    <select id="status" class="mt-1 block w-full rounded-md shadow-sm form-select border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600" wire:model.defer="status">
+                        <option value="active">{{ __('sprints.active') }}</option>
+                        <option value="inactive">{{ __('sprints.inactive') }}</option>
+                        <option value="done">{{ __('sprints.done') }}</option>
+                    </select>
+                    <x-input-error for="status" class="mt-2" />
                 </div>
             </div>
         </x-slot>
