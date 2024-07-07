@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Components;
 
 use Livewire\Component;
 
@@ -14,6 +14,6 @@ class Topbar extends Component
 
     public function render()
     {
-        return view('livewire.topbar');
+        return view('livewire.components.topbar');
     }
 }

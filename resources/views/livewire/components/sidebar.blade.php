@@ -46,7 +46,7 @@
                          </x-sidebar-nav-link>
                     </li>
                     <li class="side-item-container">
-                        <x-sidebar-nav-link href="{{ route('projects.settings.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.settings.render')">
+                        <x-sidebar-nav-link href="{{ route('projects.settings.overall.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.settings.*')">
                             <i class="fi fi-sr-settings-sliders"></i>
                             <span class="navItem ms-3">Settings</span>
                          </x-sidebar-nav-link>

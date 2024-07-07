@@ -1,13 +1,14 @@
 <?php
 
 use App\Livewire\Dashboard;
-use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 use App\Livewire\Projects\Backlog;
-use App\Livewire\Projects\Settings;
 use App\Livewire\Projects\Overview;
-use App\Livewire\Projects\CreateProject;
-use App\Livewire\Projects\Board as ProjectDashboard;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Projects\Board as ProjectDashboard;
+use App\Livewire\Projects\Settings\Admin as AdminSettings;
+use App\Livewire\Projects\Settings\Overall as OverallSettings;
+use App\Livewire\Projects\Settings\Members as MembersSettings;
+use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,5 +27,9 @@ Route::middleware([
     Route::get('/projects/{uuid}', ProjectDashboard::class)->name('projects.board.render');
     Route::get('/projects/{uuid}/sprints', SprintsOverview::class)->name('projects.sprints.render');
     Route::get('/projects/{uuid}/backlog', Backlog::class)->name('projects.backlog.render');
-    Route::get('/projects/{uuid}/settings', Settings::class)->name('projects.settings.render');
+
+    // Project - Settings
+    Route::get('/projects/{uuid}/settings/overall', OverallSettings::class)->name('projects.settings.overall.render');
+    Route::get('/projects/{uuid}/settings/members', MembersSettings::class)->name('projects.settings.members.render');
+    Route::get('/projects/{uuid}/settings/admin', AdminSettings::class)->name('projects.settings.admin.render');
 });

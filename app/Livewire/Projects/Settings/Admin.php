@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Livewire\Projects;
+namespace App\Livewire\Projects\Settings;
 
 use Livewire\Component;
 
-class Settings extends Component
+class Admin extends Component
 {
     public $uuid;
 
@@ -15,6 +15,6 @@ class Settings extends Component
 
     public function render()
     {
-        return view('livewire.projects.settings');
+        return view('livewire.projects.settings.admin');
     }
 }

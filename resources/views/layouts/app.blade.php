@@ -36,14 +36,14 @@
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex overflow-hidden">
             <!-- Sidebar -->
             <div class="h-screen">
-                @livewire('sidebar')
+                @livewire('components.sidebar')
             </div>
 
             <!-- Main Content -->
             <div class="w-full h-screen overflow-y-auto">
 
                 <!-- Topbar -->
-                @livewire('topbar')
+                @livewire('components.topbar')
 
                 <!-- Page Heading -->
                 @if (isset($header))
