@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->char('project_id', 36);
             $table->char('user_id', 36);
-            $table->enum('role', ['owner', 'member']);
+            $table->integer('role_id');
             $table->timestamps();
         });
     }
