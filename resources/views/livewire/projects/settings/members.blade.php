@@ -8,7 +8,7 @@
             <div class="p-4">
                 <div class="grid grid-cols-8 gap-x-4">
                     <div class="col-span-8 md:col-span-7">
-                        <input type="text" id="search" wire:model.live="search" class="w-full dark:bg-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded p-2 mt-2" placeholder="{{ __('settings.filter_users') }}" />
+                        <input type="text" id="search" wire:model.live="search" autocomplete="off" class="w-full dark:bg-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded p-2 mt-2" placeholder="{{ __('settings.filter_users') }}" />
                     </div>
                     @if ($project->owner_id == auth()->user()->uuid)
                         <div class="col-span-8 md:col-span-1">

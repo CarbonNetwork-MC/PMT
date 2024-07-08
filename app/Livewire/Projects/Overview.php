@@ -29,6 +29,11 @@ class Overview extends Component
         }
     }
 
+    /**
+     * Create a new project
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function createProject() {
         $data = $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -45,7 +50,7 @@ class Overview extends Component
         $project->members()->create([
             'project_id' => $project->uuid,
             'user_id' => auth()->user()->uuid,
-            'role' => 'owner',
+            'role_id' => '3',
         ]);
 
         // Redirect to project dashboard
