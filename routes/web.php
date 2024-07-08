@@ -11,7 +11,7 @@ use App\Livewire\Projects\Settings\Members as MembersSettings;
 use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::middleware([
@@ -31,5 +31,5 @@ Route::middleware([
     // Project - Settings
     Route::get('/projects/{uuid}/settings/overall', OverallSettings::class)->name('projects.settings.overall.render');
     Route::get('/projects/{uuid}/settings/members', MembersSettings::class)->name('projects.settings.members.render');
-    Route::get('/projects/{uuid}/settings/admin', AdminSettings::class)->name('projects.settings.admin.render');
+    Route::get('/projects/{uuid}/settings/admin', AdminSettings::class)->name('projects.settings.admin.render');  
 });
