@@ -18,7 +18,7 @@
                      </x-sidebar-nav-link>
                 </li>
                 <li class="side-item-container">
-                    <x-sidebar-nav-link href="{{ route('projects.overview.render') }}" :active="request()->routeIs('projects.overview.render')">
+                    <x-sidebar-nav-link href="{{ route('projects.projects.render') }}" :active="request()->routeIs('projects.projects.render')">
                         <i class="fi fi-sr-workflow-setting-alt"></i>                         
                         <span class="navItem ms-3">Projects</span>
                      </x-sidebar-nav-link>
@@ -28,11 +28,46 @@
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
                     </div>
                     <li class="side-item-container">
-                        <x-sidebar-nav-link href="{{ route('projects.board.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.board.render')">
-                            <i class="fi fi-sr-game-board-alt"></i>
-                            <span class="navItem ms-3">Board</span>
+                        <x-sidebar-nav-link href="{{ route('projects.overview.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.overview.render')">
+                            <i class="fi fi-sr-overview"></i>
+                            <span class="navItem ms-3">Overview</span>
                          </x-sidebar-nav-link>
                     </li>
+                    @if ($activeSprints != null)
+                        @if ($activeSprints->count() > 1)
+                            <li class="side-item-container">
+                                <x-sidebar-dropdown dropdownName="boardsDropdown">
+                                    <x-slot name="trigger">
+                                        <i class="fi fi-sr-game-board-alt"></i>
+                                        <span class="navItem ms-3">Boards</span>
+                                    </x-slot>
+
+                                    <x-slot name="content">
+                                        @foreach ($activeSprints as $sprint)
+                                            <x-sidebar-dropdown-link href="{{ route('projects.board.render', ['uuid' => $sprint->id]) }}" :active="request()->routeIs('projects.board.render') && request('uuid') == $sprint->id">
+                                                <i class="fi fi-rs-clipboard-list-check"></i>
+                                                <span class="navItem ms-3">{{ $sprint->name }}</span>
+                                            </x-sidebar-dropdown-link>
+                                        @endforeach
+                                    </x-slot>
+                                </x-sidebar-dropdown>
+                            </li>
+                        @else
+                            <li class="side-item-container">
+                                <x-sidebar-nav-link href="{{ route('projects.board.render', ['uuid' => $activeSprints[0]->id]) }}" :active="request()->routeIs('projects.board.render')">
+                                    <i class="fi fi-sr-game-board-alt"></i>
+                                    <span class="navItem ms-3">Board</span>
+                                </x-sidebar-nav-link>
+                            </li>
+                        @endif
+                    @else
+                        <li class="side-item-container">
+                            <x-sidebar-nav-link href="{{ route('projects.board.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.board.render')">
+                                <i class="fi fi-sr-game-board-alt"></i>
+                                <span class="navItem ms-3">Board</span>
+                            </x-sidebar-nav-link>
+                        </li>
+                    @endif
                     <li class="side-item-container">
                         <x-sidebar-nav-link href="{{ route('projects.sprints.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.sprints.render')">
                             <i class="fi fi-sr-running"></i>

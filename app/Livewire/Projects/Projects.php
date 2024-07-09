@@ -6,7 +6,7 @@ use App\Models\Project;
 use Livewire\Component;
 use Illuminate\Support\Str;
 
-class Overview extends Component
+class Projects extends Component
 {
     public $user;
     public $projects;
@@ -54,11 +54,11 @@ class Overview extends Component
         ]);
 
         // Redirect to project dashboard
-        return redirect()->route('projects.overview.render');
+        return redirect()->route('projects.projects.render');
     }
 
     public function render()
     {
-        return view('livewire.projects.overview');
+        return view('livewire.projects.projects');
     }
 }

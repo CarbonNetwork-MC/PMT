@@ -1,10 +1,11 @@
 <?php
 
 use App\Livewire\Dashboard;
-use App\Livewire\Projects\Backlog;
-use App\Livewire\Projects\Overview;
+use App\Livewire\Projects\Projects;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Projects\Board as ProjectDashboard;
+use App\Livewire\Projects\Boards\Board;
+use App\Livewire\Projects\Backlog\Backlog;
+use App\Livewire\Projects\Overview\Overview;
 use App\Livewire\Projects\Settings\Admin as AdminSettings;
 use App\Livewire\Projects\Settings\Overall as OverallSettings;
 use App\Livewire\Projects\Settings\Members as MembersSettings;
@@ -23,8 +24,9 @@ Route::middleware([
     Route::get('/dashboard', Dashboard::class)->name('dashboard.render');
 
     // Projects
-    Route::get('/projects', Overview::class)->name('projects.overview.render');
-    Route::get('/projects/{uuid}', ProjectDashboard::class)->name('projects.board.render');
+    Route::get('/projects', Projects::class)->name('projects.projects.render');
+    Route::get('/projects/{uuid}', Overview::class)->name('projects.overview.render');
+    Route::get('/projects/boards/{uuid}', Board::class)->name('projects.board.render');
     Route::get('/projects/{uuid}/sprints', SprintsOverview::class)->name('projects.sprints.render');
     Route::get('/projects/{uuid}/backlog', Backlog::class)->name('projects.backlog.render');
 

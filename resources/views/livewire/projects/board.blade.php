@@ -1,3 +1,0 @@
-<div>
-    board {{ $uuid }}
-</div>

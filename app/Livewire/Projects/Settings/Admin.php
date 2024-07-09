@@ -80,9 +80,14 @@ class Admin extends Component
         $this->dispatch('projectDeleted', ['message' => 'The project has been deleted.']);
 
         // Redirect to the projects overview
-        return redirect()->route('projects.overview.render');
+        return redirect()->route('projects.projects.render');
     }
 
+    /**
+     * Render the livewire component
+     * 
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.projects.settings.admin');

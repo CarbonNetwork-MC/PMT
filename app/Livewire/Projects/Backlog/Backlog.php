@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Projects;
+namespace App\Livewire\Projects\Backlog;
 
 use Livewire\Component;
 
@@ -15,6 +15,6 @@ class Backlog extends Component
 
     public function render()
     {
-        return view('livewire.projects.backlog');
+        return view('livewire.projects.backlog.backlog');
     }
 }
