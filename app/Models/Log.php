@@ -11,8 +11,13 @@ class Log extends Model
 
     protected $fillable = [
         'user_id',
+        'project_id',
+        'sprint_id',
+        'card_id',
+        'task_id',
         'action',
         'table',
         'data',
+        'description',
     ];
 }

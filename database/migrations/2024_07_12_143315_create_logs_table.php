@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->char('user_id', 36);
+            $table->char('project_id', 36)->nullable();
+            $table->char('sprint_id', 36)->nullable();
+            $table->char('card_id', 36)->nullable();
+            $table->char('task_id', 36)->nullable();
             $table->enum('action', ['create', 'update', 'delete']);
             $table->string('table');
             $table->text('data');
