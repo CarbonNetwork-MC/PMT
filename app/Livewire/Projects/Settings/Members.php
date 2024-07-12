@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Models\Log;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Project;
@@ -79,6 +80,15 @@ class Members extends Component
                         'user_id' => $user->uuid,
                         'role_id' => $this->role_id
                     ]);
+
+                    // Create a new Log
+                    Log::create([
+                        'user_id' => auth()->user()->uuid,
+                        'project_id' => $this->project->uuid,
+                        'action' => 'create',
+                        'data' => json_encode(['email' => $email, 'role_id' => $this->role_id]),
+                        'description' => 'Added <b>' . $email . '</b> to the project',
+                    ]);
                 }
             }
         }
@@ -108,6 +118,15 @@ class Members extends Component
             $member->role_id = $roleId;
             $member->save();
 
+            // Create a new Log
+            Log::create([
+                'user_id' => auth()->user()->uuid,
+                'project_id' => $this->project->uuid,
+                'action' => 'update',
+                'data' => json_encode(['role_id' => $roleId]),
+                'description' => 'Updated the role of <b>' . $member->user->name . '</b>',
+            ]);
+
             // Toast
             $this->dispatch('roleUpdated', ['message' => 'Role updated successfully!']);
         }
@@ -135,6 +154,15 @@ class Members extends Component
         if ($member) {
             // Delete the member
             $member->delete();
+
+            // Create a new Log
+            Log::create([
+                'user_id' => auth()->user()->uuid,
+                'project_id' => $this->project->uuid,
+                'action' => 'delete',
+                'data' => json_encode(['member' => $member]),
+                'description' => 'Removed <b>' . $member->user->name . '</b> from the project',
+            ]);
 
             // Toast
             $this->dispatch('memberRemoved', ['message' => 'Member removed successfully!']);

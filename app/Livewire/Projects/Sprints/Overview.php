@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Sprints;
 
+use App\Models\Log;
 use App\Models\Sprint;
 use Livewire\Component;
 use Illuminate\Support\Str;
@@ -41,7 +42,18 @@ class Overview extends Component
         $data['id'] = Str::uuid()->toString();
         $data['project_id'] = $this->uuid;
 
-        Sprint::create($data);
+        $sprint = Sprint::create($data);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'sprint_id' => $sprint->id,
+            'action' => 'create',
+            'data' => json_encode($data),
+            'table' => 'sprints',
+            'description' => 'Created sprint <b>' . $data['name'] . '</b>',
+        ]);
 
         $this->createSprintModal = false;
 
@@ -81,7 +93,18 @@ class Overview extends Component
 
         $sprint = Sprint::find($this->id);
 
-        $sprint->update($data);
+        $sprint = $sprint->update($data);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'sprint_id' => $this->id,
+            'action' => 'update',
+            'data' => json_encode($data),
+            'table' => 'sprints',
+            'description' => 'Updated sprint <b>' . $data['name'] . '</b>',
+        ]);
 
         $this->editSprintModal = false;
 
@@ -110,6 +133,17 @@ class Overview extends Component
 
         $sprint->delete();
 
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'sprint_id' => $this->id,
+            'action' => 'delete',
+            'data' => json_encode($sprint),
+            'table' => 'sprints',
+            'description' => 'Deleted sprint <b>' . $sprint->name . '</b>',
+        ]);
+
         $this->deleteSprintModal = false;
 
         return redirect()->route('projects.sprints.render', $this->uuid);
@@ -125,8 +159,19 @@ class Overview extends Component
     public function startSprint($id) {
         $sprint = Sprint::find($id);
 
-        $sprint->update([
+        $sprint = $sprint->update([
             'status' => 'active',
+        ]);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'sprint_id' => $id,
+            'action' => 'update',
+            'data' => json_encode($sprint),
+            'table' => 'sprints',
+            'description' => 'Started sprint <b>' . $sprint->name . '</b>',
         ]);
 
         return redirect()->route('projects.sprints.render', $this->uuid);
@@ -142,8 +187,19 @@ class Overview extends Component
     public function completeSprint($id) {
         $sprint = Sprint::find($id);
 
-        $sprint->update([
+        $sprint = $sprint->update([
             'status' => 'done',
+        ]);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'sprint_id' => $id,
+            'action' => 'update',
+            'data' => json_encode($sprint),
+            'table' => 'sprints',
+            'description' => 'Completed sprint <b>' . $sprint->name . '</b>',
         ]);
 
         return redirect()->route('projects.sprints.render', $this->uuid);

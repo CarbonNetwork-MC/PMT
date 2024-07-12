@@ -2,8 +2,12 @@
 
 namespace App\Livewire\Projects\Settings;
 
-use Livewire\Component;
+use App\Models\Log;
+use App\Models\Task;
+use App\Models\Card;
+use App\Models\Sprint;
 use App\Models\Project;
+use Livewire\Component;
 use App\Models\ProjectMember;
 
 class Admin extends Component
@@ -42,6 +46,15 @@ class Admin extends Component
         ProjectMember::where('project_id', $this->uuid)->where('user_id', $this->newOwner)->update(['role_id' => 3]);
         ProjectMember::where('project_id', $this->uuid)->where('user_id', auth()->user()->uuid)->update(['role_id' => 2]);
 
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'action' => 'update',
+            'data' => json_encode(['newOwner' => $this->newOwner, 'oldOwner' => auth()->user()->uuid]),
+            'description' => 'Changed the owner of the project',
+        ]);
+
         // Toast
         $this->dispatch('changedOwner', ['message' => 'The owner of the project has been changed.']);
 
@@ -75,6 +88,75 @@ class Admin extends Component
 
         // Delete the project
         $project->delete();
+
+        // Delete all project members
+        ProjectMember::where('project_id', $this->projectId)->delete();  // 3c0dee2f-47ce-48aa-bfdc-7df415dded4d - 7e460ae7-3deb-4994-8de8-c1877f05e321
+
+        // Delete all sprints, cards and tasks
+        $sprints = Sprint::where('project_id', $this->projectId)->get();
+        foreach ($sprints as $sprint) {
+            $cards = Card::where('sprint_id', $sprint->id)->get();
+            foreach ($cards as $card) {
+                $card->delete();
+            }
+
+            $tasks = Task::where('sprint_id', $sprint->id)->get();
+            foreach ($tasks as $task) {
+                $task->delete();
+            }
+
+            $sprint->delete();
+        }
+
+        // Create a new Log - Delete Project
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->projectId,
+            'action' => 'delete',
+            'table' => 'projects',
+            'data' => json_encode(['project_id' => $this->projectId, 'project' => $project]),
+            'description' => 'Deleted project <b>' . $project->name . '</b>',
+        ]);
+
+        // Create a new Log - Delete Project Members
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->projectId,
+            'action' => 'delete',
+            'table' => 'project_members',
+            'data' => json_encode(['project_id' => $this->projectId]),
+            'description' => 'Deleted all project members',
+        ]);
+
+        // Create a new Log - Delete Sprints
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->projectId,
+            'action' => 'delete',
+            'table' => 'sprints',
+            'data' => json_encode(['project_id' => $this->projectId]),
+            'description' => 'Deleted all sprints',
+        ]);
+
+        // Create a new Log - Delete Cards
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->projectId,
+            'action' => 'delete',
+            'table' => 'cards',
+            'data' => json_encode(['project_id' => $this->projectId]),
+            'description' => 'Deleted all cards',
+        ]);
+
+        // Create a new Log - Delete Tasks
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->projectId,
+            'action' => 'delete',
+            'table' => 'tasks',
+            'data' => json_encode(['project_id' => $this->projectId]),
+            'description' => 'Deleted all tasks',
+        ]);
 
         // Toast
         $this->dispatch('projectDeleted', ['message' => 'The project has been deleted.']);

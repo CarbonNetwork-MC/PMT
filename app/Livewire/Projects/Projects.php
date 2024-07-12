@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects;
 
+use App\Models\Log;
 use App\Models\Project;
 use Livewire\Component;
 use Illuminate\Support\Str;
@@ -51,6 +52,26 @@ class Projects extends Component
             'project_id' => $project->uuid,
             'user_id' => auth()->user()->uuid,
             'role_id' => '3',
+        ]);
+
+        // Create a new Log - Create Project
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $project->uuid,
+            'action' => 'create',
+            'table' => 'projects',
+            'data' => json_encode($data),
+            'description' => 'Created project <b>' . $data['name'] . '</b>',
+        ]);
+
+        // Create a new Log - Add User as Project Member
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $project->uuid,
+            'action' => 'create',
+            'table' => 'project_members',
+            'data' => json_encode(['project_id' => $project->uuid, 'user_id' => auth()->user()->uuid, 'role_id' => '3']),
+            'description' => 'Added user as project member',
         ]);
 
         // Redirect to project dashboard

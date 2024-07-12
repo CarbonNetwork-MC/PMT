@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Models\Log;
 use Livewire\Component;
 use App\Models\Project;
 
@@ -35,6 +36,15 @@ class Overall extends Component
         $this->project->update([
             'name' => $this->name,
             'description' => $this->description,
+        ]);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'action' => 'update',
+            'data' => json_encode(['name' => $this->name, 'description' => $this->description]),
+            'description' => 'Updated project settings',
         ]);
 
         return redirect()->route('projects.settings.overall.render', $this->uuid);
