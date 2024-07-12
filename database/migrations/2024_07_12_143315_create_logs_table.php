@@ -20,7 +20,8 @@ return new class extends Migration
             $table->char('task_id', 36)->nullable();
             $table->enum('action', ['create', 'update', 'delete']);
             $table->string('table');
-            $table->text('data');
+            $table->json('data')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
