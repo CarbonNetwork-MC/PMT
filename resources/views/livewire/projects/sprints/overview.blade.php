@@ -34,7 +34,7 @@
         @forelse ($sprints as $sprint)
             <div class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
                 <div class="flex justify-between items-center">
-                    <a href="{{ route('projects.board.render', ['uuid' => $uuid]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
+                    <a href="{{ route('projects.board.render', ['uuid' => $sprint->id]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
                     <p class="text-xs font-semibold text-gray-500 dark:text-white">{{ $sprint->start_date }} - {{ $sprint->end_date }}</p>
                 </div>
                 <div class="flex justify-between">

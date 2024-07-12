@@ -32,14 +32,14 @@
         </x-slot>
 
         <x-slot name="content">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 p-4">
                 <div class="col-span-1">
                     <x-label for="name" value="{{ __('projects.name') }}" />
                     <x-input id="name" type="text" class="mt-1 block w-full" wire:model.defer="name" />
                     <x-input-error for="name" class="mt-2" />
                 </div>
                 <div class="col-span-1"></div>
-                <div class="col-span-2">
+                <div class="col-span-3">
                     <x-label for="description" value="{{ __('projects.description') }}" />
                     <x-textarea id="description" class="mt-1 block w-full" wire:model.defer="description" />
                     <x-input-error for="description" class="mt-2" />
