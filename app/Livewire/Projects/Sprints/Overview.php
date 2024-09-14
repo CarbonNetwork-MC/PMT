@@ -159,7 +159,7 @@ class Overview extends Component
     public function startSprint($id) {
         $sprint = Sprint::find($id);
 
-        $sprint = $sprint->update([
+        $sprint->update([
             'status' => 'active',
         ]);
 
@@ -187,7 +187,7 @@ class Overview extends Component
     public function completeSprint($id) {
         $sprint = Sprint::find($id);
 
-        $sprint = $sprint->update([
+        $sprint->update([
             'status' => 'done',
         ]);
 

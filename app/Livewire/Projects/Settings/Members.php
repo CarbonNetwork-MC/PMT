@@ -122,7 +122,11 @@ class Members extends Component
             Log::create([
                 'user_id' => auth()->user()->uuid,
                 'project_id' => $this->project->uuid,
+                'sprint_id' => null,
+                'card_id' => null,
+                'task_id' => null,
                 'action' => 'update',
+                'table' => 'project_members',
                 'data' => json_encode(['role_id' => $roleId]),
                 'description' => 'Updated the role of <b>' . $member->user->name . '</b>',
             ]);

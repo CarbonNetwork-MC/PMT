@@ -56,7 +56,7 @@
                                     <i class="fi fi-ss-calendar dark:text-white"></i>
                                     @if (\Carbon\Carbon::parse($sprint->end_date)->format('d') - \Carbon\Carbon::now()->format('d') < 0)
                                         <p class="text-red-600 dark:text-red-400">
-                                            {{ \Carbon\Carbon::parse($sprint->end_date)->format('d') - \Carbon\Carbon::now()->format('d') }}
+                                            {{ $daysRemaining = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($sprint->end_date)->startOfDay(), false) }}
                                         </p>
                                     @else
                                         <p class="dark:text-white">
