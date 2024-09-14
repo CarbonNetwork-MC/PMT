@@ -11,7 +11,7 @@
             <div>
                 <p class="text-sm font-bold uppercase dark:text-white">Cards Total</p>
                 <div class="flex gap-x-2">
-                    <i class="fi fi-ss-membership-vip"></i>
+                    <i class="fi fi-ss-membership-vip dark:text-white"></i>
                     <p class="dark:text-white">{{ $numOfCards }}</p>
                 </div>
             </div>
@@ -26,5 +26,3 @@
         </div>
     </div>
 </div>
-
-{{-- $2y$12$zxdodQ1Aj3wkSElXFmBDAOv/JlLTPAekJAqGBdJq6Ws2AzqqSNktK --}}

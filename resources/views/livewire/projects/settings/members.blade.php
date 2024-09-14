@@ -61,7 +61,7 @@
         </x-slot>
 
         <x-slot name="content">
-            <p>Grant access to the project by adding members via email (separated by comma's)</p>
+            <p class="text-black dark:text-white">Grant access to the project by adding members via email (separated by comma's)</p>
             <div class="grid grid-cols-5 gap-x-4">
                 <div class="col-span-5 md:col-span-3">
                     <textarea wire:model="emails" class="w-full dark:bg-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded p-2 mt-2 resize-none" rows="5" placeholder="Email addresses"></textarea>
