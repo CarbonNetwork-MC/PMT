@@ -13,6 +13,7 @@ class Log extends Model
         'user_id',
         'project_id',
         'sprint_id',
+        'backlog_id',
         'card_id',
         'task_id',
         'action',
