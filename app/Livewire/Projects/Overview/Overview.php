@@ -2,16 +2,20 @@
 
 namespace App\Livewire\Projects\Overview;
 
+use App\Models\Log;
 use Livewire\Component;
 use App\Models\Project;
 
 class Overview extends Component
 {
     public $uuid;
+    public $logs;
 
     public function mount($uuid)
     {
         $this->uuid = $uuid;
+
+        $this->logs = Log::where('project_id', $uuid)->orderBy('created_at', 'desc')->take(10)->get();
 
         $project = Project::find($this->uuid);
         if ($project) {
