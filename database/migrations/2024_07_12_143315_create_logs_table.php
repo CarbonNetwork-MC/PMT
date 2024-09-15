@@ -16,12 +16,14 @@ return new class extends Migration
             $table->char('user_id', 36);
             $table->char('project_id', 36)->nullable();
             $table->char('sprint_id', 36)->nullable();
+            $table->char('bucket_id', 36)->nullable();
             $table->char('card_id', 36)->nullable();
             $table->char('task_id', 36)->nullable();
             $table->enum('action', ['create', 'update', 'delete']);
             $table->string('table');
             $table->json('data')->nullable();
             $table->text('description')->nullable();
+            $table->enum('environment', ['local', 'staging', 'production'])->default('local');
             $table->timestamps();
         });
     }

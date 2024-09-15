@@ -20,5 +20,6 @@ class Log extends Model
         'table',
         'data',
         'description',
+        'environment',
     ];
 }
