@@ -5,12 +5,14 @@
                 <th class="px-6 py-3">User ID</th>
                 <th class="px-6 py-3">Project ID</th>
                 <th class="px-6 py-3">Sprint ID</th>
+                <th class="px-6 py-3">Backlog ID</th>
                 <th class="px-6 py-3">Card ID</th>
                 <th class="px-6 py-3">Task ID</th>
                 <th class="px-6 py-3">Action</th>
                 <th class="px-6 py-3">Table</th>
                 <th class="px-6 py-3">Data</th>
                 <th class="px-6 py-3">Description</th>
+                <th class="px-6 py-3">Environment</th>
                 <th class="px-6 py-3">Created At</th>
             </tr>
         </thead>
@@ -20,6 +22,7 @@
                     <td class="px-6 py-4">{{ $log->user_id }}</td>
                     <td class="px-6 py-4">{{ $log->project_id }}</td>
                     <td class="px-6 py-4">{{ $log->sprint_id }}</td>
+                    <td class="px-6 py-4">{{ $log->backlog_id }}</td>
                     <td class="px-6 py-4">{{ $log->card_id }}</td>
                     <td class="px-6 py-4">{{ $log->task_id }}</td>
                     <td class="px-6 py-4">{{ $log->action }}</td>
@@ -34,7 +37,8 @@
                             <div data-popper-arrow></div>
                         </div>
                     </td>
-                    <td class="px-6 py-4">{{ $log->description }}</td>
+                    <td class="px-6 py-4">{!! $log->description !!}</td>
+                    <td class="px-6 py-4">{{ $log->environment }}</td>
                     <td class="px-6 py-4">{{ $log->created_at }}</td>
                 </tr>
             @endforeach
