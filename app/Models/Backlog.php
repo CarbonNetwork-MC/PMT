@@ -11,6 +11,10 @@ class Backlog extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'uuid',
         'project_id',
@@ -27,6 +31,6 @@ class Backlog extends Model
 
     public function cards(): HasMany 
     {
-        return $this->hasMany(BacklogCard::class, 'backlog_id', 'id');
+        return $this->hasMany(BacklogCard::class, 'backlog_id', 'uuid');
     }
 }
