@@ -15,6 +15,9 @@ return [
     'description' => 'Description',
     'create_bucket' => 'Create Bucket',
     'edit_bucket' => 'Edit Bucket',
+    'buckets' => 'Buckets',
+    'cards_total' => 'Total Cards',
+    'new_card' => 'New Card',
 
     // Buttons
     'create' => 'Create',

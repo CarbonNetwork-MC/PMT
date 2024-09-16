@@ -6,6 +6,7 @@ use App\Models\Log;
 use Livewire\Component;
 use Illuminate\Support\Str;
 use App\Models\Backlog as BacklogModel;
+use App\Models\BacklogCard;
 
 class Backlog extends Component
 {
@@ -173,6 +174,40 @@ class Backlog extends Component
         ]);
 
         $this->deleteBucketModal = false;
+
+        return redirect()->route('projects.backlog.render', $this->uuid);
+    }
+
+    /**
+     * Create a new card
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function createCard() {
+        $data = $this->validate([
+            'name' => ['required', 'string'],
+            'description' => ['required', 'string'],
+        ]);
+
+        $data['backlog_id'] = $this->selectedBucket->uuid;
+        $data['assignee_id'] = $this->assignedTo;
+
+        $card = BacklogCard::create($data);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $card->id,
+            'action' => 'create',
+            'data' => json_encode($card),
+            'table' => 'backlog_cards',
+            'description' => 'Created card <b>' . $data['name'] . '</b>',
+            'environment' => config('app.env')
+        ]);
+
+        $this->createCardModal = false;
 
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
