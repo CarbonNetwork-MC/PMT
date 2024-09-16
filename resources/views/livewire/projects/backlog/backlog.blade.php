@@ -1,4 +1,5 @@
 <div class="flex flex-col" style="height: 90vh">
+
     <div class="w-full flex justify-between bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
         <div class="flex gap-x-4">
             <div>
@@ -30,15 +31,15 @@
             <div class="flex">
                 <ul class="w-full">
                     @foreach ($buckets as $bucket)
-                        <li class="flex justify-between items-center p-2 {{ $bucket->id == $selectedBucket->id ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700' }} rounded-lg mt-2 cursor-pointer" wire:click="selectBucket({{$bucket->id}})">
+                        <li class="flex justify-between items-center p-2 {{ $bucket->uuid == $selectedBucket->uuid ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700' }} rounded-lg mt-2 cursor-pointer" wire:click="selectBucket('{{ $bucket->uuid }}')">
                             <div class="flex items-center gap-x-2">
                                 <p class="dark:text-white">{{ $bucket->name }}</p>
                             </div>
                             <div class="flex gap-x-2 items-center">
-                                <button wire:click="editBucket({{ $bucket->id }})">
+                                <button wire:click="editBucket('{{ $bucket->uuid }}')">
                                     <i class="fi fi-br-edit dark:text-white hover:text-blue-500"></i>
                                 </button>
-                                <button wire:click="deleteBucket({{ $bucket->id }})">
+                                <button wire:click="deleteBucket('{{ $bucket->uuid }}')">
                                     <i class="fi fi-br-trash dark:text-white hover:text-red-500"></i>
                                 </button>
                             </div>
@@ -50,7 +51,7 @@
         <div class="w-3/4 3xl:w-4/5">
             @if ($selectedBucket)
                 @foreach ($selectedBucket->cards as $card)
-                    <div class="bg-white dark:bg-gray-800 rounded-lg p-2 mb-2 cursor-pointer" wire:click="selectCard({{$card->id}})">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg p-2 mb-2 cursor-pointer" wire:click="selectCard({{ $card->id }})">
                         <div class="flex justify-between items-center group">
                             <div class="flex items-center gap-x-2">
                                 <p class="text-gray-400">#{{ $card->id }}</p>

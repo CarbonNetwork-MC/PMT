@@ -53,7 +53,7 @@ class Backlog extends Component
      * @return void
      */
     public function selectBucket($id) {
-        $this->selectedBucket = $this->buckets->where('id', $id)->first(); 
+        $this->selectedBucket = $this->buckets->where('uuid', $id)->first(); 
     }
 
     /**
@@ -67,7 +67,8 @@ class Backlog extends Component
             'description' => ['required', 'string'],
         ]);
         
-        $data['project_id'] = Str::uuid()->toString();
+        $data['uuid'] = Str::uuid()->toString();
+        $data['project_id'] = $this->uuid;
         $data['status'] = 'active';
 
         $bucket = BacklogModel::create($data);
@@ -76,6 +77,7 @@ class Backlog extends Component
         Log::create([
             'user_id' => auth()->user()->uuid,
             'project_id' => $this->uuid,
+            'backlog_id' => $bucket->uuid,
             'action' => 'create',
             'data' => json_encode($bucket),
             'table' => 'backlogs',
@@ -98,7 +100,7 @@ class Backlog extends Component
     public function editBucket($id) {
         $this->id = $id;
         $this->editBucketModal = true;
-        $this->bucket = $this->buckets->where('id', $id)->first();
+        $this->bucket = $this->buckets->where('uuid', $id)->first();
 
         $this->name = $this->bucket->name;
         $this->description = $this->bucket->description;
@@ -115,7 +117,7 @@ class Backlog extends Component
             'description' => ['required', 'string'],
         ]);
 
-        $bucket = BacklogModel::find($this->id);
+        $bucket = BacklogModel::where('uuid', $this->id)->first();
 
         $bucket->update($data);
 
@@ -123,15 +125,13 @@ class Backlog extends Component
         Log::create([
             'user_id' => auth()->user()->uuid,
             'project_id' => $this->uuid,
-            'backlog_id' => $bucket->id,
+            'backlog_id' => $bucket->uuid,
             'action' => 'update',
             'data' => json_encode($data),
             'table' => 'backlogs',
             'description' => 'Updated bucket <b>' . $data['name'] . '</b>',
             'environment' => config('app.env')
         ]);
-
-        dd(config('app.env'));
 
         $this->editBucketModal = false;
 
@@ -156,7 +156,7 @@ class Backlog extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyBucket() {
-        $bucket = BacklogModel::find($this->id);
+        $bucket = BacklogModel::where('uuid', $this->id)->first();
 
         $bucket->delete();
 
@@ -164,7 +164,7 @@ class Backlog extends Component
         Log::create([
             'user_id' => auth()->user()->uuid,
             'project_id' => $this->uuid,
-            'backlog_id' => $this->id,
+            'backlog_id' => $bucket->uuid,
             'action' => 'delete',
             'data' => json_encode($bucket),
             'table' => 'backlogs',
