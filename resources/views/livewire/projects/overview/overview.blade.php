@@ -17,7 +17,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($logs as $log)
+            @forelse($logs as $log)
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <td class="px-6 py-4">{{ $log->user_id }}</td>
                     <td class="px-6 py-4">{{ $log->project_id }}</td>
@@ -41,6 +41,10 @@
                     <td class="px-6 py-4">{{ $log->environment }}</td>
                     <td class="px-6 py-4">{{ $log->created_at }}</td>
                 </tr>
-            @endforeach
+            @empty
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td class="px-6 py-4 text-center" colspan="12">No logs found.</td>
+                </tr>
+            @endforelse
         </tbody>
 </div>
