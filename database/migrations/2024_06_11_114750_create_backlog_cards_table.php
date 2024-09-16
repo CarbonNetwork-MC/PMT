@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('backlog_cards', function (Blueprint $table) {
             $table->id();
-            $table->integer('backlog_id');
+            $table->char('backlog_id', 36);
             $table->string('name');
             $table->text('description')->nullable();
             $table->char('assignee_id', 36)->nullable();
