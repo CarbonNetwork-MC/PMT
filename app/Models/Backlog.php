@@ -12,6 +12,7 @@ class Backlog extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'project_id',
         'name',
         'description',
