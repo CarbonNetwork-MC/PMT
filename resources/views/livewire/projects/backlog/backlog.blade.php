@@ -94,7 +94,7 @@
     </div>
 
     {{-- Create Bucket Modal --}}
-    <x-pmt-modal wire:model="createBucketModal">
+    <x-big-modal wire:model="createBucketModal">
         <x-slot name="title">
             {{ __('backlog.create_bucket') }}
         </x-slot>
@@ -122,10 +122,10 @@
                 {{ __('backlog.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 
     {{-- Edit Bucket Modal --}}
-    <x-pmt-modal wire:model="editBucketModal">
+    <x-big-modal wire:model="editBucketModal">
         <x-slot name="title">
             {{ __('backlog.edit_bucket') }}
         </x-slot>
@@ -153,7 +153,7 @@
                 {{ __('backlog.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
     
     {{-- Delete Bucket Modal --}}
     <x-dialog-modal wire:model="deleteBucketModal">
@@ -177,7 +177,7 @@
     </x-dialog-modal>
     
     {{-- Create Card Modal --}}
-    <x-pmt-modal wire:model="createCardModal">
+    <x-big-modal wire:model="createCardModal">
         <x-slot name="title">
             {{ __('backlog.create_card') }}
         </x-slot>
@@ -209,26 +209,6 @@
                 {{ __('backlog.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
-
-    <script>
-        document.addEventListener('livewire:load', function () {
-            initDropdowns();  // Initialize dropdowns when the component is loaded
-        });
-
-        document.addEventListener('livewire:update', function () {
-            initDropdowns();  // Reinitialize dropdowns after each Livewire update
-        });
-
-        function initDropdowns() {
-            document.querySelectorAll('[data-dropdown-toggle]').forEach(dropdownButton => {
-                dropdownButton.addEventListener('click', function () {
-                    const dropdownId = this.getAttribute('data-dropdown-toggle');
-                    const dropdown = document.getElementById(dropdownId);
-                    dropdown.classList.toggle('hidden');
-                });
-            });
-        }
-    </script>
+    </x-big-modal>
 
 </div>

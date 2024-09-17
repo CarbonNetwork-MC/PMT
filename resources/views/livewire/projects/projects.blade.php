@@ -26,7 +26,7 @@
     </div>
 
     {{-- Create Project Modal --}}
-    <x-pmt-modal wire:model="createProjectModal">
+    <x-big-modal wire:model="createProjectModal">
         <x-slot name="title">
             {{ __('projects.create_project') }}
         </x-slot>
@@ -55,5 +55,5 @@
                 {{ __('projects.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 </div>

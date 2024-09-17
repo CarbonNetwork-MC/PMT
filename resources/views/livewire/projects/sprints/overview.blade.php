@@ -138,7 +138,7 @@
     </div>
 
     {{-- Create Sprint Modal --}}
-    <x-pmt-modal wire:model="createSprintModal" id="">
+    <x-big-modal wire:model="createSprintModal" id="">
         <x-slot name="title">
             {{ __('sprints.create_sprint') }}
         </x-slot>
@@ -172,10 +172,10 @@
                 {{ __('sprints.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 
     {{-- Edit Sprint Modal --}}
-    <x-pmt-modal wire:model="editSprintModal" id="">
+    <x-big-modal wire:model="editSprintModal" id="">
         <x-slot name="title">
             {{ __('sprints.edit_sprint') }}
         </x-slot>
@@ -218,7 +218,7 @@
                 {{ __('sprints.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 
     {{-- Delete Sprint Modal --}}
     <x-dialog-modal wire:model="deleteSprintModal">

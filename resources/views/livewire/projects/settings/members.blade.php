@@ -55,7 +55,7 @@
     </div>
 
     {{-- Add Member Modal --}}
-    <x-pmt-modal wire:model="addMemberModal">
+    <x-big-modal wire:model="addMemberModal">
         <x-slot name="title">
             {{ __('settings.add_user') }}
         </x-slot>
@@ -88,7 +88,7 @@
                 {{ __('settings.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 
     {{-- Delete Member Modal --}}
     <x-dialog-modal wire:model="deleteMemberModal">
