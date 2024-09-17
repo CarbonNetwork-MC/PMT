@@ -5,17 +5,19 @@ namespace App\Livewire\Projects\Backlog;
 use App\Models\Log;
 use Livewire\Component;
 use Illuminate\Support\Str;
-use App\Models\Backlog as BacklogModel;
 use App\Models\BacklogCard;
+use App\Models\Backlog as BacklogModel;
 
 class Backlog extends Component
 {
     public $uuid;
+    public $backlogId;
+
     public $buckets;
     public $selectedBucket;
     public $numOfCards = 0;
 
-    public $id;
+    public $selectedBucketId;
     public $bucket;
     public $card;
 
@@ -29,13 +31,20 @@ class Backlog extends Component
 
     public $name, $description, $assignedTo;
 
-    public function mount($uuid)
+    public function mount($uuid, $backlogId)
     {
         $this->uuid = $uuid;
+        $this->backlogId = $backlogId;
+
         $cards = [];
 
         $this->buckets = BacklogModel::where('project_id', $uuid)->with('cards.tasks')->get();
         $this->selectedBucket = $this->buckets->first();
+        if (session()->has('selected_backlog')) {
+            $this->selectedBucket = BacklogModel::where('uuid', session('selected_backlog'))->with('cards.tasks')->first();
+        } else {
+            $this->selectedBucket = $this->buckets->first();
+        }
         
         foreach ($this->buckets as $bucket) {
             foreach ($bucket->cards as $card) {
@@ -55,6 +64,10 @@ class Backlog extends Component
      */
     public function selectBucket($id) {
         $this->selectedBucket = $this->buckets->where('uuid', $id)->first(); 
+        $this->selectedBucket = $this->buckets->where('uuid', $id)->first();
+
+        // Set the selected backlog in the session
+        session()->put('selected_backlog', $this->selectedBucket->uuid);
     }
 
     /**
@@ -99,7 +112,7 @@ class Backlog extends Component
      * @return void
      */
     public function editBucket($id) {
-        $this->id = $id;
+        $this->selectedBucketId = $id;
         $this->editBucketModal = true;
         $this->bucket = $this->buckets->where('uuid', $id)->first();
 
@@ -118,7 +131,7 @@ class Backlog extends Component
             'description' => ['required', 'string'],
         ]);
 
-        $bucket = BacklogModel::where('uuid', $this->id)->first();
+        $bucket = BacklogModel::where('uuid', $this->selectedBucketId)->first();
 
         $bucket->update($data);
 
@@ -147,7 +160,7 @@ class Backlog extends Component
      * @return void
      */
     public function deleteBucket($id) {
-        $this->id = $id;
+        $this->selectedBucketId = $id;
         $this->deleteBucketModal = true;
     }
 
@@ -157,7 +170,7 @@ class Backlog extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyBucket() {
-        $bucket = BacklogModel::where('uuid', $this->id)->first();
+        $bucket = BacklogModel::where('uuid', $this->selectedBucketId)->first();
 
         $bucket->delete();
 

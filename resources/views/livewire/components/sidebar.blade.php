@@ -75,7 +75,7 @@
                          </x-sidebar-nav-link>
                     </li>
                     <li class="side-item-container">
-                        <x-sidebar-nav-link href="{{ route('projects.backlog.render', ['uuid' => session()->get('selected_project')]) }}" :active="request()->routeIs('projects.backlog.render')">
+                        <x-sidebar-nav-link href="{{ route('projects.backlog.render', ['uuid' => session()->get('selected_project'), 'backlogId' => $selectedBacklog]) }}" :active="request()->routeIs('projects.backlog.render')">
                             <i class="fi fi-ss-cubes-stacked"></i>
                             <span class="navItem ms-3">Backlog</span>
                          </x-sidebar-nav-link>
