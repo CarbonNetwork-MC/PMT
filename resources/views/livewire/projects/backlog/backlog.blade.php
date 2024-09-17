@@ -214,4 +214,34 @@
         </x-slot>
     </x-big-modal>
 
+    <x-pmt-modal wire:model="selectedCardModal">
+        <x-slot name="closeButton">
+            <button class="text-white bg-gray-800 rounded-full p-2 cursor-pointer" wire:click="$toggle('selectedCardModal')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </x-slot>
+
+        <x-slot name="cardId">
+            #14
+        </x-slot>
+
+        <x-slot name="cardName">
+            Bank System
+        </x-slot>
+
+        <x-slot name="status">
+            Doing
+        </x-slot>
+
+        <x-slot name="users">
+            Mi
+        </x-slot>
+
+        <x-slot name="menuButton">
+            Knoppe
+        </x-slot>
+    </x-pmt-modal>
+
 </div>
