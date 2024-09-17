@@ -19,12 +19,14 @@
                 </div>
             </div>
             <div class="flex items-center gap-x-4">
-                <div>
-                    <div wire:click="$toggle('createCardModal')" class="px-3 py-2 font-medium text-center flex items-center gap-x-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer">
-                        <i class="fi fi-sr-plus-small text-lg flex items-center"></i>
-                        <p class="text-sm">{{ __('backlog.new_card') }}</p>
+                @if ($buckets->count() > 0)
+                    <div>
+                        <div wire:click="$toggle('createCardModal')" class="px-3 py-2 font-medium text-center flex items-center gap-x-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer">
+                            <i class="fi fi-sr-plus-small text-lg flex items-center"></i>
+                            <p class="text-sm">{{ __('backlog.new_card') }}</p>
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
