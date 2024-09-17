@@ -31,7 +31,7 @@ class Backlog extends Component
 
     public $name, $description, $assignedTo;
 
-    public function mount($uuid, $backlogId)
+    public function mount($uuid, $backlogId = null)
     {
         $this->uuid = $uuid;
         $this->backlogId = $backlogId;
@@ -39,7 +39,6 @@ class Backlog extends Component
         $cards = [];
 
         $this->buckets = BacklogModel::where('project_id', $uuid)->with('cards.tasks')->get();
-        $this->selectedBucket = $this->buckets->first();
         if (session()->has('selected_backlog')) {
             $this->selectedBucket = BacklogModel::where('uuid', session('selected_backlog'))->with('cards.tasks')->first();
         } else {
@@ -63,7 +62,6 @@ class Backlog extends Component
      * @return void
      */
     public function selectBucket($id) {
-        $this->selectedBucket = $this->buckets->where('uuid', $id)->first(); 
         $this->selectedBucket = $this->buckets->where('uuid', $id)->first();
 
         // Set the selected backlog in the session
@@ -224,6 +222,8 @@ class Backlog extends Component
 
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
+
+    
 
     /**
      * Render the component

@@ -28,6 +28,11 @@ class Projects extends Component
         if (session()->has('selected_project')) {
             session()->forget('selected_project');
         }
+
+        // Clear the selected backlog
+        if (session()->has('selected_backlog')) {
+            session()->forget('selected_backlog');
+        }
     }
 
     /**
