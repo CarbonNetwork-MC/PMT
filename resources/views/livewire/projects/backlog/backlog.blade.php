@@ -27,6 +27,9 @@
                         </div>
                     </div>
                 @endif
+                <div wire:click="$toggle('selectedCardModal')" class="px-3 py-2 font-medium text-center flex items-center gap-x-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer">
+                    {{ $selectedCardModal ? 'Visible' : 'Open' }}
+                </div>
             </div>
         </div>
     </div>

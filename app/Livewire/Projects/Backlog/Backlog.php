@@ -26,6 +26,8 @@ class Backlog extends Component
     public $deleteBucketModal = false;
 
     public $createCardModal = false;
+
+    public $selectedCardModal = true;
     public $editCardModal = false;
     public $deleteCardModal = false;
 
