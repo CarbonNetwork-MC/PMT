@@ -18,7 +18,7 @@ class Projects extends Component
     public function mount() {
 
         $this->user = auth()->user();
-        // $this->projects = Project::where('owner_id', $this->user->uuid)->with('sprints')->with('members')->get();
+        
         // Get the project where the user is a member of
         $this->projects = Project::whereHas('members', function($query) {
             $query->where('user_id', $this->user->uuid);

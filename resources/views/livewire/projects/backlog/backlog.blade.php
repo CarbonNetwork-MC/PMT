@@ -86,15 +86,6 @@
                                     </ul>
                                 </div>
                             </div>
-
-                            {{-- <div class="flex gap-x-2 items-center">
-                                <button wire:click="editCard({{ $card->id }})">
-                                    <i class="fi fi-br-edit dark:text-white hover:text-blue-500"></i>
-                                </button>
-                                <button wire:click="deleteCard({{ $card->id }})">
-                                    <i class="fi fi-br-trash dark:text-white hover:text-red-500"></i>
-                                </button>
-                            </div> --}}
                         </div>
                     </div>
                 @endforeach
