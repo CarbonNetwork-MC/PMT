@@ -43,13 +43,18 @@ class Backlog extends Component
         $cards = [];
 
         // Get all buckets and cards for the selected project.
-        $this->buckets = BacklogModel::where('project_id', $uuid)->with('cards.tasks')->get();
+        $this->buckets = BacklogModel::where('project_id', $uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->get();
 
         // Check the session if the user has already selected a backlog and select it, if not, select the first one.
         if (session()->has('selected_backlog')) {
             $this->selectedBucket = BacklogModel::where('uuid', session('selected_backlog'))->with('cards.tasks')->first();
         } else {
             $this->selectedBucket = $this->buckets->first();
+        }
+
+        // Development - Remove this in production
+        if ($this->selectedBucket && $this->selectedBucket->cards->count() > 0) {
+            $this->selectedCard = $this->selectedBucket->cards->first();
         }
         
         // Get the number of cards in the selected bucket

@@ -24,13 +24,13 @@ class BacklogCard extends Model
         return $this->belongsTo(Backlog::class);
     }
 
-    public function assignee(): BelongsTo
+    public function assignees(): HasMany
     {
-        return $this->belongsTo(User::class, 'assignee_id');
+        return $this->hasMany(BacklogCardAssignee::class, 'backlog_card_id', 'id');
     }
 
     public function tasks(): HasMany
     {
-        return $this->hasMany(BacklogCardTask::class);
+        return $this->hasMany(BacklogTask::class, 'backlog_card_id', 'id');
     }
 }
