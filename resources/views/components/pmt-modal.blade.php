@@ -36,7 +36,10 @@
                     <h1 class="text-lg text-gray-700">{{ $cardId }}</h1>
                     <h1 class="text-lg text-gray-700">{{ $cardName }}</h1>
                 </div>
-                <div class="col-span-1 flex justify-end">
+                <div class="col-span-1 flex gap-x-4 justify-end">
+                    <div>
+                        {{ $adminStatus }}
+                    </div>
                     <div>
                         {{ $status }}
                     </div>

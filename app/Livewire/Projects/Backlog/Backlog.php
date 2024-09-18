@@ -258,7 +258,20 @@ class Backlog extends Component
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
 
-    
+    /**
+     * Select a Card
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function selectCard($id) {
+        // Get the selected card
+        $this->selectedCard = $this->selectedBucket->cards->where('id', $id)->first();
+
+        // Open the selected card modal
+        $this->selectedCardModal = true;
+    }
 
     /**
      * Render the component

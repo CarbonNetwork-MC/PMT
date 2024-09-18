@@ -224,23 +224,54 @@
         </x-slot>
 
         <x-slot name="cardId">
-            #14
+            @if ($selectedCard && isset($selectedCard->id))
+                #{{ $selectedCard->id }}
+            @else
+                #0
+            @endif
         </x-slot>
 
         <x-slot name="cardName">
-            Bank System
+            @if ($selectedCard && isset($selectedCard->name))
+                {{ $selectedCard->name }}
+            @else
+                {{ __('backlog.no_card_selected') }}
+            @endif
+        </x-slot>
+
+        <x-slot name="adminStatus">
+            @if ($selectedCard && isset($selectedCard->admin_status))
+                @if ($selectedCard->admin_status == 'None')
+                    <p class="text-sm text-gray-500">{{ __('backlog.approval_status') }}</p>
+                @elseif ($selectedCard->admin_status == 'Approved')
+                    <p class="text-sm text-green-500">{{ __('backlog.approved') }}</p>
+                @elseif ($selectedCard->admin_status == 'Needs work')
+                    <p class="text-sm text-yellow-500">{{ __('backlog.needs_work') }}</p>
+                @elseif ($selectedCard->admin_status == 'Rejected')
+                    <p class="text-sm text-red-500">{{ __('backlog.rejected') }}</p>
+                @endif
+            @else
+                <p class="text-sm text-gray-500">{{ __('backlog.approval_status') }}</p>
+            @endif
         </x-slot>
 
         <x-slot name="status">
-            Doing
+            {{-- Backlog cards don't have a status. --}}
         </x-slot>
 
         <x-slot name="users">
-            Mi
+            @if ($selectedCard && isset($selectedCard->assignees)) 
+                <div class="flex gap-x-2">
+                    <i class="fi fi-sr-users text-gray-700 dark:text-white"></i>
+                    @foreach ($selectedCard->assignees as $assignee)
+                        <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                    @endforeach
+                </div>
+            @endif
         </x-slot>
 
         <x-slot name="menuButton">
-            Knoppe
+            <i class="fi fi-sr-menu-dots-vertical"></i>
         </x-slot>
     </x-pmt-modal>
 
