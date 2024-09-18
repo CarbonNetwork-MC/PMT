@@ -14,8 +14,10 @@ class Backlog extends Component
     public $backlogId;
 
     public $buckets;
-    public $selectedBucket;
     public $numOfCards = 0;
+    
+    public $selectedBucket;
+    public $selectedCard;
 
     public $selectedBucketId;
     public $bucket;
@@ -40,13 +42,17 @@ class Backlog extends Component
 
         $cards = [];
 
+        // Get all buckets and cards for the selected project.
         $this->buckets = BacklogModel::where('project_id', $uuid)->with('cards.tasks')->get();
+
+        // Check the session if the user has already selected a backlog and select it, if not, select the first one.
         if (session()->has('selected_backlog')) {
             $this->selectedBucket = BacklogModel::where('uuid', session('selected_backlog'))->with('cards.tasks')->first();
         } else {
             $this->selectedBucket = $this->buckets->first();
         }
         
+        // Get the number of cards in the selected bucket
         foreach ($this->buckets as $bucket) {
             foreach ($bucket->cards as $card) {
                 $cards[] = $card;
@@ -76,6 +82,7 @@ class Backlog extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function createBucket() {
+        // Validate the data
         $data = $this->validate([
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
@@ -85,6 +92,7 @@ class Backlog extends Component
         $data['project_id'] = $this->uuid;
         $data['status'] = 'active';
 
+        // Create a new bucket
         $bucket = BacklogModel::create($data);
 
         // Create a new Log
@@ -99,8 +107,10 @@ class Backlog extends Component
             'environment' => config('app.env')
         ]);
 
+        // Close the modal
         $this->createBucketModal = false;
 
+        // Reload the page
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
 
@@ -112,10 +122,16 @@ class Backlog extends Component
      * @return void
      */
     public function editBucket($id) {
+        // Set the selected bucket ID
         $this->selectedBucketId = $id;
+
+        // Open the edit bucket modal
         $this->editBucketModal = true;
+
+        // Get the bucket
         $this->bucket = $this->buckets->where('uuid', $id)->first();
 
+        // Set the name and description
         $this->name = $this->bucket->name;
         $this->description = $this->bucket->description;
     }
@@ -126,13 +142,14 @@ class Backlog extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updateBucket() {
+        // Validate the data
         $data = $this->validate([
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
         ]);
 
+        // Get the bucket and update it
         $bucket = BacklogModel::where('uuid', $this->selectedBucketId)->first();
-
         $bucket->update($data);
 
         // Create a new Log
@@ -147,8 +164,10 @@ class Backlog extends Component
             'environment' => config('app.env')
         ]);
 
+        // Close the modal
         $this->editBucketModal = false;
 
+        // Reload the page
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
 
@@ -160,7 +179,10 @@ class Backlog extends Component
      * @return void
      */
     public function deleteBucket($id) {
+        // Set the selected bucket ID
         $this->selectedBucketId = $id;
+
+        // Open the delete bucket modal
         $this->deleteBucketModal = true;
     }
 
@@ -170,8 +192,8 @@ class Backlog extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyBucket() {
+        // Get the bucket and delete it
         $bucket = BacklogModel::where('uuid', $this->selectedBucketId)->first();
-
         $bucket->delete();
 
         // Create a new Log
@@ -186,8 +208,10 @@ class Backlog extends Component
             'environment' => config('app.env')
         ]);
 
+        // Close the modal
         $this->deleteBucketModal = false;
 
+        // Reload the page
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
 
@@ -197,6 +221,7 @@ class Backlog extends Component
      * @return \Illuminate\Http\RedirectResponse
      */
     public function createCard() {
+        // Validate the data
         $data = $this->validate([
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
@@ -205,6 +230,7 @@ class Backlog extends Component
         $data['backlog_id'] = $this->selectedBucket->uuid;
         $data['assignee_id'] = $this->assignedTo;
 
+        // Create a new card
         $card = BacklogCard::create($data);
 
         // Create a new Log
@@ -220,8 +246,10 @@ class Backlog extends Component
             'environment' => config('app.env')
         ]);
 
+        // Close the modal
         $this->createCardModal = false;
 
+        // Reload the page
         return redirect()->route('projects.backlog.render', $this->uuid);
     }
 
