@@ -1,3 +1,5 @@
+@props(['selectedCard'])
+
 <div 
     class="fixed inset-0 overflow-y-auto w-full h-full z-50 bg-gray-900/60 transform transition-all" 
     x-data="{ show: @entangle($attributes->wire('model')) }" 
@@ -12,6 +14,8 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0">
 
+    {{-- !!! Will probably be deleted. --}}
+
     {{-- Close Button top right --}}
     <div class="absolute top-0 right-0 p-4">
         {{ $closeButton }}
@@ -19,7 +23,7 @@
 
     {{-- Modal --}}
 
-    <div 
+    {{-- <div 
         class="w-full flex justify-center mt-12 transform transition-all"
         x-trap.inert.noscroll="show"
         x-transition:enter="ease-out duration-300"
@@ -30,7 +34,7 @@
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
         <div class="bg-gray-100 dark:bg-gray-800 rounded-sm w-5/6 p-4">
-            {{-- Topbar (card id, name, status, users, menu button?) --}}
+            {{-- Topbar (card id, name, status, users, menu button?) --} }
             <div class="grid grid-cols-4">
                 <div class="col-span-3 flex gap-x-4">
                     <h1 class="text-lg text-gray-700">{{ $cardId }}</h1>
@@ -38,7 +42,13 @@
                 </div>
                 <div class="col-span-1 flex gap-x-4 justify-end">
                     <div>
-                        {{ $adminStatus }}
+
+                        {{-- <select class="" wire:model="selectedCard.admin_status">
+                            <option value="None">None</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Needs work">Needs work</option>
+                            <option value="Rejected">Rejected</option>
+                        </select> --} }
                     </div>
                     <div>
                         {{ $status }}
@@ -51,7 +61,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     
         {{-- <div class="bg-white dark:bg-gray-800 w-4/5">
             <div class="bg-gray-100 dark:bg-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-900 px-6 py-4">

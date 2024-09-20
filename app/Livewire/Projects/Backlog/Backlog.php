@@ -18,6 +18,8 @@ class Backlog extends Component
     
     public $selectedBucket;
     public $selectedCard;
+    public $selectedCardApprovalStatus;
+    public $selectedCardColor;
 
     public $selectedBucketId;
     public $bucket;
@@ -55,6 +57,7 @@ class Backlog extends Component
         // Development - Remove this in production
         if ($this->selectedBucket && $this->selectedBucket->cards->count() > 0) {
             $this->selectedCard = $this->selectedBucket->cards->first();
+            $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
         }
         
         // Get the number of cards in the selected bucket
@@ -65,6 +68,29 @@ class Backlog extends Component
         }
         
         $this->numOfCards = count($cards);
+    }
+
+    public function updated($key, $value) {
+        if ($key === 'selectedCardApprovalStatus') {
+            $card = BacklogCard::where('id', $this->selectedCard->id)->first();
+            
+            $card->update([
+                'approval_status' => $this->selectedCardApprovalStatus
+            ]);
+
+            // Create a new Log
+            Log::create([
+                'user_id' => auth()->user()->uuid,
+                'project_id' => $this->uuid,
+                'backlog_id' => $this->selectedBucket->uuid,
+                'card_id' => $card->id,
+                'action' => 'update',
+                'data' => json_encode($card),
+                'table' => 'backlog_cards',
+                'description' => 'Updated card <b>' . $card->name . '</b>',
+                'environment' => config('app.env')
+            ]);
+        }
     }
 
     /**
@@ -268,6 +294,14 @@ class Backlog extends Component
     public function selectCard($id) {
         // Get the selected card
         $this->selectedCard = $this->selectedBucket->cards->where('id', $id)->first();
+
+        // Set selectedCardApprovalStatus
+        $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
+
+        // Set the selected card color
+        if ($this->selectedCard && $this->selectedCard->admin_status === 'None') {
+            $this->selectedCardColor = 'gray';
+        }
 
         // Open the selected card modal
         $this->selectedCardModal = true;

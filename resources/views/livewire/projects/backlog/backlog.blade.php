@@ -214,7 +214,83 @@
         </x-slot>
     </x-big-modal>
 
-    <x-pmt-modal wire:model="selectedCardModal">
+    {{-- Selected Card Modal --}}
+    <div class="fixed inset-0 overflow-y-auto w-full h-full z-50 bg-gray-900/60 transform transition-all"
+        x-data="{ show: @entangle('selectedCardModal') }"
+        x-on:close.stop="show = false"
+        x-on:keydown.escape.window="show = false"
+        x-show="show"
+        style="display: none;"
+        x-transition:enter="ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+    >
+
+        {{-- Close Button --}}
+        <div class="absolute top-0 right-0 p-4">
+            <button class="text-white bg-gray-800 rounded-full p-2 cursor-pointer" wire:click="$toggle('selectedCardModal')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Modal --}}
+        <div class="w-full flex justify-center mt-12 transform transition-all"
+            x-trap.inert.noscroll="show"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        >
+            <div class="bg-gray-100 dark:bg-gray-800 rounded-sm w-5/6 p-4">
+                {{-- Topbar (Card id, Card Name, Admin Approval, Users, Menu Button) --}}
+                @if ($selectedCard)
+                    <div class="grid grid-cols-5 p-2">
+                        <div class="col-span-3 flex gap-x-4">
+                            <div class="flex text-lg text-gray-600">
+                                <h1 class="text-gray-400">#</h1>
+                                <h1>{{ $selectedCard->id }}
+                            </div>
+                            <h1 class="text-lg text-gray-600">{{ $selectedCard->name }}</h1>
+                        </div>
+                        <div class="col-span-2 flex gap-x-4 justify-end">
+                            <div>
+                                <select class="p-0" wire:model.live="selectedCardApprovalStatus">
+                                    <option value="None">None</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Needs work">Needs work</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div>
+                                @if ($selectedCard && isset($selectedCard->assignees)) 
+                                    <div class="flex gap-x-2">
+                                        <i class="fi fi-sr-users text-gray-700 dark:text-white"></i>
+                                        @foreach ($selectedCard->assignees as $assignee)
+                                            <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                            <div>
+                                <i class="fi fi-sr-menu-dots-vertical"></i>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+        </div>
+
+    </div>
+
+    {{-- <x-pmt-modal wire:model="selectedCardModal" :selected-card="$selectedCard">
         <x-slot name="closeButton">
             <button class="text-white bg-gray-800 rounded-full p-2 cursor-pointer" wire:click="$toggle('selectedCardModal')">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -241,7 +317,7 @@
 
         <x-slot name="adminStatus">
             @if ($selectedCard && isset($selectedCard->admin_status))
-                @if ($selectedCard->admin_status == 'None')
+                {{-- @if ($selectedCard->admin_status == 'None')
                     <p class="text-sm text-gray-500">{{ __('backlog.approval_status') }}</p>
                 @elseif ($selectedCard->admin_status == 'Approved')
                     <p class="text-sm text-green-500">{{ __('backlog.approved') }}</p>
@@ -249,14 +325,21 @@
                     <p class="text-sm text-yellow-500">{{ __('backlog.needs_work') }}</p>
                 @elseif ($selectedCard->admin_status == 'Rejected')
                     <p class="text-sm text-red-500">{{ __('backlog.rejected') }}</p>
-                @endif
+                @endif --} }
+
+
+                <input wire:model="selectedCard.admin_status" type="text" />
+                <input wire:model="moi" type="text" />
+
+                
+
             @else
                 <p class="text-sm text-gray-500">{{ __('backlog.approval_status') }}</p>
             @endif
         </x-slot>
 
         <x-slot name="status">
-            {{-- Backlog cards don't have a status. --}}
+            {{-- Backlog cards don't have a status. --} }
         </x-slot>
 
         <x-slot name="users">
@@ -273,6 +356,6 @@
         <x-slot name="menuButton">
             <i class="fi fi-sr-menu-dots-vertical"></i>
         </x-slot>
-    </x-pmt-modal>
+    </x-pmt-modal> --}}
 
 </div>
