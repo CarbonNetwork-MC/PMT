@@ -15,8 +15,8 @@ class Card extends Model
         'sprint_id',
         'name',
         'description',
-        'assignee_id',
         'status',
+        'approval_status',
         'card_index',
     ];
 

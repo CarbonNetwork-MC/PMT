@@ -16,7 +16,6 @@ class Task extends Model
         'description',
         'status',
         'task_index',
-        'assignee_id',
         'sprint_id',
     ];
 
