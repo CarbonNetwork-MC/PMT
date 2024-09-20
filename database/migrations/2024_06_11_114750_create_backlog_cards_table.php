@@ -16,7 +16,6 @@ return new class extends Migration
             $table->char('backlog_id', 36);
             $table->string('name');
             $table->text('description')->nullable();
-            $table->char('assignee_id', 36)->nullable();
             $table->enum('admin_status', ['None', 'Approved', 'Needs work', 'Rejected'])->default('None');
             $table->integer('card_index')->default(0);
             $table->timestamps();

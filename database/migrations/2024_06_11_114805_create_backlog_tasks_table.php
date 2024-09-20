@@ -18,7 +18,6 @@ return new class extends Migration
             $table->enum('status', ['todo', 'doing', 'done'])->default('todo');
             $table->integer('task_index')->default(0);
             $table->char('backlog_id', 36);
-            $table->char('assignee_id', 36)->nullable();
             $table->timestamps();
         });
     }

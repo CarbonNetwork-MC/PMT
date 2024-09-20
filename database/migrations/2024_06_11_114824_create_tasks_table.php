@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('description');
             $table->enum('status', ['todo', 'doing', 'done'])->default('todo');
             $table->integer('task_index')->default(0);
-            $table->char('assignee_id', 36)->nullable();
             $table->char('sprint_id', 36);
             $table->timestamps();
         });

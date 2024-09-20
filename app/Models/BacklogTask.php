@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BacklogTask extends Model
 {
@@ -16,7 +17,6 @@ class BacklogTask extends Model
         'status',
         'task_index',
         'backlog_id',
-        'assignee_id',
     ];
 
     public function backlogCard(): BelongsTo
@@ -24,8 +24,8 @@ class BacklogTask extends Model
         return $this->belongsTo(BacklogCard::class);
     }
 
-    public function assignee(): BelongsTo
+    public function assignees(): HasMany
     {
-        return $this->belongsTo(User::class, 'assignee_id');
+        return $this->hasMany(BacklogTaskAssignee::class, 'backlog_card_id', 'id');
     }
 }

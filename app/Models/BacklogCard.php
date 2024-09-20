@@ -15,7 +15,6 @@ class BacklogCard extends Model
         'backlog_id',
         'name',
         'description',
-        'assignee_id',
         'card_index',
     ];
 
