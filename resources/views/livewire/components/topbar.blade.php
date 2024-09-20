@@ -14,7 +14,7 @@
     <div>
         <div class="flex items-center justify-end text-black dark:text-white cursor-pointer">
             <div @click="open = !open" class="font-bold flex">
-                <img src="{{ $user->profile_photo_url }}" class="w-8 h-8 rounded-full" alt="{{ $user->name }}" />
+                <img src="{{ $user->profile_photo_url }}" class="w-8 h-8 rounded-full border border-2" alt="{{ $user->name }}" />
                 <p class="flex items-center pl-2">{{ $user->name }}</p>
                 <svg x-show="open" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16 14-4-4-4 4"/>
