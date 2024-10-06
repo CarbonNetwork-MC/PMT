@@ -288,16 +288,16 @@
                                                     @foreach ($projectMembers as $member)
                                                         <li class="grid grid-cols-4 px-1">
                                                             <div class="col-span-3">
-                                                                <p class="px-4 py-2 dark:text-white hover:bg-gray-300">{{ $member->user->name }}</p>
+                                                                <p class="px-4 py-2 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700">{{ $member->user->name }}</p>
                                                             </div>
                                                             <div class="col-span-1 flex justify-end gap-x-2">
                                                                 @if ($selectedCard->assignees->contains('user_id', $member->user_id))
                                                                     <button wire:click="removeAssignee({{ $member->id }})" class="px-4 py-2 text-left hover:bg-red-500 group">
-                                                                        <i class="fi fi-sr-remove-user text-black group-hover:text-white"></i>
+                                                                        <i class="fi fi-sr-remove-user text-black dark:text-white group-hover:text-white"></i>
                                                                     </button>
                                                                 @else
                                                                     <button wire:click="addAssignee({{ $member->id }})" class="px-4 py-2 text-left hover:bg-blue-500 group">
-                                                                        <i class="fi fi-sr-user-add text-black group-hover:text-white"></i>
+                                                                        <i class="fi fi-sr-user-add text-black dark:text-white group-hover:text-white"></i>
                                                                     </button>
                                                                 @endif
                                                             </div>
