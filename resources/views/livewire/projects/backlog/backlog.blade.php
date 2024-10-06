@@ -1,4 +1,7 @@
 <div class="flex flex-col" style="height: 90vh">
+    <x-slot name="title">
+        {{ __('backlog.backlog') }}
+    </x-slot>
 
     <div class="w-full flex justify-between bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
         <div class="w-full flex justify-between">
@@ -30,7 +33,7 @@
                 <div wire:click="$toggle('selectedCardModal')" class="px-3 py-2 font-medium text-center flex items-center gap-x-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer">
                     {{ $selectedCardModal ? 'Visible' : 'Open' }}
                 </div>
-            </div>
+            </div> 
         </div>
     </div>
     <div class="w-flex flex flex-grow gap-x-4 mt-4">
@@ -226,8 +229,7 @@
         x-transition:enter-end="opacity-100"
         x-transition:leave="ease-in duration-200"
         x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-    >
+        x-transition:leave-end="opacity-0">
 
         {{-- Close Button --}}
         <div class="absolute top-0 right-0 p-4">
@@ -246,116 +248,86 @@
             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
             x-transition:leave="ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        >
+            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <div class="bg-gray-100 dark:bg-gray-800 rounded-sm w-5/6 p-4">
                 {{-- Topbar (Card id, Card Name, Admin Approval, Users, Menu Button) --}}
                 @if ($selectedCard)
                     <div class="grid grid-cols-5 p-2">
                         <div class="col-span-3 flex gap-x-4">
-                            <div class="flex text-lg text-gray-600">
-                                <h1 class="text-gray-400">#</h1>
-                                <h1>{{ $selectedCard->id }}
+                            <div class="flex text-lg">
+                                <h1 class="text-gray-400 dark:text-gray-500">#</h1>
+                                <h1 class="text-gray-600 dark:text-gray-400">{{ $selectedCard->id }}
                             </div>
-                            <h1 class="text-lg text-gray-600">{{ $selectedCard->name }}</h1>
+                            <h1 class="text-lg text-gray-600 dark:text-gray-400">{{ $selectedCard->name }}</h1>
                         </div>
                         <div class="col-span-2 flex gap-x-4 justify-end">
-                            <div>
-                                <select class="p-0" wire:model.live="selectedCardApprovalStatus">
-                                    <option value="None">None</option>
-                                    <option value="Approved">Approved</option>
-                                    <option value="Needs work">Needs work</option>
-                                    <option value="Rejected">Rejected</option>
-                                </select>
-                            </div>
-                            <div>
-                                @if ($selectedCard && isset($selectedCard->assignees)) 
-                                    <div class="flex gap-x-2">
-                                        <i class="fi fi-sr-users text-gray-700 dark:text-white"></i>
-                                        @foreach ($selectedCard->assignees as $assignee)
-                                            <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                            <div x-data="{ open: false }">
+                                <button @click="open = !open" class="text-{{ $selectedCardColor }}-500 border border-{{ $selectedCardColor }}-400 hover:bg-{{ $selectedCardColor }}-500 focus:ring-2 focus:ring-{{ $selectedCardColor }}-500 hover:text-black font-medium rounded-lg text-sm px-5 py-1 text-center">
+                                    {{ $selectedCard->approval_status }}
+                                </button>
+                                <div x-show="open" @click.away="open = false" class="z-10 absolute mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg divide-y divide-gray-100">
+                                    <div class="py-2 flex justify-center text-sm text-gray-300">
+                                        Change Approval Status
+                                    </div>
+                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                        @foreach ($approvalStatusOptions as $option => $color)
+                                            <li class="px-1 cursor-pointer">
+                                                <p wire:click="changeStatus('{{ $option }}')" class="px-4 py-2 dark:text-white hover:bg-gray-300">{{ $option }}</p>
+                                            </li>
                                         @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                @if ($selectedCard && isset($selectedCard->assignees))
+                                    <div class="flex items-center gap-x-2 bg-gray-200 dark:bg-gray-700 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
+                                        <div @click="open = !open" class="relative">
+                                            <i class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
+                                            <div x-show="open" @click.away="open = false" class="absolute mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
+                                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                    @foreach ($projectMembers as $member)
+                                                        <li class="grid grid-cols-4 px-1">
+                                                            <div class="col-span-3">
+                                                                <p class="px-4 py-2 dark:text-white hover:bg-gray-300">{{ $member->user->name }}</p>
+                                                            </div>
+                                                            <div class="col-span-1 flex justify-end gap-x-2">
+                                                                @if ($selectedCard->assignees->contains('user_id', $member->user_id))
+                                                                    <button wire:click="removeAssignee({{ $member->id }})" class="px-4 py-2 text-left hover:bg-red-500 group">
+                                                                        <i class="fi fi-sr-remove-user text-black group-hover:text-white"></i>
+                                                                    </button>
+                                                                @else
+                                                                    <button wire:click="addAssignee({{ $member->id }})" class="px-4 py-2 text-left hover:bg-blue-500 group">
+                                                                        <i class="fi fi-sr-user-add text-black group-hover:text-white"></i>
+                                                                    </button>
+                                                                @endif
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        @if ($selectedCard->assignees->count() > 0)
+                                            <div class="flex items-center gap-x-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                                @foreach ($selectedCard->assignees->slice(0, 3) as $assignee)
+                                                    <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                                                @endforeach
+                                                @if ($selectedCard->assignees->count() > 3)
+                                                    <p class="text-sm text-gray-700 dark:text-white">+{{ $selectedCard->assignees->count() - 3 }}</p>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <p class="text-sm text-gray-700 dark:text-white">No users assigned</p>
+                                        @endif
                                     </div>
                                 @endif
                             </div>
-                            <div>
+                            <div class="flex items-center">
                                 <i class="fi fi-sr-menu-dots-vertical"></i>
                             </div>
                         </div>
                     </div>
                 @endif
             </div>
-
         </div>
-
     </div>
-
-    {{-- <x-pmt-modal wire:model="selectedCardModal" :selected-card="$selectedCard">
-        <x-slot name="closeButton">
-            <button class="text-white bg-gray-800 rounded-full p-2 cursor-pointer" wire:click="$toggle('selectedCardModal')">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </x-slot>
-
-        <x-slot name="cardId">
-            @if ($selectedCard && isset($selectedCard->id))
-                #{{ $selectedCard->id }}
-            @else
-                #0
-            @endif
-        </x-slot>
-
-        <x-slot name="cardName">
-            @if ($selectedCard && isset($selectedCard->name))
-                {{ $selectedCard->name }}
-            @else
-                {{ __('backlog.no_card_selected') }}
-            @endif
-        </x-slot>
-
-        <x-slot name="adminStatus">
-            @if ($selectedCard && isset($selectedCard->admin_status))
-                {{-- @if ($selectedCard->admin_status == 'None')
-                    <p class="text-sm text-gray-500">{{ __('backlog.approval_status') }}</p>
-                @elseif ($selectedCard->admin_status == 'Approved')
-                    <p class="text-sm text-green-500">{{ __('backlog.approved') }}</p>
-                @elseif ($selectedCard->admin_status == 'Needs work')
-                    <p class="text-sm text-yellow-500">{{ __('backlog.needs_work') }}</p>
-                @elseif ($selectedCard->admin_status == 'Rejected')
-                    <p class="text-sm text-red-500">{{ __('backlog.rejected') }}</p>
-                @endif --} }
-
-
-                <input wire:model="selectedCard.admin_status" type="text" />
-                <input wire:model="moi" type="text" />
-
-                
-
-            @else
-                <p class="text-sm text-gray-500">{{ __('backlog.approval_status') }}</p>
-            @endif
-        </x-slot>
-
-        <x-slot name="status">
-            {{-- Backlog cards don't have a status. --} }
-        </x-slot>
-
-        <x-slot name="users">
-            @if ($selectedCard && isset($selectedCard->assignees)) 
-                <div class="flex gap-x-2">
-                    <i class="fi fi-sr-users text-gray-700 dark:text-white"></i>
-                    @foreach ($selectedCard->assignees as $assignee)
-                        <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
-                    @endforeach
-                </div>
-            @endif
-        </x-slot>
-
-        <x-slot name="menuButton">
-            <i class="fi fi-sr-menu-dots-vertical"></i>
-        </x-slot>
-    </x-pmt-modal> --}}
-
 </div>

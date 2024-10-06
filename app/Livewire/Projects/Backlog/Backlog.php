@@ -6,7 +6,9 @@ use App\Models\Log;
 use Livewire\Component;
 use Illuminate\Support\Str;
 use App\Models\BacklogCard;
+use App\Models\ProjectMember;
 use App\Models\Backlog as BacklogModel;
+use App\Models\BacklogCardAssignee;
 
 class Backlog extends Component
 {
@@ -15,11 +17,19 @@ class Backlog extends Component
 
     public $buckets;
     public $numOfCards = 0;
+    public $projectMembers;
     
     public $selectedBucket;
     public $selectedCard;
     public $selectedCardApprovalStatus;
-    public $selectedCardColor;
+    public $selectedCardColor = 'gray';
+
+    public $approvalStatusOptions = [
+        'None' => 'gray', 
+        'Approved' => 'green', 
+        'Rejected' => 'red', 
+        'Needs work' => 'yellow'
+    ];
 
     public $selectedBucketId;
     public $bucket;
@@ -31,14 +41,13 @@ class Backlog extends Component
 
     public $createCardModal = false;
 
-    public $selectedCardModal = true;
+    public $selectedCardModal = false;
     public $editCardModal = false;
     public $deleteCardModal = false;
 
     public $name, $description, $assignedTo;
 
-    public function mount($uuid, $backlogId = null)
-    {
+    public function mount($uuid, $backlogId = null) {
         $this->uuid = $uuid;
         $this->backlogId = $backlogId;
 
@@ -46,6 +55,9 @@ class Backlog extends Component
 
         // Get all buckets and cards for the selected project.
         $this->buckets = BacklogModel::where('project_id', $uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->get();
+
+        // Get all project users
+        $this->projectMembers = ProjectMember::where('project_id', $uuid)->with('user')->get();
 
         // Check the session if the user has already selected a backlog and select it, if not, select the first one.
         if (session()->has('selected_backlog')) {
@@ -55,10 +67,10 @@ class Backlog extends Component
         }
 
         // Development - Remove this in production
-        if ($this->selectedBucket && $this->selectedBucket->cards->count() > 0) {
-            $this->selectedCard = $this->selectedBucket->cards->first();
-            $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
-        }
+        // if ($this->selectedBucket && $this->selectedBucket->cards->count() > 0) {
+        //     $this->selectedCard = $this->selectedBucket->cards->first();
+        //     $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
+        // }
         
         // Get the number of cards in the selected bucket
         foreach ($this->buckets as $bucket) {
@@ -298,13 +310,104 @@ class Backlog extends Component
         // Set selectedCardApprovalStatus
         $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
 
-        // Set the selected card color
-        if ($this->selectedCard && $this->selectedCard->admin_status === 'None') {
-            $this->selectedCardColor = 'gray';
-        }
+        // Set the selected card color based on the approval status
+        $this->selectedCardColor = $this->approvalStatusOptions[$this->selectedCard->approval_status];
 
         // Open the selected card modal
         $this->selectedCardModal = true;
+    }
+
+    /**
+     * Change the status of a card
+     * 
+     * @param string $status
+     * 
+     * @return void
+     */
+    public function changeStatus($status) {
+        BacklogCard::where('id', $this->selectedCard->id)->update([
+            'approval_status' => $status
+        ]);
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->first();
+
+        // Update the selected card color
+        $this->selectedCardColor = $this->approvalStatusOptions[$status];
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'update',
+            'data' => json_encode($this->selectedCard),
+            'table' => 'backlog_cards',
+            'description' => 'Updated status for card <b>' . $this->selectedCard->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+
+    }
+
+    /**
+     * Add an assignee to a card
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function addAssignee($id) {
+        $projectMember = ProjectMember::where('id', $id)->first();
+        $assignee = BacklogCardAssignee::create([
+            'backlog_card_id' => $this->selectedCard->id,
+            'user_id' => $projectMember->user_id
+        ]);
+
+        // Update the selected card
+        $card = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'update',
+            'data' => json_encode($card),
+            'table' => 'backlog_cards',
+            'description' => 'Added assignee to card <b>' . $card->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Remove an assignee from a card
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function removeAssignee($id) {
+        $projectMember = ProjectMember::where('id', $id)->first();
+        $assignee = BacklogCardAssignee::where('user_id', $projectMember->user_id)->where('backlog_card_id', $this->selectedCard->id)->first();
+        $assignee->delete();
+
+        // Update the selected card
+        $card = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'update',
+            'data' => json_encode($card),
+            'table' => 'backlog_cards',
+            'description' => 'Removed assignee from card <b>' . $card->name . '</b>',
+            'environment' => config('app.env')
+        ]);
     }
 
     /**
@@ -312,8 +415,7 @@ class Backlog extends Component
      * 
      * @return \Illuminate\View\View
      */
-    public function render()
-    {
+    public function render() {
         return view('livewire.projects.backlog.backlog');
     }
 }
