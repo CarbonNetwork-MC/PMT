@@ -22,7 +22,7 @@ class Members extends Component
     public $projectMembers;
 
     public $memberId;
-    public $emails, $role_id;
+    public $emails, $role_id = 1;
     public $search;
 
     public $addMemberModal = false;
@@ -70,6 +70,7 @@ class Members extends Component
         foreach ($emails as $email) {
             $user = User::where('email', $email)->first();
             if ($user) {
+
                 // Check if the user is already a member
                 $member = ProjectMember::where('project_id', $this->project->uuid)
                     ->where('user_id', $user->id)->first();
@@ -86,8 +87,10 @@ class Members extends Component
                         'user_id' => auth()->user()->uuid,
                         'project_id' => $this->project->uuid,
                         'action' => 'create',
+                        'table' => 'project_members',
                         'data' => json_encode(['email' => $email, 'role_id' => $this->role_id]),
                         'description' => 'Added <b>' . $email . '</b> to the project',
+                        'environment' => config('app.env')
                     ]);
                 }
             }
