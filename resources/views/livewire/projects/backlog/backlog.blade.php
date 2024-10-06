@@ -322,7 +322,7 @@
                                 @endif
                             </div>
                             <div class="flex items-center">
-                                <i class="fi fi-sr-menu-dots-vertical"></i>
+                                <i class="fi fi-sr-menu-dots-vertical dark:text-white"></i>
                             </div>
                         </div>
                     </div>
