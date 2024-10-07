@@ -18,6 +18,7 @@ class Backlog extends Component
     public $buckets;
     public $numOfCards = 0;
     public $projectMembers;
+    public $projectMember; // (For permissions)
     
     public $selectedBucket;
     public $selectedCard;
@@ -46,7 +47,9 @@ class Backlog extends Component
     public $editCardModal = false;
     public $deleteCardModal = false;
 
-    public $name, $description, $assignedTo;
+    public $isEditingCardName = false;
+
+    public $name, $description;
 
     public function mount($uuid, $backlogId = null) {
         $this->uuid = $uuid;
@@ -59,6 +62,9 @@ class Backlog extends Component
 
         // Get all project users
         $this->projectMembers = ProjectMember::where('project_id', $uuid)->with('user')->get();
+
+        // Store the current logged in user as a project member - (For permissions)
+        $this->projectMember = ProjectMember::where('project_id', $uuid)->where('user_id', auth()->user()->uuid)->first();
 
         // Check the session if the user has already selected a backlog and select it, if not, select the first one.
         if (session()->has('selected_backlog')) {
@@ -272,7 +278,6 @@ class Backlog extends Component
         ]);
 
         $data['backlog_id'] = $this->selectedBucket->uuid;
-        $data['assignee_id'] = $this->assignedTo;
 
         // Create a new card
         $card = BacklogCard::create($data);
@@ -307,6 +312,10 @@ class Backlog extends Component
     public function selectCard($id) {
         // Get the selected card
         $this->selectedCard = $this->selectedBucket->cards->where('id', $id)->first();
+
+        // Set the card variables
+        $this->name = $this->selectedCard->name;
+        $this->description = $this->selectedCard->description;
 
         // Set selectedCardApprovalStatus
         $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
@@ -411,6 +420,13 @@ class Backlog extends Component
         ]);
     }
 
+    /**
+     * Open the Edit Card Modal and set the ID
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
     public function deleteCard($id) {
         // Set the selected card ID
         $this->selectedCardId = $id;
@@ -419,6 +435,11 @@ class Backlog extends Component
         $this->deleteCardModal = true;
     }
 
+    /**
+     * Delete the Card
+     * 
+     * @return void
+     */
     public function destroyCard() {
         // Get the card and delete it
         $card = BacklogCard::where('id', $this->selectedCardId)->first();
@@ -445,6 +466,47 @@ class Backlog extends Component
 
         // Update the selected bucket
         $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
+    }
+
+    /**
+     * Set the isEditingCardName variable to true
+     * 
+     * @return void
+     */
+    public function startEditingCardName() {
+        $this->isEditingCardName = true;
+    }
+
+    /**
+     * Update the card name
+     * 
+     * @return void
+     */
+    public function saveCardName() {
+        // Get the card and update it
+        $card = BacklogCard::where('id', $this->selectedCard->id)->first();
+        $card->update([
+            'name' => $this->name
+        ]);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $card->id,
+            'action' => 'update',
+            'data' => json_encode($card),
+            'table' => 'backlog_cards',
+            'description' => 'Updated card name to <b>' . $this->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+
+        // Set the isEditingCardName variable to false
+        $this->isEditingCardName = false;
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->first();
     }
 
     /**

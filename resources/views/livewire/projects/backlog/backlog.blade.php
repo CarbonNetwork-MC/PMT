@@ -200,9 +200,6 @@
                     <x-textarea id="description" class="mt-1 block w-full" wire:model.defer="description" />
                     <x-input-error for="description" class="mt-2" />
                 </div>
-                <div class="col-span-2 w-1/2">
-                    <input type="text" class="hidden" wire:model="assignedTo" value="9c42c7e8-4e75-44e5-8496-3576968a74c0">
-                </div>
             </div>
         </x-slot>
 
@@ -253,14 +250,21 @@
                 @if ($selectedCard)
                     <div class="grid grid-cols-5 p-2">
                         <div class="col-span-3 flex gap-x-4">
-                            <div class="flex text-lg">
+                            <div class="flex items-center text-lg">
                                 <h1 class="text-gray-400 dark:text-gray-500">#</h1>
                                 <h1 class="text-gray-600 dark:text-gray-400">{{ $selectedCard->id }}
                             </div>
-                            <h1 class="text-lg text-gray-600 dark:text-gray-400">{{ $selectedCard->name }}</h1>
+                            <div class="flex items-center">
+                                @if ($isEditingCardName)
+                                    <input id="cardNameInput" type="text" wire:model="name" wire:keydown.enter="saveCardName" wire:blur="saveCardName" 
+                                        class="border-0 px-2 py-1 border-b-2 border-gray-600 focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" />
+                                @else
+                                    <h1 wire:click="startEditingCardName" class="text-lg text-gray-600 dark:text-gray-400">{{ $selectedCard->name }}</h1>
+                                @endif
+                            </div>
                         </div>
                         <div class="col-span-2 flex gap-x-4 justify-end">
-                            <div x-data="{ open: false }">
+                            <div x-data="{ open: false }" class="flex items-center">
                                 <button @click="open = !open" class="text-{{ $selectedCardColor }}-500 border border-{{ $selectedCardColor }}-400 hover:bg-{{ $selectedCardColor }}-500 focus:ring-2 focus:ring-{{ $selectedCardColor }}-500 hover:text-black font-medium rounded-lg text-sm px-5 py-1 text-center">
                                     {{ $selectedCard->approval_status }}
                                 </button>
