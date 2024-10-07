@@ -257,7 +257,7 @@
                             <div class="flex items-center">
                                 @if ($isEditingCardName)
                                     <input id="cardNameInput" type="text" wire:model="name" wire:keydown.enter="saveCardName" wire:blur="saveCardName" 
-                                        class="border-0 px-2 py-1 border-b-2 border-gray-600 focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" />
+                                        class="border-0 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" />
                                 @else
                                     <h1 wire:click="startEditingCardName" class="text-lg text-gray-600 dark:text-gray-400">{{ $selectedCard->name }}</h1>
                                 @endif
