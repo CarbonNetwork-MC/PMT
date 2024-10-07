@@ -66,7 +66,7 @@ class Backlog extends Component
             $this->selectedBucket = $this->buckets->first();
         }
 
-        // Development - Remove this in production
+        // ! Development - Remove this in production
         // if ($this->selectedBucket && $this->selectedBucket->cards->count() > 0) {
         //     $this->selectedCard = $this->selectedBucket->cards->first();
         //     $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
@@ -261,7 +261,7 @@ class Backlog extends Component
     /**
      * Create a new card
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return void
      */
     public function createCard() {
         // Validate the data
@@ -292,8 +292,8 @@ class Backlog extends Component
         // Close the modal
         $this->createCardModal = false;
 
-        // Reload the page
-        return redirect()->route('projects.backlog.render', $this->uuid);
+        // Update the selected bucket
+        $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
     }
 
     /**
