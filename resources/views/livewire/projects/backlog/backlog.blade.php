@@ -84,10 +84,10 @@
                                 <div x-show="open" @click.outside="open = false" class="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                         <li>
-                                            <p wire:click="editCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</p>
+                                            <p wire:click="editCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ __('backlog.edit') }}</p>
                                         </li>
                                         <li>
-                                            <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</p>
+                                            <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ __('backlog.delete') }}</p>
                                         </li>
                                     </ul>
                                 </div>
@@ -164,11 +164,11 @@
     {{-- Delete Bucket Modal --}}
     <x-dialog-modal wire:model="deleteBucketModal">
         <x-slot name="title">
-            {{ __('backlog.dialog_delete_title') }}
+            {{ __('backlog.dialog_delete_title_bucket') }}
         </x-slot>
 
         <x-slot name="content">
-            {{ __('backlog.dialog_delete_text') }}
+            {{ __('backlog.dialog_delete_text_bucket') }}
         </x-slot>
 
         <x-slot name="footer">
@@ -201,7 +201,6 @@
                     <x-input-error for="description" class="mt-2" />
                 </div>
                 <div class="col-span-2 w-1/2">
-                    assignee(s)
                     <input type="text" class="hidden" wire:model="assignedTo" value="9c42c7e8-4e75-44e5-8496-3576968a74c0">
                 </div>
             </div>
@@ -321,8 +320,18 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="flex items-center">
-                                <i class="fi fi-sr-menu-dots-vertical dark:text-white"></i>
+                            <div class="flex items-center" x-data="{ open: false }">
+                                <i @click="open = !open" class="fi fi-sr-menu-dots-vertical dark:text-white cursor-pointer"></i>
+                                <div x-show="open" @click.outside="open = false" class="absolute z-10 top-16 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                        <li>
+                                            <p wire:click="editCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.edit') }}</p>
+                                        </li>
+                                        <li>
+                                            <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.delete') }}</p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -330,4 +339,25 @@
             </div>
         </div>
     </div>
+
+    {{-- Delete Card Modal --}}
+    <x-dialog-modal wire:model="deleteCardModal">
+        <x-slot name="title">
+            {{ __('backlog.dialog_delete_title_card') }}
+        </x-slot>
+
+        <x-slot name="content">
+            {{ __('backlog.dialog_delete_text_card') }}
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-danger-button class="ml-2" wire:click="destroyCard" wire:loading.attr="disabled">
+                {{ __('backlog.delete') }}
+            </x-danger-button>
+
+            <x-secondary-button wire:click="$toggle('deleteCardModal')" wire:loading.attr="disabled">
+                {{ __('backlog.cancel') }}
+            </x-secondary-button>            
+        </x-slot>
+    </x-dialog-modal>
 </div>

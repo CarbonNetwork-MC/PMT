@@ -27,7 +27,10 @@ return [
     'update' => 'Update',
 
     // Dialog
-    'dialog_delete_title' => 'Delete Bucket',
-    'dialog_delete_text' => 'Are you sure you want to delete this bucket?',
+    'dialog_delete_title_bucket' => 'Delete Bucket',
+    'dialog_delete_text_bucket' => 'Are you sure you want to delete this bucket?',
+
+    'dialog_delete_title_card' => 'Delete Card',
+    'dialog_delete_text_card' => 'Are you sure you want to delete this card?',
 
 ];

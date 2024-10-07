@@ -31,9 +31,10 @@ class Backlog extends Component
         'Needs work' => 'yellow'
     ];
 
-    public $selectedBucketId;
     public $bucket;
+    public $selectedBucketId;
     public $card;
+    public $selectedCardId;
 
     public $createBucketModal = false;
     public $editBucketModal = false;
@@ -408,6 +409,42 @@ class Backlog extends Component
             'description' => 'Removed assignee from card <b>' . $card->name . '</b>',
             'environment' => config('app.env')
         ]);
+    }
+
+    public function deleteCard($id) {
+        // Set the selected card ID
+        $this->selectedCardId = $id;
+
+        // Open the delete card modal
+        $this->deleteCardModal = true;
+    }
+
+    public function destroyCard() {
+        // Get the card and delete it
+        $card = BacklogCard::where('id', $this->selectedCardId)->first();
+        $card->delete();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $card->id,
+            'action' => 'delete',
+            'data' => json_encode($card),
+            'table' => 'backlog_cards',
+            'description' => 'Deleted card <b>' . $card->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+
+        // Close the modal
+        $this->deleteCardModal = false;
+
+        // Close the selected card modal (if open)
+        $this->selectedCardModal = false;
+
+        // Update the selected bucket
+        $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
     }
 
     /**
