@@ -26,6 +26,6 @@ class BacklogTask extends Model
 
     public function assignees(): HasMany
     {
-        return $this->hasMany(BacklogTaskAssignee::class, 'backlog_card_id', 'id');
+        return $this->hasMany(BacklogTaskAssignee::class, 'backlog_task_id', 'id');
     }
 }

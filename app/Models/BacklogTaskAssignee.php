@@ -17,7 +17,7 @@ class BacklogTaskAssignee extends Model
 
     public function task(): BelongsTo
     {
-        return $this->belongsTo(BacklogTask::class, 'backlog_task_id', 'id');
+        return $this->belongsTo(BacklogTask::class, 'backlog_task_id');
     }
 
     public function user(): BelongsTo
