@@ -78,12 +78,6 @@ class Backlog extends Component
         } else {
             $this->selectedBucket = $this->buckets->first();
         }
-
-        // ! Development - Remove this in production
-        // if ($this->selectedBucket && $this->selectedBucket->cards->count() > 0) {
-        //     $this->selectedCard = $this->selectedBucket->cards->first();
-        //     $this->selectedCardApprovalStatus = $this->selectedCard->approval_status;
-        // }
         
         // Get the number of cards in the selected bucket
         foreach ($this->buckets as $bucket) {
