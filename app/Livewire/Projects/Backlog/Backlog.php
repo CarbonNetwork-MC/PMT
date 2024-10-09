@@ -441,6 +441,24 @@ class Backlog extends Component
      * @return void
      */
     public function destroyCard() {
+        // Get all assignees for the card and delete them
+        $assignees = BacklogCardAssignee::where('backlog_card_id', $this->selectedCardId)->get();
+        foreach ($assignees as $assignee) {
+            $assignee->delete();
+        }
+
+        // Get all tasks for the card and delete them
+        $tasks = BacklogTask::where('backlog_card_id', $this->selectedCardId)->get();
+        foreach ($tasks as $task) {
+            // Get all assignees for the task and delete them
+            $taskAssignees = BacklogTaskAssignee::where('backlog_task_id', $task->id)->get();
+            foreach ($taskAssignees as $taskAssignee) {
+                $taskAssignee->delete();
+            }
+
+            $task->delete();
+        }
+
         // Get the card and delete it
         $card = BacklogCard::where('id', $this->selectedCardId)->first();
         $card->delete();
