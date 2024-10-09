@@ -64,6 +64,7 @@ class Backlog extends Component
     public $isEditingCardDescription = false;
     public $isCreatingTask = false;
     public $createdTaskColumn;
+    public $openTaskboard = false;
 
     public $name, $description, $taskDescription;
     public $selectedProject, $backlogOrSprint = 'backlog', $backlogOrSprintName, $sprintColumn = 'todo', $position = 'top';
@@ -112,13 +113,6 @@ class Backlog extends Component
         }
         
         $this->numOfCards = count($cards);
-    }
-
-    public function devCommand() {
-
-        dd("buckets:", $this->buckets, "Project Members:", $this->projectMembers, "Project Member:", $this->projectMember,
-        "Selected Bucket:", $this->selectedBucket, "Selected Card:", $this->selectedCard, "Selected Task:", $this->selectedTask,);
-
     }
 
     public function updated($key, $value) {
@@ -344,7 +338,7 @@ class Backlog extends Component
      * 
      * @return void
      */
-    public function selectCard($id) {
+    public function selectCard($id, $showModal = true) {
         // Get the selected card
         $this->selectedCard = $this->selectedBucket->cards->where('id', $id)->first();
 
@@ -358,8 +352,10 @@ class Backlog extends Component
         // Set the selected card color based on the approval status
         $this->selectedCardColor = $this->approvalStatusOptions[$this->selectedCard->approval_status];
 
-        // Open the selected card modal
-        $this->selectedCardModal = true;
+        if ($showModal) {
+            // Open the selected card modal
+            $this->selectedCardModal = true;
+        }
     }
 
     /**
