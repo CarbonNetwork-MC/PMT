@@ -78,11 +78,11 @@
                                     {{ $card->approval_status }}
                                 </div>
                                 <div class="flex items-center gap-x-2">
-                                    <i class="fi fi-sr-list-check dark:text-white"></i>
+                                    <i class="fi fi-sr-list-check flex items-center dark:text-white"></i>
                                     <p class="dark:text-white">{{ $card->tasks->count() }}</p>
                                 </div>
-                                <div class="relative" x-data="{ open: false, moveTo: false }">
-                                    <i @click="open = !open" wire:click="selectCard('{{ $card->id }}', false)" class="fi fi-sr-menu-dots-vertical dark:text-white"></i>
+                                <div class="relative flex items-center" x-data="{ open: false, moveTo: false }">
+                                    <i @click="open = !open" wire:click="selectCard('{{ $card->id }}', false)" class="fi fi-sr-menu-dots-vertical flex items-center dark:text-white"></i>
         
                                     <div x-show="open" @click.outside="open = false" class="absolute z-10 top-10 -left-40 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
                                         <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
