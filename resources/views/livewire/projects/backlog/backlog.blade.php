@@ -73,7 +73,7 @@
                                 <p class="text-gray-400">#{{ $card->id }}</p>
                                 <p class="dark:text-white group-hover:text-blue-500">{{ $card->name }}</p>
                             </div>
-                            <div class="flex gap-x-8 ml-10">
+                            <div class="flex gap-x-6 ml-10">
                                 <div class="text-{{ $approvalStatusOptions[$card->approval_status] }}-500 border border-{{ $approvalStatusOptions[$card->approval_status] }}-500 hover:bg-{{ $approvalStatusOptions[$card->approval_status] }}-500 focus:ring-2 focus:ring-{{ $approvalStatusOptions[$card->approval_status] }}-500 hover:text-black font-medium rounded-lg text-sm px-5 py-1 text-center">
                                     {{ $card->approval_status }}
                                 </div>
