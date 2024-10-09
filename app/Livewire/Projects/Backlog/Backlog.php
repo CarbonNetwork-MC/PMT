@@ -3,21 +3,28 @@
 namespace App\Livewire\Projects\Backlog;
 
 use App\Models\Log;
+use App\Models\Card;
+use App\Models\Task;
+use App\Models\Sprint;
 use Livewire\Component;
+use App\Models\Project;
 use Illuminate\Support\Str;
 use App\Models\BacklogCard;
 use App\Models\BacklogTask;
+use App\Models\CardAssignee;
+use App\Models\TaskAssignee;
 use App\Models\ProjectMember;
 use App\Models\BacklogCardAssignee;
 use App\Models\BacklogTaskAssignee;
 use App\Models\Backlog as BacklogModel;
-use Illuminate\Support\Facades\Log as LaravelLog;
 
 class Backlog extends Component
 {
     public $uuid;
     public $backlogId;
 
+    public $projects;
+    public $sprints;
     public $buckets;
     public $numOfCards = 0;
     public $projectMembers;
@@ -59,12 +66,24 @@ class Backlog extends Component
     public $createdTaskColumn;
 
     public $name, $description, $taskDescription;
+    public $selectedProject, $backlogOrSprint = 'backlog', $backlogOrSprintName, $sprintColumn = 'todo', $position = 'top';
 
     public function mount($uuid, $backlogId = null) {
         $this->uuid = $uuid;
         $this->backlogId = $backlogId;
 
         $cards = [];
+
+        // Get all projects where the user is an admin or project owner
+        $projectMembersOfAllProjects = ProjectMember::where('user_id', auth()->user()->uuid)->get();
+        foreach ($projectMembersOfAllProjects as $projectMember) {
+            if ($projectMember->role_id === 2 || $projectMember->role_id === 3) {
+                $this->projects[] = Project::where('uuid', $projectMember->project_id)->first();
+            }
+        }
+
+        // Set the selected project and the 
+        $this->selectedProject = $this->uuid;
 
         // Get all buckets and cards for the selected project.
         $this->buckets = BacklogModel::where('project_id', $uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->get();
@@ -81,6 +100,9 @@ class Backlog extends Component
         } else {
             $this->selectedBucket = $this->buckets->first();
         }
+
+        // Set backlogOrSprintName to the selected bucket
+        $this->backlogOrSprintName = $this->selectedBucket->uuid;
         
         // Get the number of cards in the selected bucket
         foreach ($this->buckets as $bucket) {
@@ -119,6 +141,9 @@ class Backlog extends Component
                 'description' => 'Updated card <b>' . $card->name . '</b>',
                 'environment' => config('app.env')
             ]);
+        } else if ($key === 'backlogOrSprint' && $value === 'sprint') {
+            // Get all sprints for the selected project
+            $this->sprints = Sprint::where('project_id', $this->selectedProject)->orderBy('start_date')->get();
         }
     }
 
@@ -613,6 +638,162 @@ class Backlog extends Component
     }
 
     /**
+     * Move a card
+     * 
+     * @return void
+     */
+    public function moveCard() {
+        // Get the selected project
+        Project::where('uuid', $this->selectedProject)->first();
+
+        if ($this->backlogOrSprint === 'backlog') {
+            // Get the selected backlog
+            $backlog = BacklogModel::where('uuid', $this->backlogOrSprintName)->first();
+
+            // Get the selected card
+            $card = BacklogCard::where('id', $this->selectedCard->id)->first();
+
+            $position = 0;
+            if ($this->position === 'bottom') {
+                $position = $backlog->cards->count() + 1;
+            }
+
+            // Update the card
+            $card->update([
+                'backlog_id' => $backlog->uuid,
+                'card_index' => $position
+            ]);
+
+            // Update the backlog_id in the tasks
+            $tasks = BacklogTask::where('backlog_card_id', $card->id)->get();
+            foreach ($tasks as $task) {
+                $task->update([
+                    'backlog_id' => $backlog->uuid
+                ]);
+            }
+
+            // Create a new Log
+            Log::create([
+                'user_id' => auth()->user()->uuid,
+                'project_id' => $this->uuid,
+                'backlog_id' => $backlog->uuid,
+                'card_id' => $card->id,
+                'action' => 'update',
+                'data' => json_encode($card),
+                'table' => 'backlog_cards',
+                'description' => 'Moved card <b>' . $card->name . '</b>',
+                'environment' => config('app.env')
+            ]);
+
+            // Update the selectedbucket
+            $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
+
+            // Update the buckets
+            $this->buckets = BacklogModel::where('project_id', $this->uuid)->with('cards')->get();
+
+            // Close the modal
+            $this->selectedCardModal = false;
+        } elseif ($this->backlogOrSprint === 'sprint') {
+            // Get the selected sprint
+            $sprint = Sprint::where('uuid', $this->backlogOrSprintName)->first();
+
+            // Get the selected card
+            $card = BacklogCard::where('id', $this->selectedCard->id)->first();
+
+            $position = 0;
+            if ($this->position === 'top') {
+                // Check if there is already a card with index 0, if so increment the card index
+                $cardsWithIndexZero = Card::where('sprint_id', $sprint->uuid)->where('card_index', 0)->get();
+                foreach ($cardsWithIndexZero as $cardWithIndexZero) {
+                    $cardWithIndexZero->increment('card_index');
+                }
+            } elseif ($this->position === 'bottom') {
+                $position = $sprint->cards->count() + 1;
+            }
+
+            // Create a sprint card from the backlog card
+            $sprintCard = Card::create([
+                'sprint_id' => $sprint->uuid,
+                'name' => $card->name,
+                'description' => $card->description,
+                'status' => $this->sprintColumn,
+                'approval_status' => $card->approval_status,
+                'card_index' => $position
+            ]);
+
+            // Get all assignees for the card and add them to the sprint card
+            $assignees = BacklogCardAssignee::where('backlog_card_id', $card->id)->get();
+            foreach ($assignees as $assignee) {
+                CardAssignee::create([
+                    'card_id' => $sprintCard->id,
+                    'user_id' => $assignee->user_id
+                ]);
+
+                // Delete the backlog card assignee
+                $assignee->delete();
+            }
+
+            // Get all tasks for the card and add them to the sprint card
+            $tasks = BacklogTask::where('backlog_card_id', $card->id)->get();
+            foreach ($tasks as $task) {
+                $sprintTask = Task::create([
+                    'card_id' => $sprintCard->id,
+                    'description' => $task->description,
+                    'status' => $task->status,
+                    'task_index' => 0,
+                    'sprint_id' => $sprint->uuid
+                ]);
+
+                // Check if there are any tasks with task_index 0, if so increment the task_index
+                $tasksWithIndexZero = Task::where('card_id', $sprintCard->id)->where('task_index', 0)->get();
+                foreach ($tasksWithIndexZero as $taskWithIndexZero) {
+                    $taskWithIndexZero->increment('task_index');
+                }
+
+                // Get all assignees for the task and add them to the sprint task
+                $taskAssignees = BacklogTaskAssignee::where('backlog_task_id', $task->id)->get();
+                foreach ($taskAssignees as $taskAssignee) {
+                    TaskAssignee::create([
+                        'task_id' => $sprintTask->id,
+                        'user_id' => $taskAssignee->user_id
+                    ]);
+
+                    // Delete the backlog task assignee
+                    $taskAssignee->delete();
+                }
+
+                // Delete the backlog task
+                $task->delete();
+            }
+
+            // Delete the backlog card
+            $card->delete();
+
+            // Create a new Log
+            Log::create([
+                'user_id' => auth()->user()->uuid,
+                'project_id' => $this->uuid,
+                'backlog_id' => $sprint->uuid,
+                'card_id' => $sprintCard->id,
+                'action' => 'create',
+                'data' => json_encode($sprintCard),
+                'table' => 'cards',
+                'description' => 'Moved card <b>' . $card->name . '</b> to sprint <b>' . $sprint->name . '</b>',
+                'environment' => config('app.env')
+            ]);
+
+            // Update the selectedbucket
+            $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
+
+            // Update the buckets
+            $this->buckets = BacklogModel::where('project_id', $this->uuid)->with('cards')->get();
+
+            // Close the modal
+            $this->selectedCardModal = false;
+        }
+    }
+
+    /**
      * Set the isCreatingTask variable to true
      * 
      * @param string $taskType
@@ -842,11 +1023,50 @@ class Backlog extends Component
      * Move a task
      * 
      * @param int $id
+     * @param string $column
      * 
      * @return void
      */
-    public function moveTask($id) {
+    public function moveTask($id, $column) {
+        // Get the task
+        $task = BacklogTask::where('id', $id)->first();
 
+        // Get all tasks in the new column and sort them by task_index
+        $tasksInColumn = BacklogTask::where('status', $column)
+            ->orderBy('task_index')
+            ->get();
+
+        // Check if there is already a task with task index 0 in the new column
+        $taskWithSameIndex = $tasksInColumn->where('task_index', 0)->where('status', $column)->first();
+
+        // If there is a task with the same index, increment the task_index of all tasks in the new column
+        if ($taskWithSameIndex) {
+            foreach ($tasksInColumn as $otherTask) {
+                $otherTask->increment('task_index');
+            }
+        }
+
+        // Update the task with the new status and task_index
+        $task->update([
+            'status' => $column,
+            'task_index' => 0
+        ]);
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'backlog_tasks',
+            'description' => 'Moved task <b>' . $task->description . '</b>',
+            'environment' => config('app.env')
+        ]);
     }
 
     /**

@@ -356,9 +356,9 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="flex items-center" x-data="{ open: false }">
+                            <div class="relative flex items-center" x-data="{ open: false, moveTo: false }">
                                 <i @click="open = !open" class="fi fi-sr-menu-dots-vertical dark:text-white cursor-pointer"></i>
-                                <div x-show="open" @click.outside="open = false" class="absolute z-10 top-16 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
+                                <div x-show="open" @click.outside="open = false" class="absolute z-10 top-10 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
                                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                         {{-- Assign me, Move to, Make a copy, Delete --}}
                                         <li>
@@ -370,7 +370,7 @@
                                         </li>
                                         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                         <li>
-                                            <p @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }}</p>
+                                            <p @click="open = false; moveTo = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }}</p>
                                         </li>
                                         <li>
                                             <p @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.make_copy') }}</p>
@@ -378,6 +378,68 @@
                                         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                         <li>
                                             <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.delete') }}</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div x-show="moveTo" @click.outside="moveTo = false" class="absolute z-10 top-10 -left-40 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                        <li>
+                                            <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.move_to') }} - #{{ $card->id }}</p>
+                                        </li>
+                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                        <li class="p-2">
+                                            {{-- Project, Backlog/Sprint, Backlog/Sprint Name, Sprint Column (if sprint), Position: Top/Bottom --}}
+                                            <p class="dark:text-white">{{ __('backlog.select_destination') }}</p>
+                                            {{-- Projects --}}
+                                            <select wire:model="selectedProject" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                @forelse ($projects as $project)
+                                                    <option value="{{ $project->uuid }}">{{ $project->name }}</option>
+                                                @empty
+                                                    <option value="">{{ __('backlog.select_project') }}</option>
+                                                @endforelse
+                                            </select>
+                                            {{-- Backlog/Sprint --}}
+                                            <select wire:model.live="backlogOrSprint" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                <option value="backlog">{{ __('backlog.backlog') }}</option>
+                                                <option value="sprint">{{ __('backlog.sprint') }}</option>
+                                            </select>
+                                            {{-- Backlog / Sprint name --}}
+                                            <select wire:model="backlogOrSprintName" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                @if ($backlogOrSprint === 'backlog')
+                                                    @forelse ($buckets as $bucket)
+                                                        <option value="{{ $bucket->uuid }}">{{ $bucket->name }}</option>
+                                                    @empty
+                                                        <option value="">{{ __('backlog.select_bucket') }}</option>
+                                                    @endforelse
+                                                @elseif ($backlogOrSprint === 'sprint')
+                                                    @forelse ($sprints as $sprint)
+                                                        <option value="{{ $sprint->uuid }}">{{ $sprint->name }}</option>
+                                                    @empty
+                                                        <option value="">{{ __('backlog.select_sprint') }}</option>
+                                                    @endforelse
+                                                @endif
+                                            </select>
+                                            {{-- Sprint Column --}}
+                                            @if ($backlogOrSprint === 'sprint') 
+                                                <select wire:model="sprintColumn" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                    <option value="todo">{{ __('backlog.todo') }}</option>
+                                                    <option value="doing">{{ __('backlog.doing') }}</option>
+                                                    <option value="testing">{{ __('backlog.testing') }}</option>
+                                                    <option value="done">{{ __('backlog.done') }}</option>
+                                                    <option value="released">{{ __('backlog.released') }}</option>
+                                                </select>
+                                            @endif
+                                            {{-- Position: Top/Bottom --}}
+                                            <select wire:model="position" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                <option value="top">{{ __('backlog.top') }}</option>
+                                                <option value="bottom">{{ __('backlog.bottom') }}</option>
+                                            </select>
+                                            {{-- Submit --}}
+                                            <div class="flex justify-center mt-4">
+                                                <button @click="moveTo = false" wire:click="moveCard" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+                                                    {{ __('backlog.move') }}
+                                                </button>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
@@ -435,7 +497,7 @@
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 {{-- Assign me, Move to, Make a Copy, Convert to Card Delete --}}
                                                                 <li>
-                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.actions') }} - #{{ $task->id }}</p>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.actions') }} - {{ __('backlog.task') }} #{{ $task->id }}</p>
                                                                 </li>
                                                                 <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                                                 <li>
@@ -443,7 +505,7 @@
                                                                 </li>
                                                                 <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                                                 <li>
-                                                                    <p @click="open = false; moveTo = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }} (doesn't work)</p>
+                                                                    <p @click="open = false; moveTo = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }}</p>
                                                                 </li>
                                                                 <li>
                                                                     <p @click="open = false" wire:click="copyTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.make_copy') }}</p>
@@ -460,7 +522,17 @@
                                                         <div x-show="moveTo" @click.outside="moveTo = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
-                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.move_to') }} - #{{ $task->id }}</p>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.move_to_column') }} - {{ __('backlog.task') }} #{{ $task->id }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'todo')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.todo') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'doing')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.doing') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'done')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.done') }}</p>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -475,7 +547,7 @@
                                                         <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li class="flex justify-center items-center">
-                                                                    <p class="text-gray-400 dark:text-gray-300 text-sm">Users - #{{ $task->id }}</p>
+                                                                    <p class="text-gray-400 dark:text-gray-300 text-sm">Users - {{ __('backlog.task') }} #{{ $task->id }}</p>
                                                                 </li>
                                                                 <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
                                                                 @foreach ($projectMembers as $member)
@@ -550,60 +622,105 @@
 
                                     @foreach ($selectedCard->tasks->sortBy('task_index') as $task)
                                         @if ($task->status == 'doing')
-                                        <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
-                                            <div class="flex justify-between">
-                                                <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
-                                                <i class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                            </div>
-                                            <div class="flex justify-end">
-                                                <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
-                                                    <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
-                                                    <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
-                                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                            <li class="flex justify-center items-center">
-                                                                <p class="text-gray-400 dark:text-gray-800 text-sm">Users - #{{ $task->id }}</p>
-                                                            </li>
-                                                            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
-                                                            @foreach ($projectMembers as $member)
-                                                                <li class="px-1">
-                                                                    @if ($task->assignees->contains('user_id', $member->user_id))
-                                                                        <div wire:click="removeTaskAssignee({{ $member->id }})" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
-                                                                            <div class="flex items-center gap-x-2">
-                                                                                <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
-                                                                                <p class="dark:text-white">{{ $member->user->name }}</p>
-                                                                            </div>
-                                                                            <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
-                                                                        </div>
-                                                                    @else
-                                                                        <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
-                                                                            <div class="flex items-center gap-x-2">
-                                                                                <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
-                                                                                <p class="dark:text-white">{{ $member->user->name }}</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
+                                            <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
+                                                <div class="flex justify-between">
+                                                    <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
+                                                    <div class="relative" x-data="{ open: false, moveTo: false }">
+                                                        <i wire:click="selectTask('{{ $task->id }}')" @click="open = !open" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                        <div x-show="open" @click.outside="open = false" class="absolute z-10 top-8 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                {{-- Assign me, Move to, Make a Copy, Convert to Card Delete --}}
+                                                                <li>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.actions') }} - {{ __('backlog.task') }} #{{ $task->id }}</p>
                                                                 </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
-                                                    @if ($task->assignees->count() > 0)
-                                                        <div class="flex items-center gap-x-2 rounded-full">
-                                                            @foreach ($task->assignees->slice(0, 2) as $assignee)
-                                                                <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
-                                                            @endforeach
-                                                            @if ($task->assignees->count() > 2)
-                                                                <p class="text-sm text-gray-700 dark:text-white">+{{ $task->assignees->count() - 2 }}</p>
-                                                            @endif
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="assignTaskToMe" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.assign_me') }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false; moveTo = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="copyTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.make_copy') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="convertToCard('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.convert_to_card') }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="deleteTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.delete') }}</p>
+                                                                </li>
+                                                            </ul>
                                                         </div>
-                                                    @else
-                                                        <p class="text-sm text-gray-700 dark:text-white">No users assigned</p>
-                                                    @endif
+                                                        <div x-show="moveTo" @click.outside="moveTo = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                <li>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.move_to_column') }} - {{ __('backlog.task') }} #{{ $task->id }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'todo')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.todo') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'doing')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.doing') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'done')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.done') }}</p>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
+                                                </div>
+                                                <div class="flex justify-end">
+                                                    <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
+                                                        <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
+                                                        <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                <li class="flex justify-center items-center">
+                                                                    <p class="text-gray-400 dark:text-gray-300 text-sm">Users - {{ __('backlog.task') }} #{{ $task->id }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
+                                                                @foreach ($projectMembers as $member)
+                                                                    <li class="px-1">
+                                                                        @if ($task->assignees->contains('user_id', $member->user_id))
+                                                                            <div wire:click="removeTaskAssignee({{ $member->id }})" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                                <div class="flex items-center gap-x-2">
+                                                                                    <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                                    <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                                </div>
+                                                                                <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
+                                                                            </div>
+                                                                        @else
+                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                                <div class="flex items-center gap-x-2">
+                                                                                    <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                                    <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                        @if ($task->assignees->count() > 0)
+                                                            <div class="flex items-center gap-x-2 rounded-full">
+                                                                @foreach ($task->assignees->slice(0, 2) as $assignee)
+                                                                    <img class="w-6 h-6 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                                                                @endforeach
+                                                                @if ($task->assignees->count() > 2)
+                                                                    <p class="text-sm text-gray-700 dark:text-white">+{{ $task->assignees->count() - 2 }}</p>
+                                                                @endif
+                                                            </div>
+                                                        @else
+                                                            <p class="text-sm text-gray-700 dark:text-white">No users assigned</p>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         @endif 
                                     @endforeach
                                 </div>
@@ -642,7 +759,52 @@
                                             <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
-                                                    <i class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                    <div class="relative" x-data="{ open: false, moveTo: false }">
+                                                        <i wire:click="selectTask('{{ $task->id }}')" @click="open = !open" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                        <div x-show="open" @click.outside="open = false" class="absolute z-10 top-8 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                {{-- Assign me, Move to, Make a Copy, Convert to Card Delete --}}
+                                                                <li>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.actions') }} - {{ __('backlog.task') }} #{{ $task->id }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="assignTaskToMe" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.assign_me') }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false; moveTo = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="copyTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.make_copy') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="convertToCard('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.convert_to_card') }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="deleteTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.delete') }}</p>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div x-show="moveTo" @click.outside="moveTo = false" class="absolute z-10 top-8 -left-10 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                <li>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.move_to_column') }} - {{ __('backlog.task') }} #{{ $task->id }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'todo')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.todo') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'doing')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.doing') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'done')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.done') }}</p>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <p class="text-sm dark:text-white">{{ $task->description }}</p>
@@ -650,10 +812,10 @@
                                                 <div class="flex justify-end">
                                                     <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
                                                         <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
-                                                        <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
+                                                        <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li class="flex justify-center items-center">
-                                                                    <p class="text-gray-400 dark:text-gray-800 text-sm">Users - #{{ $task->id }}</p>
+                                                                    <p class="text-gray-400 dark:text-gray-300 text-sm">Users - {{ __('backlog.task') }} #{{ $task->id }}</p>
                                                                 </li>
                                                                 <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
                                                                 @foreach ($projectMembers as $member)
