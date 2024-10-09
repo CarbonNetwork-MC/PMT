@@ -28,6 +28,9 @@
                             <i class="fi fi-sr-plus-small text-lg flex items-center"></i>
                             <p class="text-sm">{{ __('backlog.new_card') }}</p>
                         </div>
+                        <div wire:click="devCommand" class="px-3 py-2 font-medium text-center flex items-center text-white bg-blue-700 rounded-lg cursor-pointer">
+                            <p class="text-sm">Dev</p>
+                        </div>
                     </div>
                 @endif
             </div> 
@@ -67,26 +70,31 @@
             @if ($selectedBucket)
                 @foreach ($selectedBucket->cards as $card)
                     <div class="bg-white dark:bg-gray-800 rounded-lg p-2 mb-2 cursor-pointer">
+
                         <div class="flex justify-between items-center">
-                            <div class="w-5/6 flex items-center gap-x-2 group" wire:click="selectCard({{ $card->id }})">
+                            <div class="w-full flex gap-x-2 group" wire:click="selectCard({{ $card->id }})">
                                 <p class="text-gray-400">#{{ $card->id }}</p>
                                 <p class="dark:text-white group-hover:text-blue-500">{{ $card->name }}</p>
                             </div>
-
-                            <div class="w-1/6 flex justify-end" x-data="{ open: false }">
-                                <button @click="open = !open" class="dark:text-white">
-                                    <i class="fi fi-sr-menu-dots-vertical"></i>
-                                </button>
-    
-                                <div x-show="open" @click.outside="open = false" class="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                        <li>
-                                            <p wire:click="editCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ __('backlog.edit') }}</p>
-                                        </li>
-                                        <li>
-                                            <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ __('backlog.delete') }}</p>
-                                        </li>
-                                    </ul>
+                            <div class="flex gap-x-2 ml-10">
+                                <div>
+                                    <i class="fi fi-sr-list-check"></i>
+                                </div>
+                                <div class="relative" x-data="{ open: false }">
+                                    <button @click="open = !open" class="dark:text-white">
+                                        <i class="fi fi-sr-menu-dots-vertical"></i>
+                                    </button>
+        
+                                    <div x-show="open" @click.outside="open = false" class="absolute top-10 -left-36 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                            <li>
+                                                <p wire:click="editCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ __('backlog.edit') }}</p>
+                                            </li>
+                                            <li>
+                                                <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ __('backlog.delete') }}</p>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -209,6 +217,27 @@
             </x-secondary-button>
         </x-slot>
     </x-big-modal>
+
+    {{-- Delete Card Modal --}}
+    <x-dialog-modal wire:model="deleteCardModal">
+        <x-slot name="title">
+            {{ __('backlog.dialog_delete_title_card') }}
+        </x-slot>
+
+        <x-slot name="content">
+            {{ __('backlog.dialog_delete_text_card') }}
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-danger-button class="ml-2" wire:click="destroyCard" wire:loading.attr="disabled">
+                {{ __('backlog.delete') }}
+            </x-danger-button>
+
+            <x-secondary-button wire:click="$toggle('deleteCardModal')" wire:loading.attr="disabled">
+                {{ __('backlog.cancel') }}
+            </x-secondary-button>            
+        </x-slot>
+    </x-dialog-modal>
 
     {{-- Selected Card Modal --}}
     <div class="fixed inset-0 overflow-y-auto w-full h-full z-50 bg-gray-900/60 transform transition-all"
@@ -400,7 +429,42 @@
                                             <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
-                                                    <i class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                    <div class="relative" x-data="{ open: false, moveTo: false }">
+                                                        <i wire:click="selectTask('{{ $task->id }}')" @click="open = !open" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                        <div x-show="open" @click.outside="open = false" class="absolute z-10 top-8 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                {{-- Assign me, Move to, Make a Copy, Convert to Card Delete --}}
+                                                                <li>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.actions') }} - #{{ $task->id }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="assignTaskToMe" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.assign_me') }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false; moveTo = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }} (doesn't work)</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="copyTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.make_copy') }}</p>
+                                                                </li>
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="convertToCard('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.convert_to_card') }}</p>
+                                                                </li>
+                                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                                <li>
+                                                                    <p @click="open = false" wire:click="deleteTask('{{ $task->id }}')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.delete') }}</p>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div x-show="moveTo" @click.outside="moveTo = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                                <li>
+                                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.move_to') }} - #{{ $task->id }}</p>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <p class="text-sm dark:text-white">{{ $task->description }}</p>
@@ -546,6 +610,15 @@
                             </div>
 
                             {{-- Tasks - Done --}}
+                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md"
+                                x-data
+                                x-init="Sortable.create($refs.doneTasks, {
+                                    group: 'tasks',
+                                    animation: 150,
+                                    onEnd: function (evt) {
+                                        @this.call('updateTaskOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
+                                    }
+                                })">
                                 <div class="flex justify-between p-2">
                                     <div class="flex items-center gap-x-2 text-green-500">
                                         <p class="flex items-center justify-center rounded-md text-sm font-bold bg-green-500 text-white px-1.5 py-0.5">
@@ -631,22 +704,22 @@
         </div>
     </div>
 
-    {{-- Delete Card Modal --}}
-    <x-dialog-modal wire:model="deleteCardModal">
+    {{-- Delete Task Modal --}}
+    <x-dialog-modal wire:model="deleteTaskModal">
         <x-slot name="title">
-            {{ __('backlog.dialog_delete_title_card') }}
+            {{ __('backlog.dialog_delete_title_task') }}
         </x-slot>
 
         <x-slot name="content">
-            {{ __('backlog.dialog_delete_text_card') }}
+            {{ __('backlog.dialog_delete_text_task') }}
         </x-slot>
 
         <x-slot name="footer">
-            <x-danger-button class="ml-2" wire:click="destroyCard" wire:loading.attr="disabled">
+            <x-danger-button class="ml-2" wire:click="destroyTask" wire:loading.attr="disabled">
                 {{ __('backlog.delete') }}
             </x-danger-button>
 
-            <x-secondary-button wire:click="$toggle('deleteCardModal')" wire:loading.attr="disabled">
+            <x-secondary-button wire:click="$toggle('deleteTaskModal')" wire:loading.attr="disabled">
                 {{ __('backlog.cancel') }}
             </x-secondary-button>            
         </x-slot>

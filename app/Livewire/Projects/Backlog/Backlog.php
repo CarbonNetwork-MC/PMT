@@ -11,6 +11,7 @@ use App\Models\ProjectMember;
 use App\Models\BacklogCardAssignee;
 use App\Models\BacklogTaskAssignee;
 use App\Models\Backlog as BacklogModel;
+use Illuminate\Support\Facades\Log as LaravelLog;
 
 class Backlog extends Component
 {
@@ -35,20 +36,22 @@ class Backlog extends Component
         'Needs work' => 'yellow'
     ];
 
-    public $bucket;
-    public $selectedBucketId;
-    public $card;
-    public $selectedCardId;
+    // public $card;
+    // public $bucket;
+    // public $selectedBucketId;
+    // public $selectedCardId;
+    public $selectedId;
 
     public $createBucketModal = false;
     public $editBucketModal = false;
     public $deleteBucketModal = false;
 
-    public $createCardModal = false;
-
     public $selectedCardModal = false;
+    public $createCardModal = false;
     public $editCardModal = false;
     public $deleteCardModal = false;
+
+    public $deleteTaskModal = false;
 
     public $isEditingCardName = false;
     public $isEditingCardDescription = false;
@@ -87,6 +90,13 @@ class Backlog extends Component
         }
         
         $this->numOfCards = count($cards);
+    }
+
+    public function devCommand() {
+
+        dd("buckets:", $this->buckets, "Project Members:", $this->projectMembers, "Project Member:", $this->projectMember,
+        "Selected Bucket:", $this->selectedBucket, "Selected Card:", $this->selectedCard, "Selected Task:", $this->selectedTask,);
+
     }
 
     public function updated($key, $value) {
@@ -173,17 +183,17 @@ class Backlog extends Component
      */
     public function editBucket($id) {
         // Set the selected bucket ID
-        $this->selectedBucketId = $id;
+        $this->selectedId = $id;
 
         // Open the edit bucket modal
         $this->editBucketModal = true;
 
         // Get the bucket
-        $this->bucket = $this->buckets->where('uuid', $id)->first();
+        $bucket = $this->buckets->where('uuid', $id)->first();
 
         // Set the name and description
-        $this->name = $this->bucket->name;
-        $this->description = $this->bucket->description;
+        $this->name = $bucket->name;
+        $this->description = $bucket->description;
     }
 
     /**
@@ -199,7 +209,7 @@ class Backlog extends Component
         ]);
 
         // Get the bucket and update it
-        $bucket = BacklogModel::where('uuid', $this->selectedBucketId)->first();
+        $bucket = BacklogModel::where('uuid', $this->selectedId)->first();
         $bucket->update($data);
 
         // Create a new Log
@@ -230,7 +240,7 @@ class Backlog extends Component
      */
     public function deleteBucket($id) {
         // Set the selected bucket ID
-        $this->selectedBucketId = $id;
+        $this->selectedId = $id;
 
         // Open the delete bucket modal
         $this->deleteBucketModal = true;
@@ -243,7 +253,7 @@ class Backlog extends Component
      */
     public function destroyBucket() {
         // Get the bucket and delete it
-        $bucket = BacklogModel::where('uuid', $this->selectedBucketId)->first();
+        $bucket = BacklogModel::where('uuid', $this->selectedId)->first();
         $bucket->delete();
 
         // Create a new Log
@@ -429,7 +439,7 @@ class Backlog extends Component
      */
     public function deleteCard($id) {
         // Set the selected card ID
-        $this->selectedCardId = $id;
+        $this->selectedId = $id;
 
         // Open the delete card modal
         $this->deleteCardModal = true;
@@ -442,13 +452,13 @@ class Backlog extends Component
      */
     public function destroyCard() {
         // Get all assignees for the card and delete them
-        $assignees = BacklogCardAssignee::where('backlog_card_id', $this->selectedCardId)->get();
+        $assignees = BacklogCardAssignee::where('backlog_card_id', $this->selectedId)->get();
         foreach ($assignees as $assignee) {
             $assignee->delete();
         }
 
         // Get all tasks for the card and delete them
-        $tasks = BacklogTask::where('backlog_card_id', $this->selectedCardId)->get();
+        $tasks = BacklogTask::where('backlog_card_id', $this->selectedId)->get();
         foreach ($tasks as $task) {
             // Get all assignees for the task and delete them
             $taskAssignees = BacklogTaskAssignee::where('backlog_task_id', $task->id)->get();
@@ -460,7 +470,7 @@ class Backlog extends Component
         }
 
         // Get the card and delete it
-        $card = BacklogCard::where('id', $this->selectedCardId)->first();
+        $card = BacklogCard::where('id', $this->selectedId)->first();
         $card->delete();
 
         // Create a new Log
@@ -484,6 +494,9 @@ class Backlog extends Component
 
         // Update the selected bucket
         $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
+
+        // Update the number of cards
+        $this->numOfCards = $this->numOfCards - 1;
     }
 
     /**
@@ -792,6 +805,203 @@ class Backlog extends Component
             'environment' => config('app.env')
         ]);
     }
+
+    /**
+     * Assign the task to the current user
+     * 
+     * @return void
+     */
+    public function assignTaskToMe() {
+        // Get the current user
+        $user = auth()->user();
+
+        // Create a new assignee
+        $assignee = BacklogTaskAssignee::create([
+            'backlog_task_id' => $this->selectedTask->id,
+            'user_id' => $user->uuid
+        ]);
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'update',
+            'data' => json_encode($this->selectedCard),
+            'table' => 'backlog_cards',
+            'description' => 'Added assignee to card <b>' . $this->selectedCard->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Move a task
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function moveTask($id) {
+
+    }
+
+    /**
+     * Copy a task
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function copyTask($id) {
+        // Get the task
+        $task = BacklogTask::where('id', $id)->first();
+
+        // Check if there is a task in the same column with the same index
+        $taskWithSameIndex = BacklogTask::where('task_index', $task->task_index)->where('status', $task->status)->first();
+
+        // If there is a task with the same index, increment the task_index of all tasks in the same column
+        if ($taskWithSameIndex) {
+            $tasksInColumn = BacklogTask::where('status', $task->status)->get();
+            foreach ($tasksInColumn as $otherTask) {
+                $otherTask->increment('task_index');
+            }
+        }
+
+        // Create a new task
+        $newTask = BacklogTask::create([
+            'description' => $task->description,
+            'status' => $task->status,
+            'task_index' => 0,
+            'backlog_card_id' => $task->backlog_card_id,
+            'backlog_id' => $task->backlog_id
+        ]);
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'create',
+            'data' => json_encode($newTask),
+            'table' => 'backlog_tasks',
+            'description' => 'Copied task <b>' . $newTask->description . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Convert a task to a card
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function convertToCard($id) {
+        // Get the task
+        $task = BacklogTask::where('id', $id)->first();
+
+        // Create a new card
+        $newCard = BacklogCard::create([
+            'backlog_id' => $task->backlog_id,
+            'name' => $task->description,
+            'description' => null,
+            'approval_status' => 'None',
+        ]);
+
+        // Copy the assignees and remove them from the task
+        if ($task->assignees->count() > 0) {
+            foreach ($task->assignees as $assignee) {
+                BacklogCardAssignee::create([
+                    'backlog_card_id' => $newCard->id,
+                    'user_id' => $assignee->user_id
+                ]);
+    
+                $assignee->delete();
+            }
+        }
+
+        // Remove the task
+        $task->delete();
+        $this->selectedTask = null;
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the selected bucket
+        $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
+
+        // Update the number of cards
+        $this->numOfCards = count($this->selectedBucket->cards);
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $newCard->id,
+            'action' => 'create',
+            'data' => json_encode($newCard),
+            'table' => 'backlog_cards',
+            'description' => 'Converted task to card <b>' . $newCard->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Open the Delete Task Modal and set the ID
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function deleteTask($id) {
+        // Set the selected task ID
+        $this->selectedId = $id;
+
+        // Open the delete task modal
+        $this->deleteTaskModal = true;
+    }
+
+    /**
+     * Delete the Task
+     * 
+     * @return void
+     */
+    public function destroyTask() {
+        // Get the task and delete it
+        $task = BacklogTask::where('id', $this->selectedId)->first();
+        $task->delete();
+
+        $this->selectedTask = null;
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Close the modal
+        $this->deleteTaskModal = false;
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'delete',
+            'data' => json_encode($task),
+            'table' => 'backlog_tasks',
+            'description' => 'Deleted task <b>' . $task->description . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
     /**
      * Render the component
      * 
@@ -801,4 +1011,3 @@ class Backlog extends Component
         return view('livewire.projects.backlog.backlog');
     }
 }
-
