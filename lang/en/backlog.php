@@ -32,6 +32,7 @@ return [
     'assign_me' => 'Assign Me',
     'move_to' => 'Move To',
     'make_copy' => 'Make a Copy',
+    'convert_to_card' => 'Convert to Card',
 
     // Tasks
     'tasks' => 'Tasks',

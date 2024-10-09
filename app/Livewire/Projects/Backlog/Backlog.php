@@ -724,6 +724,57 @@ class Backlog extends Component
     }
 
     /**
+     * Update the task order
+     * 
+     * @param int $taskId
+     * @param string $newColumn
+     * @param int $newIndex
+     * 
+     * @return void
+     */
+    public function updateTaskOrder($taskId, $newColumn, $newIndex) {
+        // Get the task
+        $task = BacklogTask::where('id', $taskId)->first();
+
+        // Get all tasks in the new column and sort them by task_index
+        $tasksInColumn = BacklogTask::where('status', $newColumn)
+            ->orderBy('task_index')
+            ->get();
+
+        // Check if there is a task in the new column with the same index
+        $taskWithSameIndex = $tasksInColumn->where('task_index', $newIndex)->where('status', $newColumn)->first();
+
+        // If there is a task with the same index, increment the task_index of all tasks in the new column
+        if ($taskWithSameIndex) {
+            // dd($taskWithSameIndex);
+            foreach ($tasksInColumn as $otherTask) {
+                $otherTask->increment('task_index');
+            }
+        }
+
+        // Update the moved task with its new task_index
+        $task->update([
+            'status' => $newColumn,
+            'task_index' => $newIndex
+        ]);
+
+        // Update the selected card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $this->selectedCard->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'backlog_tasks',
+            'description' => 'Updated task <b>' . $task->description . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+    /**
      * Render the component
      * 
      * @return \Illuminate\View\View

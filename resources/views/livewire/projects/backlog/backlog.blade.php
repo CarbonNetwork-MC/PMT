@@ -272,7 +272,7 @@
                                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                         @foreach ($approvalStatusOptions as $option => $color)
                                             <li class="px-1 cursor-pointer">
-                                                <p wire:click="changeStatus('{{ $option }}')" class="px-4 py-2 dark:text-white hover:bg-gray-300">{{ $option }}</p>
+                                                <p @click="open = false" wire:click="changeStatus('{{ $option }}')" class="px-4 py-2 dark:text-white hover:bg-gray-300">{{ $option }}</p>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -286,9 +286,9 @@
                                             <div x-show="open" @click.away="open = false" class="absolute mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
                                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                     <li class="flex justify-center items-center">
-                                                        <p class="text-gray-400 dark:text-gray-800 text-sm">Users - #{{ $selectedCard->id }}</p>
+                                                        <p class="text-gray-400 dark:text-gray-300 text-sm">Users - #{{ $selectedCard->id }}</p>
                                                     </li>
-                                                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
+                                                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                                     @foreach ($projectMembers as $member)
                                                         <li class="px-1">
                                                             @if ($selectedCard->assignees->contains('user_id', $member->user_id))
@@ -329,24 +329,24 @@
                             </div>
                             <div class="flex items-center" x-data="{ open: false }">
                                 <i @click="open = !open" class="fi fi-sr-menu-dots-vertical dark:text-white cursor-pointer"></i>
-                                <div x-show="open" @click.outside="open = false" class="absolute z-10 top-16 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                <div x-show="open" @click.outside="open = false" class="absolute z-10 top-16 bg-white rounded-lg shadow w-44 dark:bg-gray-800">
                                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                         {{-- Assign me, Move to, Make a copy, Delete --}}
                                         <li>
-                                            <p class="flex justify-center text-gray-400 dark:text-gray-700">{{ __('backlog.actions') }} - #{{ $selectedCard->id }}</p>
+                                            <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('backlog.actions') }} - #{{ $selectedCard->id }}</p>
                                         </li>
-                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
+                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                         <li>
                                             <p wire:click="assignCardToMe" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.assign_me') }}</p>
                                         </li>
-                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
+                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                         <li>
                                             <p @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.move_to') }}</p>
                                         </li>
                                         <li>
                                             <p @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.make_copy') }}</p>
                                         </li>
-                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
+                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
                                         <li>
                                             <p wire:click="deleteCard({{ $card->id }})" @click="open = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('backlog.delete') }}</p>
                                         </li>
@@ -368,7 +368,15 @@
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-800">
                         <div class="h-full grid grid-cols-3 gap-x-4">
                             {{-- Tasks - To Do --}}
-                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md"
+                                x-data
+                                x-init="Sortable.create($refs.todoTasks, {
+                                    group: 'tasks',
+                                    animation: 150,
+                                    onEnd: function (evt) {
+                                        @this.call('updateTaskOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
+                                    }
+                                })">
                                 <div class="flex justify-between p-2">
                                     <div class="flex items-center gap-x-2 text-purple-600">
                                         <p class="flex items-center justify-center rounded-md text-sm font-bold bg-purple-600 text-white px-1.5 py-0.5">
@@ -380,16 +388,16 @@
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
                                     </div>
                                 </div>
-                                <div class="p-2">
+                                <div class="p-2" x-ref="todoTasks" data-column="todo">
                                     @if ($isCreatingTask && $createdTaskColumn == 'todo')
-                                        <div class="bg-white p-2">
+                                        <div class="bg-white p-2 mb-2">
                                             <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('todo')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_task') }}">
                                         </div>
                                     @endif
 
                                     @foreach ($selectedCard->tasks->sortBy('task_index') as $task)
                                         @if ($task->status == 'todo')
-                                            <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
+                                            <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
                                                     <i class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
@@ -400,10 +408,10 @@
                                                 <div class="flex justify-end">
                                                     <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
                                                         <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
-                                                        <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
+                                                        <div x-show="open" @click.away="open = false" class="absolute top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li class="flex justify-center items-center">
-                                                                    <p class="text-gray-400 dark:text-gray-800 text-sm">Users - #{{ $task->id }}</p>
+                                                                    <p class="text-gray-400 dark:text-gray-300 text-sm">Users - #{{ $task->id }}</p>
                                                                 </li>
                                                                 <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-800">
                                                                 @foreach ($projectMembers as $member)
@@ -449,7 +457,15 @@
                             </div>
 
                             {{-- Tasks - Doing --}}
-                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md"
+                                x-data
+                                x-init="Sortable.create($refs.doingTasks, {
+                                    group: 'tasks',
+                                    animation: 150,
+                                    onEnd: function (evt) {
+                                        @this.call('updateTaskOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
+                                    }
+                                })">
                                 <div class="flex justify-between p-2">
                                     <div class="flex items-center gap-x-2 text-sky-500">
                                         <p class="flex items-center justify-center rounded-md text-sm font-bold bg-sky-500 text-white px-1.5 py-0.5">
@@ -461,16 +477,16 @@
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
                                     </div>
                                 </div>
-                                <div class="p-2">
+                                <div class="p-2" x-ref="doingTasks" data-column="doing">
                                     @if ($isCreatingTask && $createdTaskColumn == 'doing')
-                                        <div class="bg-white p-2">
+                                        <div class="bg-white p-2 mb-2">
                                             <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('doing')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_task') }}">
                                         </div>
                                     @endif
 
                                     @foreach ($selectedCard->tasks->sortBy('task_index') as $task)
                                         @if ($task->status == 'doing')
-                                        <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
+                                        <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                             <div class="flex justify-between">
                                                 <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
                                                 <i class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
@@ -530,7 +546,6 @@
                             </div>
 
                             {{-- Tasks - Done --}}
-                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md">
                                 <div class="flex justify-between p-2">
                                     <div class="flex items-center gap-x-2 text-green-500">
                                         <p class="flex items-center justify-center rounded-md text-sm font-bold bg-green-500 text-white px-1.5 py-0.5">
@@ -542,16 +557,16 @@
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
                                     </div>
                                 </div>
-                                <div class="p-2">
+                                <div class="p-2" x-ref="doneTasks" data-column="done">
                                     @if ($isCreatingTask && $createdTaskColumn == 'done')
-                                        <div class="bg-white p-2">
+                                        <div class="bg-white p-2 mb-2">
                                             <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('done')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_task') }}">
                                         </div>
                                     @endif
 
                                     @foreach ($selectedCard->tasks->sortBy('task_index') as $task)
                                         @if ($task->status == 'done')
-                                            <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
+                                            <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
                                                     <i class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
