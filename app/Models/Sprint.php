@@ -11,12 +11,12 @@ class Sprint extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id',
+        'uuid',
         'project_id',
         'name',
         'start_date',

@@ -44,7 +44,7 @@
 
                                     <x-slot name="content">
                                         @foreach ($activeSprints as $sprint)
-                                            <x-sidebar-dropdown-link href="{{ route('projects.board.render', ['uuid' => $sprint->id]) }}" :active="request()->routeIs('projects.board.render') && request('uuid') == $sprint->id">
+                                            <x-sidebar-dropdown-link href="{{ route('projects.board.render', ['uuid' => $sprint->uuid]) }}" :active="request()->routeIs('projects.board.render') && request('uuid') == $sprint->id">
                                                 <i class="fi fi-rs-clipboard-list-check"></i>
                                                 <span class="navItem ms-3">{{ $sprint->name }}</span>
                                             </x-sidebar-dropdown-link>
@@ -54,7 +54,7 @@
                             </li>
                         @else
                             <li class="side-item-container">
-                                <x-sidebar-nav-link href="{{ route('projects.board.render', ['uuid' => $activeSprints[0]->id]) }}" :active="request()->routeIs('projects.board.render')">
+                                <x-sidebar-nav-link href="{{ route('projects.board.render', ['uuid' => $activeSprints[0]->uuid]) }}" :active="request()->routeIs('projects.board.render')">
                                     <i class="fi fi-sr-game-board-alt"></i>
                                     <span class="navItem ms-3">Board</span>
                                 </x-sidebar-nav-link>

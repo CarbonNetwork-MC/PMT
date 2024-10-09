@@ -48,7 +48,7 @@ class Overview extends Component
         Log::create([
             'user_id' => auth()->user()->uuid,
             'project_id' => $this->uuid,
-            'sprint_id' => $sprint->id,
+            'sprint_id' => $sprint->uuid,
             'action' => 'create',
             'data' => json_encode($data),
             'table' => 'sprints',

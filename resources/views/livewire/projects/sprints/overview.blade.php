@@ -34,7 +34,7 @@
         @forelse ($sprints as $sprint)
             <div class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
                 <div class="flex justify-between items-center">
-                    <a href="{{ route('projects.board.render', ['uuid' => $sprint->id]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
+                    <a href="{{ route('projects.board.render', ['uuid' => $sprint->uuid]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
                     <p class="text-xs font-semibold text-gray-500 dark:text-white">{{ $sprint->start_date }} - {{ $sprint->end_date }}</p>
                 </div>
                 <div class="flex justify-between">
@@ -98,14 +98,14 @@
                             @if ($sprint->status == 'active')
                                 <div class="group">
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.complete') }}</p>
-                                    <button wire:click="completeSprint('{{ $sprint->id }}')" class="w-full flex justify-center">
+                                    <button wire:click="completeSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
                                         <i class="fi fi-br-stop-circle group-hover:text-blue-500 dark:text-white     "></i>
                                     </button>
                                 </div>
                             @elseif ($sprint->status == 'inactive')
                                 <div class="group">
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.start') }}</p>
-                                    <button wire:click="startSprint('{{ $sprint->id }}')" class="w-full flex justify-center">
+                                    <button wire:click="startSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
                                         <i class="fi fi-br-play-circle group-hover:text-blue-500 dark:text-white     "></i>
                                     </button>
                                 </div>
@@ -114,7 +114,7 @@
                         <div>
                             <div class="group">
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.edit') }}</p>
-                                <button wire:click="editSprintSetId('{{ $sprint->id }}')" class="w-full flex justify-center">
+                                <button wire:click="editSprintSetId('{{ $sprint->uuid }}')" class="w-full flex justify-center">
                                     <i class="fi fi-br-edit group-hover:text-blue-500 dark:text-white     "></i>
                                 </button>
                             </div>
@@ -122,7 +122,7 @@
                         <div>
                             <div class="group">
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-red-500">{{ __('sprints.delete') }}</p>
-                                <button wire:click="deleteSprint('{{ $sprint->id }}')" class="w-full flex justify-center">
+                                <button wire:click="deleteSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
                                     <i class="fi fi-br-trash group-hover:text-red-500 dark:text-white     "></i>
                                 </button>
                             </div>
