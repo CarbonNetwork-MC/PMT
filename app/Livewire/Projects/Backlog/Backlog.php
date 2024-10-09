@@ -677,7 +677,7 @@ class Backlog extends Component
                 'action' => 'update',
                 'data' => json_encode($card),
                 'table' => 'backlog_cards',
-                'description' => 'Moved card <b>' . $card->name . '</b>',
+                'description' => 'Moved card <b>' . $card->name . '</b> to backlog <b>' . $backlog->name . '</b>',
                 'environment' => config('app.env')
             ]);
 

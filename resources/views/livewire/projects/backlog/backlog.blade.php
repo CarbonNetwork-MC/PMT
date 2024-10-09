@@ -78,7 +78,7 @@
                                     {{ $card->approval_status }}
                                 </div>
                                 <div class="flex items-center gap-x-2">
-                                    <i class="fi fi-sr-list-check"></i>
+                                    <i class="fi fi-sr-list-check dark:text-white"></i>
                                     <p class="dark:text-white">{{ $card->tasks->count() }}</p>
                                 </div>
                                 <div class="relative" x-data="{ open: false, moveTo: false }">
