@@ -21,7 +21,9 @@ class Overview extends Component
         if ($project) {
             // Set the selected project
             session()->put('selected_project', $this->uuid);
-        
+            if ($project->backlogs->count() > 0) {
+                session()->put('selected_backlog', $project->backlogs->first()->id);
+            }
         }    
     }
 

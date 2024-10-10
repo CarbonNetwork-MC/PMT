@@ -29,7 +29,7 @@ class Project extends Model
 
     public function backlogs(): HasMany
     {
-        return $this->hasMany(Backlog::class);
+        return $this->hasMany(Backlog::class, 'project_id', 'uuid');
     }
 
     public function sprints(): HasMany

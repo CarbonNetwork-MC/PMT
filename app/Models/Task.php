@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Task extends Model
 {
@@ -15,7 +16,6 @@ class Task extends Model
         'description',
         'status',
         'task_index',
-        'assignee_id',
         'sprint_id',
     ];
 
@@ -29,8 +29,8 @@ class Task extends Model
         return $this->belongsTo(Card::class);
     }
 
-    public function assignee(): BelongsTo
+    public function assignees(): HasMany
     {
-        return $this->belongsTo(User::class, 'assignee_id');
+        return $this->hasMany(TaskAssignee::class, 'card_id', 'id');
     }
 }

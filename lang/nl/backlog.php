@@ -15,6 +15,9 @@ return [
     'description' => 'Omschrijving',
     'create_bucket' => 'Maak een nieuwe bucket',
     'edit_bucket' => 'Bewerk bucket',
+    'buckets' => 'Buckets',
+    'cards_total' => 'Totaal aantal kaarten',
+    'new_card' => 'Nieuwe kaart',
 
     // Buttons
     'create' => 'Toevoegen',

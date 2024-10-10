@@ -5,3 +5,11 @@
 [x-cloak] {
     display: none;
 }
+
+.-left-41 {
+    left: -10.25rem;
+}
+
+.hover\:bg-green-500:hover {
+    background-color: #047857;
+}
