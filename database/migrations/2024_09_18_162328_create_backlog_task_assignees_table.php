@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('backlog_cards', function (Blueprint $table) {
+        Schema::create('backlog_task_assignees', function (Blueprint $table) {
             $table->id();
-            $table->char('backlog_id', 36);
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->enum('approval_status', ['None', 'Approved', 'Needs work', 'Rejected'])->default('None');
-            $table->integer('card_index')->default(0);
+            $table->integer('backlog_task_id')->unsigned();
+            $table->char('user_id', 36);
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('backlog_cards');
+        Schema::dropIfExists('backlog_task_assignees');
     }
 };

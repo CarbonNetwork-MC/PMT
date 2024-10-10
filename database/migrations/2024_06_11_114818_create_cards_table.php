@@ -16,8 +16,8 @@ return new class extends Migration
             $table->char('sprint_id', 36);
             $table->string('name');
             $table->text('description')->nullable();
-            $table->char('assignee_id', 36)->nullable();
             $table->enum('status', ['todo', 'doing', 'testing', 'done', 'released'])->default('todo');
+            $table->enum('approval_status', ['None', 'Approved', 'Needs work', 'Rejected'])->default('None');
             $table->integer('card_index')->default(0);
             $table->timestamps();
         });

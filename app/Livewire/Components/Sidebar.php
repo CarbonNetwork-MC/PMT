@@ -4,6 +4,7 @@ namespace App\Livewire\Components;
 
 use App\Models\Sprint;
 use Livewire\Component;
+use App\Models\Backlog as BacklogModel;
 
 class Sidebar extends Component
 {
@@ -14,6 +15,7 @@ class Sidebar extends Component
 
     public $selectedProject;
     public $selectedSprint;
+    public $selectedBacklog;
 
     public function mount() {
         $this->user = auth()->user();
@@ -25,6 +27,12 @@ class Sidebar extends Component
         $activeSprints = Sprint::where('project_id', $this->selectedProject)->where('status', 'active')->get();
         if ($activeSprints->count() > 0) {
             $this->activeSprints = $activeSprints;
+        }
+
+        if (session()->has('selected_backlog')) {
+            $this->selectedBacklog = session('selected_backlog');
+        } else {
+            $this->selectedBacklog = BacklogModel::where('project_id', $this->selectedProject)->first();
         }
     }
 

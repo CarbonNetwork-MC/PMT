@@ -26,7 +26,7 @@
     </div>
 
     {{-- Change Owner Modal --}}
-    <x-pmt-modal wire:model="changeOwnerModal">
+    <x-big-modal wire:model="changeOwnerModal">
         <x-slot name="title">
             {{ __('settings.change_owner') }}
         </x-slot>
@@ -57,7 +57,7 @@
                 {{ __('settings.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 
     {{-- Delete Project Modal --}}
     <x-dialog-modal wire:model="deleteProjectModal">

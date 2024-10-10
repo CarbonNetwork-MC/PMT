@@ -30,7 +30,7 @@
                                     @if ($userRole == 1)
                                         <span class="text-sm dark:text-white font-semibold">{{ $member->role->name }}</span>
                                     @else
-                                        <select class="dark:bg-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded p-2" wire:model="role.{{ $member->id }}" wire:change="updateRole({{ $member->id }}, $event.target.value)">
+                                        <select class="dark:bg-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded p-2" wire:change="updateRole({{ $member->id }}, $event.target.value)">
                                             @foreach ($roles as $role)
                                                 @if ($role->id == 3)
                                                     @continue
@@ -55,7 +55,7 @@
     </div>
 
     {{-- Add Member Modal --}}
-    <x-pmt-modal wire:model="addMemberModal">
+    <x-big-modal wire:model="addMemberModal">
         <x-slot name="title">
             {{ __('settings.add_user') }}
         </x-slot>
@@ -88,7 +88,7 @@
                 {{ __('settings.cancel') }}
             </x-secondary-button>
         </x-slot>
-    </x-pmt-modal>
+    </x-big-modal>
 
     {{-- Delete Member Modal --}}
     <x-dialog-modal wire:model="deleteMemberModal">

@@ -90,7 +90,7 @@ class Admin extends Component
         $project->delete();
 
         // Delete all project members
-        ProjectMember::where('project_id', $this->projectId)->delete();  // 3c0dee2f-47ce-48aa-bfdc-7df415dded4d - 7e460ae7-3deb-4994-8de8-c1877f05e321
+        ProjectMember::where('project_id', $this->projectId)->delete();
 
         // Delete all sprints, cards and tasks
         $sprints = Sprint::where('project_id', $this->projectId)->get();

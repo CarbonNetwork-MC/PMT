@@ -15,8 +15,8 @@ class Card extends Model
         'sprint_id',
         'name',
         'description',
-        'assignee_id',
         'status',
+        'approval_status',
         'card_index',
     ];
 
@@ -25,9 +25,9 @@ class Card extends Model
         return $this->belongsTo(Sprint::class);
     }
 
-    public function assignee(): BelongsTo
+    public function assignees(): HasMany
     {
-        return $this->belongsTo(User::class, 'assignee_id');
+        return $this->hasMany(CardAssignee::class, 'card_id');
     }
 
     public function tasks(): HasMany
