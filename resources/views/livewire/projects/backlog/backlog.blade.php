@@ -365,7 +365,7 @@
                                 <button @click="open = !open" class="text-{{ $selectedCardColor }}-500 border border-{{ $selectedCardColor }}-400 hover:bg-{{ $selectedCardColor }}-500 focus:ring-2 focus:ring-{{ $selectedCardColor }}-500 hover:text-black font-medium rounded-lg text-sm px-5 py-1 text-center">
                                     {{ $selectedCard->approval_status }}
                                 </button>
-                                <div x-show="open" @click.away="open = false" class="z-10 absolute mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg divide-y divide-gray-100">
+                                <div x-show="open" @click.away="open = false" class="z-10 absolute top-16 mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg divide-y divide-gray-100">
                                     <div class="py-2 flex justify-center text-sm text-gray-300">
                                         Change Approval Status
                                     </div>
