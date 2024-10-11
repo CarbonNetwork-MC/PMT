@@ -36,6 +36,7 @@ return [
     'card' => 'Card',
     'cards_total' => 'Total Cards',
     'tasks' => 'Tasks',
+    'task' => 'Task',
     
     'actions' => 'Actions',
     'select_destination' => 'Select Destination',
@@ -44,6 +45,7 @@ return [
     'select_backlog' => 'Select Backlog',
     'select_sprint' => 'Select Sprint',
     'change_approval_status' => 'Change Approval Status',
+    'convert_to_card' => 'Convert to Card',
 
     'users' => 'Users',
     'no_users_assigned' => 'No users assigned',
