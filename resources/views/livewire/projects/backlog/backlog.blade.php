@@ -33,7 +33,7 @@
             </div> 
         </div>
     </div>
-    <div class="w-flex flex flex-grow gap-x-4 mt-4">
+    <div class="w-full flex flex-grow gap-x-4 mt-4">
         <div class="w-1/4 3xl:w-1/5 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
             <div class="flex justify-between">
                 <p class="text-lg font-bold dark:text-white">{{ __('backlog.buckets') }}</p>
