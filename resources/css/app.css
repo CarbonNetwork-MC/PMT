@@ -6,6 +6,11 @@
     display: none;
 }
 
+.fi {
+    display: flex;
+    align-items: center;
+}
+
 .-left-41 {
     left: -10.25rem;
 }
