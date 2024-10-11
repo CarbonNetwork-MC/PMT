@@ -523,7 +523,7 @@
                                 class="border-0 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
                             </textarea>
                         @else
-                            <p wire:click="startEditingCardDescription" class="text-sm text-gray-700 dark:text-gray-200">{{ $selectedCard->description }}</p>
+                            <p wire:click="startEditingCardDescription" class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
                         @endif
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-800">
                         <div class="h-full grid grid-cols-3 gap-x-4">
