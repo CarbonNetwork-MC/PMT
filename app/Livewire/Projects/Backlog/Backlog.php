@@ -604,6 +604,12 @@ class Backlog extends Component
      * @return void
      */
     public function assignCardToMe() {
+        // Check if the user is already assigned to the card
+        $assignee = BacklogCardAssignee::where('user_id', auth()->user()->uuid)->where('backlog_card_id', $this->selectedCard->id)->first();
+
+        if ($assignee) return;
+
+        // Create the assignee
         $assignee = BacklogCardAssignee::create([
             'backlog_card_id' => $this->selectedCard->id,
             'user_id' => auth()->user()->uuid
@@ -987,6 +993,11 @@ class Backlog extends Component
     public function assignTaskToMe() {
         // Get the current user
         $user = auth()->user();
+
+        // Check if the user is already assigned to the task
+        $assignee = BacklogTaskAssignee::where('user_id', $user->uuid)->where('backlog_task_id', $this->selectedTask->id)->first();
+
+        if ($assignee) return;
 
         // Create a new assignee
         $assignee = BacklogTaskAssignee::create([
