@@ -35,6 +35,7 @@ return [
     'cards' => 'Cards',
     'card' => 'Card',
     'cards_total' => 'Total Cards',
+    'tasks' => 'Tasks',
     
     'actions' => 'Actions',
     'select_destination' => 'Select Destination',
@@ -42,6 +43,11 @@ return [
     'backlog' => 'Backlog',
     'select_backlog' => 'Select Backlog',
     'select_sprint' => 'Select Sprint',
+    'change_approval_status' => 'Change Approval Status',
+
+    'users' => 'Users',
+    'no_users_assigned' => 'No users assigned',
+    'no_users_found' => 'No users?',
 
     'todo' => 'To Do',
     'doing' => 'Doing',
@@ -65,7 +71,7 @@ return [
     'make_copy' => 'Make a Copy',
 
     // Delete Dialog
-    'dialog_delete_title' => 'Delete Sprint',
-    'dialog_delete_text' => 'Are you sure you want to delete this sprint?',
+    'dialog_delete_title_card' => 'Delete Card',
+    'dialog_delete_text_card' => 'Are you sure you want to delete this card?',
 
 ];
