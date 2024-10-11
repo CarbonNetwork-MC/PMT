@@ -83,7 +83,7 @@ class Backlog extends Component
             }
         }
 
-        // Set the selected project and the 
+        // Set the selected project
         $this->selectedProject = $this->uuid;
 
         // Get all buckets and cards for the selected project.
