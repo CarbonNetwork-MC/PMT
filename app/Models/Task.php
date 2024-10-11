@@ -31,6 +31,6 @@ class Task extends Model
 
     public function assignees(): HasMany
     {
-        return $this->hasMany(TaskAssignee::class, 'card_id', 'id');
+        return $this->hasMany(TaskAssignee::class, 'task_id', 'id');
     }
 }

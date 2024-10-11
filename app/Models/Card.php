@@ -27,11 +27,11 @@ class Card extends Model
 
     public function assignees(): HasMany
     {
-        return $this->hasMany(CardAssignee::class, 'card_id');
+        return $this->hasMany(CardAssignee::class, 'card_id', 'id');
     }
 
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'card_id', 'id');
     }
 }
