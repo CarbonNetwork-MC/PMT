@@ -43,10 +43,6 @@ class Backlog extends Component
         'Needs work' => 'yellow'
     ];
 
-    // public $card;
-    // public $bucket;
-    // public $selectedBucketId;
-    // public $selectedCardId;
     public $selectedId;
 
     public $createBucketModal = false;
