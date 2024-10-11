@@ -448,7 +448,7 @@ class Backlog extends Component
     }
 
     /**
-     * Open the Edit Card Modal and set the ID
+     * Open the Delete Card Modal and set the ID
      * 
      * @param int $id
      * 
