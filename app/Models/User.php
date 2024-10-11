@@ -85,7 +85,7 @@ class User extends Authenticatable
 
     public function backlogTasks(): HasMany
     {
-        return $this->hasMany(BacklogCardTask::class, 'assignee_id');
+        return $this->hasMany(BacklogTask::class, 'assignee_id');
     }
 
     public function cards(): HasMany
