@@ -24,6 +24,7 @@ return [
     'buckets' => 'Buckets',
     'cards_total' => 'Total Cards',
     'new_card' => 'New Card',
+    'create_card' => 'Create Card',
     'create_task' => 'Add a task, press enter to save!',
 
     // Buttons
