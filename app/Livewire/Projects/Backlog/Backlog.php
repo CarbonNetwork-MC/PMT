@@ -956,7 +956,6 @@ class Backlog extends Component
 
         // If there is a task with the same index, increment the task_index of all tasks in the new column
         if ($taskWithSameIndex) {
-            // dd($taskWithSameIndex);
             foreach ($tasksInColumn as $otherTask) {
                 $otherTask->increment('task_index');
             }
