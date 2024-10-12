@@ -76,4 +76,7 @@ return [
     'dialog_delete_title_card' => 'Delete Card',
     'dialog_delete_text_card' => 'Are you sure you want to delete this card?',
 
+    'dialog_delete_title_task' => 'Delete Task',
+    'dialog_delete_text_task' => 'Are you sure you want to delete this task?',
+
 ];

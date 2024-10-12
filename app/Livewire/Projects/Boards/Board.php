@@ -87,17 +87,28 @@ class Board extends Component
     public $selectedCardModal = false;
     public $deleteCardModal = false;
 
+    public $deleteTaskModal = false;
+
     public $isCreatingCard = false;
     public $isCreatingTask = false;
     public $isEditingCardName = false;
     public $isEditingCardDescription = false;
+    public $isEditingTaskDescription = false;
     public $createdCardColumn;
     public $createdTaskColumn;
     public $editingCardId;
+    public $editingTaskId;
 
-    public $name, $description;
+    public $name, $description, $taskDescription;
     public $selectedProject, $backlogOrSprint = 'sprint', $backlogOrSprintName, $sprintColumn = 'todo', $position = 'top';
 
+    /**
+     * Mount the component
+     * 
+     * @param string $uuid
+     * 
+     * @return void
+     */
     public function mount($uuid)
     {
         $this->user = auth()->user();
@@ -151,10 +162,6 @@ class Board extends Component
         $this->backlogOrSprintName = $this->sprint->uuid;
         $this->selectedProject = $this->projectId;
     }
-
-    // Functions
-    // Create Task + cancellation, Change Task Assignees, Update Task Order, AssignTaskToMe, Move Task, Copy Task, 
-    // Convert Task to Card, Delete Task, Change Task Name, 
 
     public function updated($key, $value) {
         if ($key === 'backlogOrSprint') {
@@ -852,6 +859,555 @@ class Board extends Component
             'data' => json_encode($newCard),
             'table' => 'cards',
             'description' => 'Card <b>' . $newCard->name . '</b> copied from card <b>' . $card->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Set the isCreatingTask variable to true
+     * 
+     * @param string $column
+     * 
+     * @return void
+     */
+    public function createTask($column) {
+        $this->isCreatingTask = true;
+        $this->createdTaskColumn = $column;
+    }
+
+    /**
+     * Cancel the task creation
+     * 
+     * @return void
+     */
+    public function cancelTaskCreation() {
+        $this->isCreatingTask = false;
+        $this->createdTaskColumn = null;
+    }
+
+    /**
+     * Store the task
+     * 
+     * @param string $column
+     * 
+     * @return void
+     */
+    public function storeTask($column) {
+        // Validate the data
+        $data = $this->validate([
+            'taskDescription' => 'required|string'
+        ]);
+
+        $data['description'] = $this->taskDescription;
+        $data['card_id'] = $this->selectedCard->id;
+        $data['status'] = $column;
+        $data['task_index'] = 0;
+        $data['sprint_id'] = $this->sprint->uuid;
+
+        // Create the task
+        $task = Task::create($data);
+
+        // Check if there is already a task with index 0, if so, increment the index of all tasks in the column
+        $tasksInColumn = Task::where('card_id', $this->selectedCard->id)->where('status', $column)->orderBy('task_index')->get();
+        $taskWithIndexZero = $tasksInColumn->where('task_index', 0)->first();
+        if ($taskWithIndexZero) {
+            foreach ($tasksInColumn as $taskInColumn) {
+                $taskInColumn->task_index++;
+                $taskInColumn->save();
+            }
+        }
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $this->selectedCard->id,
+            'task_id' => $task->id,
+            'action' => 'create',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> created in ' . $column,
+            'environment' => config('app.env')
+        ]);
+
+        // Reset the variables
+        $this->isCreatingTask = false;
+        $this->createdTaskColumn = null;
+        $this->description = null;
+    }
+
+    /**
+     * Open the delete task modal and set the ID
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function deleteTask($id) {
+        // Set the selected task ID
+        $this->selectedId = $id;
+
+        // Open the modal
+        $this->deleteTaskModal = true;
+    }
+
+    /**
+     * Delete the task
+     * 
+     * @return void
+     */
+    public function destroyTask() {
+        // Get the task
+        $task = Task::where('id', $this->selectedId)->first();
+
+        // Get all assignees of the task
+        $assignees = TaskAssignee::where('task_id', $task->id)->get();
+        foreach ($assignees as $assignee) {
+            $assignee->delete();
+        }
+
+        // Delete the task
+        $task->delete();
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $task->id,
+            'action' => 'delete',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> deleted',
+            'environment' => config('app.env')
+        ]);
+
+        // Close the modal
+        $this->deleteTaskModal = false;
+
+        // Reset the variables
+        $this->selectedId = null;
+    }
+
+    /**
+     * Uppdate the task order
+     * 
+     * @param int $taskId
+     * @param string $newColumn
+     * @param int $newIndex
+     * 
+     * @return void
+     */
+    public function updateTaskOrder($taskId, $newColumn, $newIndex) {
+        // Get the task
+        $task = Task::where('id', $taskId)->first();
+
+        // Get all tasks in the new column and sort them by their index
+        $tasksInColumn = Task::where('card_id', $task->card_id)->where('status', $newColumn)->orderBy('task_index')->get();
+
+        // Check if there is a task with the same index, if so, increment the index of all tasks in the new column
+        $taskWithSameIndex = $tasksInColumn->where('task_index', $newIndex)->first();
+
+        if ($taskWithSameIndex) {
+            foreach ($tasksInColumn as $taskInColumn) {
+                if ($taskInColumn->task_index >= $newIndex) {
+                    $taskInColumn->increment('task_index');
+                }
+            }
+        }
+
+        // Update the task with the new column and index
+        $task->update([
+            'status' => $newColumn,
+            'task_index' => $newIndex
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $task->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> moved to ' . $newColumn,
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Assign the task to the current user
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function assignTaskToMe($id) {
+        // Get the current user
+        $user = auth()->user();
+
+        // Check if the user is already assigned to the task
+        $assignee = TaskAssignee::where('task_id', $id)->where('user_id', $user->uuid)->first();
+
+        if ($assignee) return;
+
+        // Create the assignee
+        TaskAssignee::create([
+            'task_id' => $id,
+            'user_id' => $user->uuid
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $this->selectedCard->id,
+            'task_id' => $id,
+            'action' => 'create',
+            'data' => json_encode($user),
+            'table' => 'task_assignees',
+            'description' => 'User <b>' . $user->name . '</b> was added to task <b>' . Task::where('id', $id)->first()->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Add an assignee to a task
+     * 
+     * @param int $id
+     * @param int $assigneeId
+     * 
+     * @return void
+     */
+    public function addTaskAssignee($id, $assigneeId) {
+        // Get the clicked project member
+        $projectMember = ProjectMember::where('id', $assigneeId)->first();
+        
+        // Create the assignee
+        TaskAssignee::create([
+            'task_id' => $id,
+            'user_id' => $projectMember->user_id
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $this->selectedCard->id,
+            'task_id' => $id,
+            'action' => 'create',
+            'data' => json_encode($projectMember),
+            'table' => 'task_assignees',
+            'description' => 'User <b>' . $projectMember->user->name . '</b> was added to task <b>' . Task::where('id', $id)->first()->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Remove an assignee from a task
+     * 
+     * @param int $id
+     * @param int $assigneeId
+     * 
+     * @return void
+     */
+    public function removeTaskAssignee($id, $assigneeId) {
+        // Get the clicked project member
+        $projectMember = ProjectMember::where('id', $assigneeId)->first();
+
+        // Get the assignee
+        $assignee = TaskAssignee::where('task_id', $id)->where('user_id', $projectMember->user_id)->first();
+
+        // Delete the assignee
+        $assignee->delete();
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $this->selectedCard->id,
+            'task_id' => $id,
+            'action' => 'delete',
+            'data' => json_encode($projectMember),
+            'table' => 'task_assignees',
+            'description' => 'User <b>' . $projectMember->user->name . '</b> was removed from task <b>' . Task::where('id', $id)->first()->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Set the isEditingTaskName variable to true
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function startEditingTaskDescription($id) {
+        $this->isEditingTaskDescription = true;
+        $this->editingTaskId = $id;
+        $this->taskDescription = Task::where('id', $id)->first()->description;
+    }
+
+    /**
+     * Save the task description
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function saveTaskDescription($id) {
+        // Get the task
+        $task = Task::where('id', $id)->first();
+
+        // Update the task
+        $task->update([
+            'description' => $this->taskDescription
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $task->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> updated',
+            'environment' => config('app.env')
+        ]);
+
+        // Reset the variables
+        $this->isEditingTaskDescription = false;
+        $this->taskDescription = null;
+    }
+
+    /**
+     * Copy a task
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function copyTask($id) {
+        // Get the task
+        $task = Task::where('id', $id)->first();
+
+        // Check if there is a task with the same index, if so, increment the index of all tasks
+        $taskWithSameIndex = Task::where('card_id', $task->card_id)->where('status', $task->status)->where('task_index', $task->task_index)->first();
+
+        if ($taskWithSameIndex) {
+            $tasksInColumn = Task::where('card_id', $task->card_id)->where('status', $task->status)->orderBy('task_index')->get();
+            foreach ($tasksInColumn as $taskInColumn) {
+                if ($taskInColumn->task_index >= $task->task_index) {
+                    $taskInColumn->increment('task_index');
+                }
+            }
+        }
+
+        // Create the task
+        $newTask = Task::create([
+            'card_id' => $task->card_id,
+            'description' => $task->description,
+            'status' => $task->status,
+            'task_index' => $task->task_index,
+            'sprint_id' => $task->sprint_id
+        ]);
+
+        // Get all assignees of the task, and create assignees for the new task
+        $assignees = TaskAssignee::where('task_id', $task->id)->get();
+        foreach ($assignees as $assignee) {
+            TaskAssignee::create([
+                'task_id' => $newTask->id,
+                'user_id' => $assignee->user_id
+            ]);
+        }
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $newTask->id,
+            'action' => 'create',
+            'data' => json_encode($newTask),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $newTask->name . '</b> copied from task <b>' . $task->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Convert a task to a card
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function convertToCard($id) {
+        // Get the task
+        $task = Task::where('id', $id)->first();
+
+        // Check if there is a card with the same index, if so, increment the index of all cards in the column
+        $cardWithSameIndex = Card::where('sprint_id', $task->sprint_id)->where('status', $task->status)->where('card_index', $task->task_index)->first();
+
+        if ($cardWithSameIndex) {
+            $cardsInColumn = Card::where('sprint_id', $task->sprint_id)->where('status', $task->status)->orderBy('card_index')->get();
+            foreach ($cardsInColumn as $cardInColumn) {
+                if ($cardInColumn->card_index >= $task->task_index) {
+                    $cardInColumn->increment('card_index');
+                }
+            }
+        }
+
+        // Create the card
+        $card = Card::create([
+            'sprint_id' => $task->sprint_id,
+            'name' => $task->description,
+            'description' => null,
+            'status' => $task->status,
+            'card_index' => $task->task_index
+        ]);
+
+        // Get all assignees of the task, and create assignees for the new card
+        $assignees = TaskAssignee::where('task_id', $task->id)->get();
+        foreach ($assignees as $assignee) {
+            CardAssignee::create([
+                'card_id' => $card->id,
+                'user_id' => $assignee->user_id
+            ]);
+        }
+
+        // Delete the task
+        $task->delete();
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $card->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $card->id,
+            'task_id' => $task->id,
+            'action' => 'create',
+            'data' => json_encode($card),
+            'table' => 'cards',
+            'description' => 'Card <b>' . $card->name . '</b> created from task <b>' . $task->name . '</b>',
+            'environment' => config('app.env')
+        ]);
+    }
+
+    /**
+     * Move a task
+     * 
+     * @param int $id
+     * @param string $column
+     * 
+     * @return void
+     */
+    public function moveTask($id, $column) {
+        // Get the task
+        $task = Task::where('id', $id)->first();
+
+        // Get all tasks in the new column and sort them by their index
+        $tasksInColumn = Task::where('card_id', $task->card_id)->where('status', $column)->orderBy('task_index')->get();
+
+        // Check if there is a task with the same index, if so, increment the index of all tasks in the new column
+        $taskWithSameIndex = $tasksInColumn->where('task_index', $task->task_index)->first();
+
+        if ($taskWithSameIndex) {
+            foreach ($tasksInColumn as $taskInColumn) {
+                if ($taskInColumn->task_index >= $task->task_index) {
+                    $taskInColumn->increment('task_index');
+                }
+            }
+        }
+
+        // Update the task with the new column and index
+        $task->update([
+            'status' => $column,
+            'task_index' => 0
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Update the sprint
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->sprint->project_id,
+            'sprint_id' => $this->sprint->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $task->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> moved to ' . $column,
             'environment' => config('app.env')
         ]);
     }

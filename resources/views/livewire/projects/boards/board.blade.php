@@ -186,181 +186,6 @@
                     </div>
                 </div>
             @endforeach
-
-            {{-- <div class="oldCode">
-                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-700 rounded-md p-2"
-                    x-data
-                    x-init="Sortable.create($refs.todoTasks, {
-                        group: 'cards',
-                        animation: 150,
-                        onEnd: function (evt) {
-                            @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
-                        }
-                    })">
-                    <div class="flex justify-between">
-                        <div class="w-full flex gap-x-2">
-                            <p class="flex items-center justify-center rounded-md text-sm font-bold bg-rose-500 text-white px-1.5 py-0.5">{{ $sprint->cards->where('status', 'todo')->count() }}</p>
-                            <p class="text-rose-500 font-bold">{{ __('sprints.todo') }}</p>
-                        </div>
-                        <div>
-                            <i wire:click="createCard('todo')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2" x-ref="todoTasks" data-column="todo">
-                        @foreach ($sprint->cards->where('status', 'todo') as $card)
-                            <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $card->id }}" wire:key="card-{{ $card->id }}">
-                                <div class="w-full flex justify-between">
-                                    <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
-                                    <div class="relative" x-data="{ menuState: false, moveToState: false }">
-                                        <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
-                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                <li>
-                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
-                                                </li>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                <li>
-                                                    <p wire:click="assignCardToMe('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.assign_me') }}</p>
-                                                </li>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                <li>
-                                                    <p @click="menuState = false; moveToState = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.move_to') }}</p>
-                                                </li>
-                                                <li>
-                                                    <p wire:click="copyCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.make_copy') }}</p>
-                                                </li>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                <li>
-                                                    <p wire:click="deleteCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.delete') }}</p>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-700 rounded-md p-2"
-                    x-data
-                    x-init="Sortable.create($refs.doingTasks, {
-                        group: 'cards',
-                        animation: 150,
-                        onEnd: function (evt) {
-                            @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
-                        }
-                    })">
-                    <div class="flex justify-between">
-                        <div class="w-full flex gap-x-2">
-                            <p class="flex items-center justify-center rounded-md text-sm font-bold bg-amber-500 text-white px-1.5 py-0.5">{{ $sprint->cards->where('status', 'doing')->count() }}</p>
-                            <p class="text-amber-500 font-bold">{{ __('sprints.doing') }}</p>
-                        </div>
-                        <div>
-                            <i wire:click="createCard('doing')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2" x-ref="doingTasks" data-column="doing">
-                        @foreach ($sprint->cards->where('status', 'doing') as $card)
-                            <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $card->id }}" wire:key="card-{{ $card->id }}">
-                                <div class="w-full flex justify-between">
-                                    <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
-                                    <div class="relative" x-data="{ menuState: false, moveToState: false }">
-                                        <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
-                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                <li>
-                                                    <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
-                                                </li>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                <li>
-                                                    <p wire:click="assignCardToMe('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.assign_me') }}</p>
-                                                </li>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                <li>
-                                                    <p @click="menuState = false; moveToState = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.move_to') }}</p>
-                                                </li>
-                                                <li>
-                                                    <p wire:click="copyCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.make_copy') }}</p>
-                                                </li>
-                                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                <li>
-                                                    <p wire:click="deleteCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.delete') }}</p>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-700 rounded-md p-2"
-                    x-data
-                    x-init="Sortable.create($refs.testingTasks, {
-                        group: 'cards',
-                        animation: 150,
-                        onEnd: function (evt) {
-                            @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
-                        }
-                    })">
-                    <div class="flex justify-between">
-                        <div class="w-full flex gap-x-2">
-                            <p class="flex items-center justify-center rounded-md text-sm font-bold bg-yellow-300 text-white px-1.5 py-0.5">{{ $sprint->cards->where('status', 'testing')->count() }}</p>
-                            <p class="text-yellow-400 font-bold">{{ __('sprints.testing') }}</p>
-                        </div>
-                        <div>
-                            <i wire:click="createCard('testing')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2" x-ref="testingTasks" data-column="testing">
-
-                    </div>
-                </div>
-                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-700 rounded-md p-2"
-                    x-data
-                    x-init="Sortable.create($refs.doneTasks, {
-                        group: 'cards',
-                        animation: 150,
-                        onEnd: function (evt) {
-                            @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
-                        }
-                    })">
-                    <div class="flex justify-between">
-                        <div class="w-full flex gap-x-2">
-                            <p class="flex items-center justify-center rounded-md text-sm font-bold bg-green-600 text-white px-1.5 py-0.5">{{ $sprint->cards->where('status', 'done')->count() }}</p>
-                            <p class="text-green-500 font-bold">{{ __('sprints.done') }}</p>
-                        </div>
-                        <div>
-                            <i wire:click="createCard('done')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2" x-ref="doneTasks" data-column="done">
-
-                    </div>
-                </div>
-                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-700 rounded-md p-2"
-                    x-data
-                    x-init="Sortable.create($refs.releasedTasks, {
-                        group: 'cards',
-                        animation: 150,
-                        onEnd: function (evt) {
-                            @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
-                        }
-                    })">
-                    <div class="flex justify-between">
-                        <div class="w-full flex gap-x-2">
-                            <p class="flex items-center justify-center rounded-md text-sm font-bold bg-sky-500 text-white px-1.5 py-0.5">{{ $sprint->cards->where('status', 'released')->count() }}</p>
-                            <p class="text-sky-500 font-bold">{{ __('sprints.released') }}</p>
-                        </div>
-                        <div>
-                            <i wire:click="createCard('released')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2" x-ref="releasedTasks" data-column="released">
-
-                    </div>
-                </div>
-            </div> --}}
         </div>
     </div>
 
@@ -385,8 +210,29 @@
         </x-slot>
     </x-dialog-modal>
 
+    {{-- Delete Task Modal --}}
+    <x-dialog-modal wire:model="deleteTaskModal">
+        <x-slot name="title">
+            {{ __('sprints.dialog_delete_title_task') }}
+        </x-slot>
+
+        <x-slot name="content">
+            {{ __('sprints.dialog_delete_text_task') }}
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-danger-button class="ml-2" wire:click="destroyTask" wire:loading.attr="disabled">
+                {{ __('sprints.delete') }}
+            </x-danger-button>
+
+            <x-secondary-button wire:click="$toggle('deleteTaskModal')" wire:loading.attr="disabled">
+                {{ __('sprints.cancel') }}
+            </x-secondary-button>            
+        </x-slot>
+    </x-dialog-modal>
+
     {{-- Selected Card Modal --}}
-    <div class="fixed inset-0 overflow-y-auto w-full h-full z-50 bg-gray-900/60 transform transition-all"
+    <div class="fixed inset-0 overflow-y-auto w-full h-full z-20 bg-gray-900/60 transform transition-all"
         x-data="{ show: @entangle('selectedCardModal') }"
         x-on:close.stop="show = false"
         x-on:keydown.escape.window="show = false"
@@ -602,7 +448,10 @@
                                 class="border-0 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
                             </textarea>
                         @else
-                            <p wire:click="startEditingCardDescription('{{ $selectedCard->id }}')" class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
+                            <div class="flex gap-x-2" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                <p class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
+                                <i x-show="hover" wire:click="startEditingCardDescription('{{ $selectedCard->id }}')" class="fi fi-bs-pencil text-sm hover:text-sky-500 dark:text-white cursor-pointer"></i>
+                            </div>
                         @endif
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-800">
                         <div class="h-full grid grid-cols-3 gap-x-4">
@@ -676,20 +525,28 @@
                                                                     <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'todo')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.todo') }}</p>
                                                                 </li>
                                                                 <li>
-                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'doing')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.todo') }}</p>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'doing')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.doing') }}</p>
                                                                 </li>
                                                                 <li>
-                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'done')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.todo') }}</p>
+                                                                    <p @click="open = false" wire:click="moveTask('{{ $task->id }}', 'done')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.done') }}</p>
                                                                 </li>
                                                             </ul>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                                </div>
+                                                @if ($isEditingTaskDescription && (int) $editingTaskId === $task->id)
+                                                    <textarea wire:model="taskDescription" wire:blur="saveTaskDescription('{{ $task->id }}')" 
+                                                        class="w-full border-0 mt-1 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
+                                                        {{ $task->description }}
+                                                    </textarea>
+                                                @else
+                                                    <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-ss-pencil text-xs hover:text-sky-500 dark:text-white"></i>
+                                                    </div>
+                                                @endif
                                                 <div class="flex justify-end">
-                                                    <div @click="menuState = !menuState" class="relative flex gapx--2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
+                                                    <div @click="menuState = !menuState" class="relative flex gapx--2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
                                                         <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
@@ -754,7 +611,7 @@
                                         <p class="flex items-center justify-center rounded-md text-sm font-bold bg-sky-500 text-white px-1.5 py-0.5">
                                             {{ $selectedCard->tasks->where('status', 'doing')->count() }}
                                         </p>
-                                        <h1 class="text-sm font-bold dark:text-white">{{ __('sprints.tasks') }} - {{ __('backlog.todo') }}</h1>
+                                        <h1 class="text-sm font-bold dark:text-white">{{ __('sprints.tasks') }} - {{ __('backlog.doing') }}</h1>
                                     </div>
                                     <div wire:click="createTask('doing')" class="flex items-center mr-1 cursor-pointer">
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
@@ -887,7 +744,7 @@
                                         <p class="flex items-center justify-center rounded-md text-sm font-bold bg-green-500 text-white px-1.5 py-0.5">
                                             {{ $selectedCard->tasks->where('status', 'done')->count() }}
                                         </p>
-                                        <h1 class="text-sm font-bold dark:text-white">{{ __('sprints.tasks') }} - {{ __('backlog.todo') }}</h1>
+                                        <h1 class="text-sm font-bold dark:text-white">{{ __('sprints.tasks') }} - {{ __('backlog.done') }}</h1>
                                     </div>
                                     <div wire:click="createTask('done')" class="flex items-center mr-1 cursor-pointer">
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>

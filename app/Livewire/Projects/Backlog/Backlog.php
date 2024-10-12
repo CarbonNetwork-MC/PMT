@@ -58,9 +58,11 @@ class Backlog extends Component
 
     public $isEditingCardName = false;
     public $isEditingCardDescription = false;
+    public $isEditingTaskDescription = false;
     public $isCreatingTask = false;
-    public $createdTaskColumn;
     public $openTaskboard = false;
+    public $createdTaskColumn;
+    public $editingTaskId;
 
     public $name, $description, $taskDescription;
     public $selectedProject, $backlogOrSprint = 'backlog', $backlogOrSprintName, $sprintColumn = 'todo', $position = 'top';
@@ -1222,6 +1224,57 @@ class Backlog extends Component
             'description' => 'Deleted task <b>' . $task->description . '</b>',
             'environment' => config('app.env')
         ]);
+    }
+
+    /**
+     * Set the isEditingTaskName variable to true
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function startEditingTaskDescription($id) {
+        $this->isEditingTaskDescription = true;
+        $this->editingTaskId = $id;
+        $this->taskDescription = BacklogTask::where('id', $id)->first()->description;
+    }
+
+    /**
+     * Save the task description
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function saveTaskDescription($id) {
+        // Get the task
+        $task = BacklogTask::where('id', $id)->first();
+
+        // Update the task
+        $task->update([
+            'description' => $this->taskDescription
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $task->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> updated',
+            'environment' => config('app.env')
+        ]);
+
+        // Reset the variables
+        $this->isEditingTaskDescription = false;
+        $this->taskDescription = null;
     }
 
     /**
