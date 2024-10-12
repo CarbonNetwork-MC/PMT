@@ -60,10 +60,10 @@
     {{-- Approval Status Icons: fi-sr-checkbox, fi-sr-pen-square, fi-sr-square-x --}}
 
     <div class="w-full flex flex-grow gap-x-4 mt-4">
-        <div class="w-full grid grid-cols-5 gap-x-4 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
+        <div class="w-full grid grid-cols-5 gap-x-4 bg-white dark:bg-gray-700 shadow-md rounded-lg p-4">
 
             @foreach ($columns as $column)
-                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-700 rounded-md p-2"
+                <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md p-2"
                     x-data
                     x-init="Sortable.create($refs.{{ $column->internal_name }}Tasks, {
                         group: 'cards',
