@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectMember;
+use App\Models\ProjectMemberRole;
 use Livewire\Component;
 
 class Members extends Component
@@ -37,7 +38,7 @@ class Members extends Component
             ->where('user_id', auth()->user()->uuid)->first()->role->id;
 
         $this->users = User::all();
-        $this->roles = Role::all();
+        $this->roles = ProjectMemberRole::all();
 
         $this->projectMembers = ProjectMember::where('project_id', $this->project->uuid)->with('user')->with('role')->get();
     }
