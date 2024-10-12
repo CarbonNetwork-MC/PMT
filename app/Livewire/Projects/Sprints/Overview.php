@@ -30,19 +30,24 @@ class Overview extends Component
     /**
      * Create a new sprint
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return void
      */
     public function createSprint() {
+        // Validate the date
         $data = $this->validate([
             'name' => ['required', 'string'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
         ]);
 
-        $data['id'] = Str::uuid()->toString();
+        $data['uuid'] = Str::uuid()->toString();
         $data['project_id'] = $this->uuid;
 
+        // Create the sprint
         $sprint = Sprint::create($data);
+
+        // Update the sprints
+        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -55,9 +60,8 @@ class Overview extends Component
             'description' => 'Created sprint <b>' . $data['name'] . '</b>',
         ]);
 
+        // Close the modal
         $this->createSprintModal = false;
-
-        return redirect()->route('projects.sprints.render', $this->uuid);
     }
 
     /**
@@ -81,9 +85,10 @@ class Overview extends Component
     /**
      * Update the sprint
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return void
      */
     public function updateSprint() {
+        // Validate the data
         $data = $this->validate([
             'name' => ['required', 'string'],
             'start_date' => ['required', 'date'],
@@ -91,9 +96,14 @@ class Overview extends Component
             'status' => ['required', 'string'],
         ]);
 
+        // Find the sprint
         $sprint = Sprint::find($this->id);
 
+        // Update the sprint
         $sprint = $sprint->update($data);
+
+        // Update the sprints
+        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -106,9 +116,8 @@ class Overview extends Component
             'description' => 'Updated sprint <b>' . $data['name'] . '</b>',
         ]);
 
+        // Close the modal
         $this->editSprintModal = false;
-
-        return redirect()->route('projects.sprints.render', $this->uuid);
     }
 
     /**
@@ -126,12 +135,17 @@ class Overview extends Component
     /**
      * Destroy the sprint
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return void
      */
     public function destroySprint() {
+        // Find the sprint
         $sprint = Sprint::find($this->id);
 
+        // Delete the sprint
         $sprint->delete();
+
+        // Update the sprints
+        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -144,9 +158,8 @@ class Overview extends Component
             'description' => 'Deleted sprint <b>' . $sprint->name . '</b>',
         ]);
 
+        // Close the modal
         $this->deleteSprintModal = false;
-
-        return redirect()->route('projects.sprints.render', $this->uuid);
     }
 
     /**
@@ -154,14 +167,19 @@ class Overview extends Component
      * 
      * @param string $id
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return void
      */
     public function startSprint($id) {
+        // Find the sprint
         $sprint = Sprint::find($id);
 
+        // Update the sprint
         $sprint->update([
             'status' => 'active',
         ]);
+
+        // Update the sprints
+        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -173,8 +191,6 @@ class Overview extends Component
             'table' => 'sprints',
             'description' => 'Started sprint <b>' . $sprint->name . '</b>',
         ]);
-
-        return redirect()->route('projects.sprints.render', $this->uuid);
     }
 
     /**
@@ -182,14 +198,19 @@ class Overview extends Component
      * 
      * @param string $id
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return void
      */
     public function completeSprint($id) {
+        // Find the sprint
         $sprint = Sprint::find($id);
 
+        // Update the sprint
         $sprint->update([
             'status' => 'done',
         ]);
+
+        // Update the sprints
+        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -201,8 +222,6 @@ class Overview extends Component
             'table' => 'sprints',
             'description' => 'Completed sprint <b>' . $sprint->name . '</b>',
         ]);
-
-        return redirect()->route('projects.sprints.render', $this->uuid);
     }
 
     /**

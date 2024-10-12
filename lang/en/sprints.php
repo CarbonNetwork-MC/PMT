@@ -79,4 +79,7 @@ return [
     'dialog_delete_title_task' => 'Delete Task',
     'dialog_delete_text_task' => 'Are you sure you want to delete this task?',
 
+    'dialog_delete_title_sprint' => 'Delete Sprint',
+    'dialog_delete_text_sprint' => 'Are you sure you want to delete this sprint?',
+
 ];
