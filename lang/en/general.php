@@ -14,5 +14,8 @@ return [
     'backlogs' => 'Backlogs',
     'members' => 'Members',
     'owning' => 'Owning',
+    'activity' => 'Activity',
+
+    'cards' => 'Cards',
 
 ];
