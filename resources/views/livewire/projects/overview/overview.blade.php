@@ -65,7 +65,7 @@
         @endforeach
     </div>
 
-    <hr class="{{ $numberOfActiveSprints <= 3 ? 'mt-80' : '' }} {{ $numberOfActiveSprints > 3 && $numberOfActiveSprints <= 6 ? 'mt-45' : '' }} mb-4 border-gray-200 dark:border-gray-700">
+    <hr class="{{ $numberOfActiveSprints <= 3 ? 'mt-80' : '' }} {{ $numberOfActiveSprints > 3 && $numberOfActiveSprints <= 6 ? 'mt-45' : '' }} mb-4 border-gray-300 dark:border-gray-700">
 
     <div class="w-full">
         <div class="flex justify-center">
