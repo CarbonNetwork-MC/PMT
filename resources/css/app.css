@@ -26,3 +26,15 @@
 .border-yellow-500 {
     border-color: #eab308;
 }
+
+.bg-rose-500 {
+    background-color: #f43f5e;
+}
+
+.bg-amber-500 {
+    background-color: #f59e0b;
+}
+
+.text-amber-500 {
+    color: #f59e0b;
+}
