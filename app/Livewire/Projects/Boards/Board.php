@@ -159,8 +159,10 @@ class Board extends Component
         $this->projectMembers = ProjectMember::where('project_id', $this->projectId)->with('user')->get();
 
         // Set backlogOrSprintName to the selected sprint and set the selectedProject
-        $this->backlogOrSprintName = $this->sprint->uuid;
-        $this->selectedProject = $this->projectId;
+        if ($sprint) {
+            $this->backlogOrSprintName = $this->sprint->uuid;
+            $this->selectedProject = $this->projectId;
+        }
     }
 
     public function updated($key, $value) {
