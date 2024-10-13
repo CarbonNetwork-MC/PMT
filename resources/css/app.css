@@ -14,27 +14,3 @@
 .-left-41 {
     left: -10.25rem;
 }
-
-.hover\:bg-green-500:hover {
-    background-color: #047857;
-}
-
-.border-amber-400 {
-    border-color: #fbbf24;
-}
-
-.border-yellow-500 {
-    border-color: #eab308;
-}
-
-.bg-rose-500 {
-    background-color: #f43f5e;
-}
-
-.bg-amber-500 {
-    background-color: #f59e0b;
-}
-
-.text-amber-500 {
-    color: #f59e0b;
-}
