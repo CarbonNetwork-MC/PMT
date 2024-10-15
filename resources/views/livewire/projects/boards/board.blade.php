@@ -53,8 +53,6 @@
             @endif
         </div>
 
-        {{-- Approval Status Icons: fi-sr-checkbox, fi-sr-pen-square, fi-sr-square-x --}}
-
         <div class="w-full flex flex-grow gap-x-4 mt-4">
             <div class="w-full grid grid-cols-5 gap-x-4 bg-white dark:bg-gray-700 shadow-md rounded-lg p-4">
 
@@ -80,8 +78,8 @@
                         {{-- Cards --}}
                         <div class="mt-2" x-ref="{{ $column->internal_name }}Tasks" data-column="{{ $column->internal_name }}">
                             @if ($isCreatingCard && $createdCardColumn === $column->internal_name)
-                                <div class="bg-white p-2 mb-2">
-                                    <input type="text" wire:model="name" wire:keydown.enter="storeCard('{{ $column->internal_name }}')" wire:blur="cancelCardCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_card') }}">
+                                <div class="bg-white dark:bg-gray-700 p-2 mb-2">
+                                    <input type="text" wire:model="name" wire:keydown.enter="storeCard('{{ $column->internal_name }}')" wire:blur="cancelCardCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-100 dark:placeholder:text-white" placeholder="{{ __('backlog.create_card') }}">
                                 </div>
                             @endif
 
@@ -91,7 +89,7 @@
                                         <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
                                         <div class="relative" x-data="{ menuState: false, moveToState: false }">
                                             <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                            <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 -left-40 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
+                                            <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 -left-20 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
                                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                     <li>
                                                         <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
