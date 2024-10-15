@@ -175,6 +175,140 @@
                                         </div>
                                     </div>
                                     <p wire:click="selectCard('{{ $card->id }}')" class="text-sm text-gray-700 dark:text-gray-200 hover:text-sky-500 cursor-pointer">{{ $card->name }}</p>
+                                    <div class="flex gap-x-2">
+                                        @if ($card->approval_status !== 'None')
+                                            <div wire:click="selectCard('{{ $card->id }}')">
+                                                @switch($card->approval_status)
+                                                    @case('Approved')
+                                                        <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                            <i class="fi fi-sr-checkbox text-emerald-400" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                        </div>
+
+                                                        <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.approval_status_approved') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                        @break
+                                                    @case('Needs work')
+                                                        <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                            <i class="fi fi-sr-pen-square text-amber-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                        </div>
+
+                                                        <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.approval_status_needs_work') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                        @break
+                                                    @case('Rejected')
+                                                        <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                            <i class="fi fi-sr-square-x text-rose-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                        </div> 
+
+                                                        <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.approval_status_rejected') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                        @break
+                                                @endswitch
+                                            </div>
+                                        @endif
+                                        @if ($card->tasks->count() > 0)
+                                            <div wire:click="selectCard('{{ $card->id }}')" class="cursor-pointer">
+                                                @if ($card->tasks->where('status', 'done')->count() === $card->tasks->count())
+                                                    <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-emerald-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                        <i class="fi fi-ss-list-check text-white"></i>
+                                                        <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                    </div>
+
+                                                    <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                        {{ __('sprints.tooltip-tasks-done') }}
+                                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                                    </div>
+                                                @elseif ($card->tasks->where('status', 'doing')->count() > 0)
+                                                    <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-blue-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                        <i class="fi fi-ss-list-check text-white"></i>
+                                                        <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                    </div>
+
+                                                    <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                        {{ __('sprints.tooltip-tasks-doing') }}
+                                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                                    </div>
+                                                @else
+                                                    <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-purple-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                        <i class="fi fi-ss-list-check text-white"></i>
+                                                        <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                    </div>
+
+                                                    <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                        {{ __('sprints.tooltip-tasks-none') }}
+                                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                        @if ($card->description !== null)
+                                            <div wire:click="selectCard('{{ $card->id }}')" data-tooltip-target="description-{{ $card->id }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                <i class="fi fi-rr-poll-h dark:text-white"></i>
+                                            </div>
+
+                                            <div id="description-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                {{ __('sprints.tooltip-description') }}
+                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="flex justify-end">
+                                        <div class="flex items-center gap-x-2 bg-gray-200 dark:bg-gray-700 px-2.5 py-1.5 rounded-full" x-data="{ userMenuState: false }">
+                                            <div @click="userMenuState = !userMenuState" class="relative">
+                                                <i class="fi fi-sr-users text-sm flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
+                                                <div x-show="userMenuState" @click.away="userMenuState = false" class="absolute z-10 mt-2 w-60 top-6 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+                                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                        <li class="flex justify-center items-center">
+                                                            <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        @forelse ($projectMembers as $member)
+                                                            <li class="px-1">
+                                                                @if ($card->assignees->contains('user_id', $member->user_id))
+                                                                    <div wire:click="removeCardAssignee('{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                        <div class="flex items-center gap-x-2">
+                                                                            <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                            <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                        </div>
+                                                                        <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div wire:click="addCardAssignee('{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                        <div class="flex items-center gap-x-2">
+                                                                            <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                            <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                            </li>
+                                                        @empty
+                                                            <li>
+                                                                <p class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.no_users_found') }}</p>
+                                                            </li>
+                                                        @endforelse
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            @if ($card->assignees->count() > 0)
+                                                <div class="flex items-center gap-x-2">
+                                                    @foreach ($card->assignees->slice(0, 3) as $assignee)
+                                                        <img class="w-5 h-5 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                                                    @endforeach
+                                                    @if ($card->assignees->count() > 3)
+                                                        <p class="text-xs text-gray-700 dark:text-white">+{{ $card->assignees->count() - 3 }}</p>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <p class="text-xs text-gray-700 dark:text-white">{{ __('sprints.no_users_assigned') }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -448,9 +582,14 @@
                             </textarea>
                         @else
                             <div class="flex gap-x-2" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
-                                <p class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
+                                @if ($selectedCard->description !== null)
+                                    <p class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
+                                @else
+                                    <p class="text-sm text-gray-400 dark:text-gray-200 cursor-pointer">{{ __('sprints.no_description') }}</p>
+                                @endif
                                 <i x-show="hover" wire:click="startEditingCardDescription('{{ $selectedCard->id }}')" class="fi fi-bs-pencil text-sm hover:text-sky-500 dark:text-white cursor-pointer"></i>
                             </div>
+                            
                         @endif
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-800">
                         <div class="h-full grid grid-cols-3 gap-x-4">
@@ -674,11 +813,19 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                                </div>
+                                                @if ($isEditingTaskDescription && (int) $editingTaskId === $task->id)
+                                                    <textarea wire:model="taskDescription" wire:blur="saveTaskDescription('{{ $task->id }}')" 
+                                                        class="w-full border-0 mt-1 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
+                                                        {{ $task->description }}
+                                                    </textarea>
+                                                @else
+                                                    <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-ss-pencil text-xs hover:text-sky-500 dark:text-white"></i>
+                                                    </div>
+                                                @endif
                                                 <div class="flex justify-end">
-                                                    <div @click="menuState = !menuState" class="relative flex gapx--2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
+                                                    <div @click="menuState = !menuState" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
                                                         <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
@@ -807,11 +954,19 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                                </div>
+                                                @if ($isEditingTaskDescription && (int) $editingTaskId === $task->id)
+                                                    <textarea wire:model="taskDescription" wire:blur="saveTaskDescription('{{ $task->id }}')" 
+                                                        class="w-full border-0 mt-1 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
+                                                        {{ $task->description }}
+                                                    </textarea>
+                                                @else
+                                                    <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-ss-pencil text-xs hover:text-sky-500 dark:text-white"></i>
+                                                    </div>
+                                                @endif
                                                 <div class="flex justify-end">
-                                                    <div @click="menuState = !menuState" class="relative flex gapx--2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
+                                                    <div @click="menuState = !menuState" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
                                                         <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">

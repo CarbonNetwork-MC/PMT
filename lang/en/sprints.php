@@ -57,6 +57,19 @@ return [
     'done' => 'Done',
     'released' => 'Released',
 
+    'no_description' => 'This card has no description.',
+
+    // Tooltips
+    'approval_status_approved' => 'This card is approved',
+    'approval_status_needs_work' => 'This card needs work',
+    'approval_status_rejected' => 'This card is rejected',
+
+    'tooltip-description' => 'This card has a description',
+
+    'tooltip-tasks-done' => 'All tasks are done',
+    'tooltip-tasks-doing' => 'Tasks are in progress',
+    'tooltip-tasks-none' => 'No task is in progress',
+
     // Buttons
     'create' => 'Create',
     'update' => 'Update',
