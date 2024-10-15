@@ -194,6 +194,8 @@ class Board extends Component
      * @return void
      */
     public function createCard($column) {
+        $this->name = null;
+
         $this->isCreatingCard = true;
         $this->createdCardColumn = $column;
     }
