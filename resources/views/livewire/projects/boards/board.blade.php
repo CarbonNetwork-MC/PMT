@@ -79,7 +79,7 @@
                         <div class="mt-2" x-ref="{{ $column->internal_name }}Tasks" data-column="{{ $column->internal_name }}">
                             @if ($isCreatingCard && $createdCardColumn === $column->internal_name)
                                 <div class="bg-white dark:bg-gray-700 p-2 mb-2">
-                                    <input type="text" wire:model="name" wire:keydown.enter="storeCard('{{ $column->internal_name }}')" wire:blur="cancelCardCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-100 dark:placeholder:text-white" placeholder="{{ __('backlog.create_card') }}">
+                                    <input type="text" wire:model="name" wire:keydown.enter="storeCard('{{ $column->internal_name }}')" wire:blur="cancelCardCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-100 dark:placeholder:text-white" placeholder="{{ __('backlog.create_card') }}" autofocus>
                                 </div>
                             @endif
 
