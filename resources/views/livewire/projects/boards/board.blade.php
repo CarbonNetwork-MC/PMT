@@ -86,9 +86,9 @@
                                 <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $card->id }}" wire:key="card-{{ $card->id }}">
                                     <div class="w-full flex justify-between">
                                         <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
-                                        <div class="relative" x-data="{ menuState: false, moveToState: false }">
+                                        <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down'; dropdownDirectionX = (window.innerWidth - $el.getBoundingClientRect().right < 200) ? 'left' : 'right'" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down', dropdownDirectionX: 'right' }">
                                             <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                            <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 -left-20 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
+                                            <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-32' : '-left-20')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
                                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                     <li>
                                                         <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
@@ -110,7 +110,7 @@
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <div x-show="moveToState" @click.outside="moveToState = false" class="absolute z-10 top-8 -left-40 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                            <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-52' : '-left-40')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
                                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                     <li>
                                                         <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to') }} - #{{ $card->id }}</p>
