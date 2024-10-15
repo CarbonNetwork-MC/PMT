@@ -22,6 +22,7 @@ class Sprint extends Model
         'start_date',
         'end_date',
         'status',
+        'is_archived',
     ];
 
     public function project(): BelongsTo
