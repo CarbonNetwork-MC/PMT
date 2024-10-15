@@ -875,6 +875,8 @@ class Board extends Component
      * @return void
      */
     public function createTask($column) {
+        $this->taskDescription = null;
+
         $this->isCreatingTask = true;
         $this->createdTaskColumn = $column;
     }
@@ -944,7 +946,7 @@ class Board extends Component
         // Reset the variables
         $this->isCreatingTask = false;
         $this->createdTaskColumn = null;
-        $this->description = null;
+        $this->taskDescription = null;
     }
 
     /**
