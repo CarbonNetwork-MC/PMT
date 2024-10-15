@@ -576,21 +576,22 @@ class Board extends Component
      * Remove an assignee from a card
      * 
      * @param int $id
+     * @param string $memberId
      * 
      * @return void
      */
-    public function removeCardAssignee($id) {
+    public function removeCardAssignee($id, $memberId) {
         // Get the clicked project member
-        $projectMember = ProjectMember::where('id', $id)->first();
+        $projectMember = ProjectMember::where('id', $memberId)->first();
         
         // Get the assignee
-        $assignee = CardAssignee::where('card_id', $this->selectedCard->id)->where('user_id', $projectMember->user_id)->first();
+        $assignee = CardAssignee::where('card_id', $id)->where('user_id', $projectMember->user_id)->first();
 
         // Delete the assignee
         $assignee->delete();
 
         // Update the selected Card
-        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+        $this->selectedCard = Card::where('id', $id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
         $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
@@ -600,7 +601,7 @@ class Board extends Component
             'user_id' => auth()->user()->uuid,
             'project_id' => $this->sprint->project_id,
             'sprint_id' => $this->sprint->uuid,
-            'card_id' => $this->selectedCard->id,
+            'card_id' => $id,
             'action' => 'delete',
             'data' => json_encode($projectMember),
             'table' => 'card_assignees',
