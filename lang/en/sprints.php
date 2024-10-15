@@ -10,7 +10,12 @@ return [
     |
     */
 
-    'sprint' => 'Sprint', 
+    'sprint' => 'Sprint',
+    'sprints' => 'Sprints',
+    'archived_sprints' => 'Archived Sprints',
+
+    'show_sprints' => 'Show Sprints',
+    'show_archived_sprints' => 'Show Archived Sprints',
 
     // Title
     'create_sprint' => 'Create Sprint',
@@ -61,6 +66,10 @@ return [
 
     'archive' => 'Archive',
     'unarchive' => 'Unarchive',
+
+    'search' => 'Search',
+
+    'no_archived_sprints_found' => 'No archived sprints found for this project.',
 
     // Tooltips
     'approval_status_approved' => 'This card is approved',
