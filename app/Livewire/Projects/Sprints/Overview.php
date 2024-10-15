@@ -24,7 +24,7 @@ class Overview extends Component
     public function mount($uuid)
     {
         $this->uuid = $uuid;
-        $this->sprints = Sprint::where('project_id', $uuid)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = Sprint::where('project_id', $uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
     }
 
     /**
@@ -47,7 +47,7 @@ class Overview extends Component
         $sprint = Sprint::create($data);
 
         // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -103,7 +103,7 @@ class Overview extends Component
         $sprint = $sprint->update($data);
 
         // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -145,7 +145,7 @@ class Overview extends Component
         $sprint->delete();
 
         // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -179,7 +179,7 @@ class Overview extends Component
         ]);
 
         // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -210,7 +210,7 @@ class Overview extends Component
         ]);
 
         // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
 
         // Create a new Log
         Log::create([
@@ -221,6 +221,37 @@ class Overview extends Component
             'data' => json_encode($sprint),
             'table' => 'sprints',
             'description' => 'Completed sprint <b>' . $sprint->name . '</b>',
+        ]);
+    }
+
+    /**
+     * Archive the sprint
+     * 
+     * @param string $id
+     * 
+     * @return void
+     */
+    public function archiveSprint($id) {
+        // Find the sprint
+        $sprint = Sprint::find($id);
+
+        // Update the sprint
+        $sprint->update([
+            'is_archived' => 1,
+        ]);
+
+        // Update the sprints
+        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
+
+        // Create a new Log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'sprint_id' => $id,
+            'action' => 'update',
+            'data' => json_encode($sprint),
+            'table' => 'sprints',
+            'description' => 'Archived sprint <b>' . $sprint->name . '</b>',
         ]);
     }
 

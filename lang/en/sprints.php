@@ -59,6 +59,9 @@ return [
 
     'no_description' => 'This card has no description.',
 
+    'archive' => 'Archive',
+    'unarchive' => 'Unarchive',
+
     // Tooltips
     'approval_status_approved' => 'This card is approved',
     'approval_status_needs_work' => 'This card needs work',
