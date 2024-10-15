@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->enum('status', ['active', 'inactive', 'done'])->default('inactive');
             $table->boolean('is_archived')->default(false);
+            $table->timestamp('archived_at')->nullable();
             $table->timestamps();
         });
     }
