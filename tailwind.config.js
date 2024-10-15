@@ -4,13 +4,23 @@ import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    mode: 'jit',
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './vendor/laravel/jetstream/**/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './app/Livewire/**/*.php',
+        './resources/views/livewire/**/*.blade.php',
     ],
-
+    safelist: [
+        'bg-rose-500',
+        'text-amber-500',
+        'bg-amber-500',
+        'border-yellow-500',
+        'border-amber-400',
+        'hover:bg-green-500'
+    ],
     theme: {
         extend: {
             fontFamily: {

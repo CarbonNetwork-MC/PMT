@@ -8,6 +8,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -68,9 +69,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function role(): HasMany
+    public function role(): HasOne
     {
-        return $this->hasMany(Role::class, 'id', 'role_id');
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 
     public function projects(): HasMany
@@ -85,7 +86,7 @@ class User extends Authenticatable
 
     public function backlogTasks(): HasMany
     {
-        return $this->hasMany(BacklogCardTask::class, 'assignee_id');
+        return $this->hasMany(BacklogTask::class, 'assignee_id');
     }
 
     public function cards(): HasMany

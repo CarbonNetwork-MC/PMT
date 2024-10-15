@@ -29,6 +29,6 @@ class ProjectMember extends Model
 
     public function role(): HasOne
     {
-        return $this->hasOne(Role::class, 'id', 'role_id');
+        return $this->hasOne(ProjectMemberRole::class, 'id', 'role_id');
     }
 }

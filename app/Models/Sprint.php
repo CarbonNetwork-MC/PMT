@@ -22,6 +22,7 @@ class Sprint extends Model
         'start_date',
         'end_date',
         'status',
+        'is_archived',
     ];
 
     public function project(): BelongsTo
@@ -31,6 +32,6 @@ class Sprint extends Model
 
     public function cards(): HasMany
     {
-        return $this->hasMany(Card::class, 'sprint_id', 'id');
+        return $this->hasMany(Card::class, 'sprint_id', 'uuid');
     }
 }

@@ -43,10 +43,6 @@ class Backlog extends Component
         'Needs work' => 'yellow'
     ];
 
-    // public $card;
-    // public $bucket;
-    // public $selectedBucketId;
-    // public $selectedCardId;
     public $selectedId;
 
     public $createBucketModal = false;
@@ -62,9 +58,11 @@ class Backlog extends Component
 
     public $isEditingCardName = false;
     public $isEditingCardDescription = false;
+    public $isEditingTaskDescription = false;
     public $isCreatingTask = false;
-    public $createdTaskColumn;
     public $openTaskboard = false;
+    public $createdTaskColumn;
+    public $editingTaskId;
 
     public $name, $description, $taskDescription;
     public $selectedProject, $backlogOrSprint = 'backlog', $backlogOrSprintName, $sprintColumn = 'todo', $position = 'top';
@@ -83,7 +81,7 @@ class Backlog extends Component
             }
         }
 
-        // Set the selected project and the 
+        // Set the selected project
         $this->selectedProject = $this->uuid;
 
         // Get all buckets and cards for the selected project.
@@ -452,7 +450,7 @@ class Backlog extends Component
     }
 
     /**
-     * Open the Edit Card Modal and set the ID
+     * Open the Delete Card Modal and set the ID
      * 
      * @param int $id
      * 
@@ -608,6 +606,12 @@ class Backlog extends Component
      * @return void
      */
     public function assignCardToMe() {
+        // Check if the user is already assigned to the card
+        $assignee = BacklogCardAssignee::where('user_id', auth()->user()->uuid)->where('backlog_card_id', $this->selectedCard->id)->first();
+
+        if ($assignee) return;
+
+        // Create the assignee
         $assignee = BacklogCardAssignee::create([
             'backlog_card_id' => $this->selectedCard->id,
             'user_id' => auth()->user()->uuid
@@ -954,7 +958,6 @@ class Backlog extends Component
 
         // If there is a task with the same index, increment the task_index of all tasks in the new column
         if ($taskWithSameIndex) {
-            // dd($taskWithSameIndex);
             foreach ($tasksInColumn as $otherTask) {
                 $otherTask->increment('task_index');
             }
@@ -991,6 +994,11 @@ class Backlog extends Component
     public function assignTaskToMe() {
         // Get the current user
         $user = auth()->user();
+
+        // Check if the user is already assigned to the task
+        $assignee = BacklogTaskAssignee::where('user_id', $user->uuid)->where('backlog_task_id', $this->selectedTask->id)->first();
+
+        if ($assignee) return;
 
         // Create a new assignee
         $assignee = BacklogTaskAssignee::create([
@@ -1216,6 +1224,57 @@ class Backlog extends Component
             'description' => 'Deleted task <b>' . $task->description . '</b>',
             'environment' => config('app.env')
         ]);
+    }
+
+    /**
+     * Set the isEditingTaskName variable to true
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function startEditingTaskDescription($id) {
+        $this->isEditingTaskDescription = true;
+        $this->editingTaskId = $id;
+        $this->taskDescription = BacklogTask::where('id', $id)->first()->description;
+    }
+
+    /**
+     * Save the task description
+     * 
+     * @param int $id
+     * 
+     * @return void
+     */
+    public function saveTaskDescription($id) {
+        // Get the task
+        $task = BacklogTask::where('id', $id)->first();
+
+        // Update the task
+        $task->update([
+            'description' => $this->taskDescription
+        ]);
+
+        // Update the selected Card
+        $this->selectedCard = BacklogCard::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+
+        // Create a new log
+        Log::create([
+            'user_id' => auth()->user()->uuid,
+            'project_id' => $this->uuid,
+            'backlog_id' => $this->selectedBucket->uuid,
+            'card_id' => $task->card_id,
+            'task_id' => $task->id,
+            'action' => 'update',
+            'data' => json_encode($task),
+            'table' => 'tasks',
+            'description' => 'Task <b>' . $task->name . '</b> updated',
+            'environment' => config('app.env')
+        ]);
+
+        // Reset the variables
+        $this->isEditingTaskDescription = false;
+        $this->taskDescription = null;
     }
 
     /**
