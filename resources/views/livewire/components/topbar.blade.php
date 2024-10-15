@@ -34,10 +34,10 @@
                 <i class="fi fi-ss-settings text-xl"></i>    
                 <p class="pl-2">Settings</p>
             </a>
-            <form method="POST" action="{{ route('logout') }}" class="block px-2 py-2 text-sm flex items-center text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-300">
+            <form method="POST" action="{{ route('logout') }}" class="block px-2 py-2 text-sm flex items-center gap-x-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-300">
                 @csrf
                 <i class="fi fi-sr-sign-out-alt text-xl"></i>
-                <button type="submit" class="pl-2">Logout</button>
+                <button class="w-full text-left" type="submit" class="pl-2">Logout</button>
             </form>
         </div>
     </div>

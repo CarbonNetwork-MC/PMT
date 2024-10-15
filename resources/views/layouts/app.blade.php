@@ -52,7 +52,7 @@
             </div>
 
             <!-- Main Content -->
-            <div class="w-full h-screen">
+            <div class="w-full h-screen overflow-y-auto">
 
                 <!-- Topbar -->
                 @livewire('components.topbar')

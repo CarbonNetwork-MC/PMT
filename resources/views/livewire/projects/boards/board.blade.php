@@ -52,11 +52,11 @@
             @endif
         </div>
 
-        <div class="w-full flex flex-grow gap-x-4 mt-4 overflow-y-auto">
+        <div class="w-full flex flex-grow gap-x-4 mt-4">
             <div class="w-full grid grid-cols-5 gap-x-4 bg-white dark:bg-gray-700 shadow-md rounded-lg p-4">
 
                 @foreach ($columns as $column)
-                    <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md p-2 overflow-y-auto"
+                    <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md p-2"
                         x-data
                         x-init="Sortable.create($refs.{{ $column->internal_name }}Tasks, {
                             group: 'cards',
@@ -615,8 +615,8 @@
                                 </div>
                                 <div class="p-2" x-ref="todoTasks" data-column="todo">
                                     @if ($isCreatingTask && $createdTaskColumn === 'todo')
-                                        <div class="bg-white p-2 mb-2">
-                                            <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('todo')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_task') }}">
+                                        <div class="bg-white dark:bg-gray-700 p-2 mb-2">
+                                            <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('todo')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-white" placeholder="{{ __('backlog.create_task') }}">
                                         </div>
                                     @endif
 
@@ -756,8 +756,8 @@
                                 </div>
                                 <div class="p-2" x-ref="doingTasks" data-column="doing">
                                     @if ($isCreatingTask && $createdTaskColumn === 'doing')
-                                        <div class="bg-white p-2 mb-2">
-                                            <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('doing')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_task') }}">
+                                        <div class="bg-white dark:bg-gray-700 p-2 mb-2">
+                                            <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('doing')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-white" placeholder="{{ __('backlog.create_task') }}">
                                         </div>
                                     @endif
 
@@ -897,8 +897,8 @@
                                 </div>
                                 <div class="p-2" x-ref="doneTasks" data-column="done">
                                     @if ($isCreatingTask && $createdTaskColumn === 'done')
-                                        <div class="bg-white p-2 mb-2">
-                                            <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('done')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400" placeholder="{{ __('backlog.create_task') }}">
+                                        <div class="bg-white dark:bg-gray-700 p-2 mb-2">
+                                            <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('done')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-white" placeholder="{{ __('backlog.create_task') }}">
                                         </div>
                                     @endif
 
