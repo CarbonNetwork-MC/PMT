@@ -11,7 +11,7 @@ class Dashboard extends Component
 
     public function mount()
     {
-        $this->user = User::find(auth()->id())->with('role')->first();
+        $this->user = auth()->user();
 
         // Clear the selected project session
         if (session()->has('selected_project')) {

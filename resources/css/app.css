@@ -6,10 +6,20 @@
     display: none;
 }
 
+.fi {
+    display: flex;
+    align-items: center;
+}
+
 .-left-41 {
     left: -10.25rem;
 }
 
-.hover\:bg-green-500:hover {
-    background-color: #047857;
+.login-background {
+    width: 100vw !important;
+    height: 100vh !important;
+    background-image: url('/resources/images/login-background.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position-y: -10em;
 }

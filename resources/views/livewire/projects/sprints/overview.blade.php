@@ -99,14 +99,21 @@
                                 <div class="group">
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.complete') }}</p>
                                     <button wire:click="completeSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
-                                        <i class="fi fi-br-stop-circle group-hover:text-blue-500 dark:text-white     "></i>
+                                        <i class="fi fi-br-stop-circle group-hover:text-blue-500 dark:text-white"></i>
                                     </button>
                                 </div>
                             @elseif ($sprint->status == 'inactive')
                                 <div class="group">
                                     <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.start') }}</p>
                                     <button wire:click="startSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
-                                        <i class="fi fi-br-play-circle group-hover:text-blue-500 dark:text-white     "></i>
+                                        <i class="fi fi-br-play-circle group-hover:text-blue-500 dark:text-white"></i>
+                                    </button>
+                                </div>
+                            @elseif ($sprint->status == 'done')
+                                <div class="group">
+                                    <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.archive') }}</p>
+                                    <button wire:click="archiveSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
+                                        <i class="fi fi-sr-folder-download group-hover:text-blue-500 dark:text-white"></i>
                                     </button>
                                 </div>
                             @endif
@@ -115,7 +122,7 @@
                             <div class="group">
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.edit') }}</p>
                                 <button wire:click="editSprintSetId('{{ $sprint->uuid }}')" class="w-full flex justify-center">
-                                    <i class="fi fi-br-edit group-hover:text-blue-500 dark:text-white     "></i>
+                                    <i class="fi fi-br-edit group-hover:text-blue-500 dark:text-white"></i>
                                 </button>
                             </div>
                         </div>
@@ -123,7 +130,7 @@
                             <div class="group">
                                 <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-red-500">{{ __('sprints.delete') }}</p>
                                 <button wire:click="deleteSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
-                                    <i class="fi fi-br-trash group-hover:text-red-500 dark:text-white     "></i>
+                                    <i class="fi fi-br-trash group-hover:text-red-500 dark:text-white"></i>
                                 </button>
                             </div>
                         </div>

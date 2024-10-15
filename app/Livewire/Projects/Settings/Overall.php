@@ -9,7 +9,9 @@ use App\Models\Project;
 class Overall extends Component
 {
     public $uuid;
-    public $project; 
+    public $project;
+
+    public $user;
     
     public $name, $description;
 
@@ -17,6 +19,8 @@ class Overall extends Component
     {
         $this->uuid = $uuid;
         $this->project = Project::where('uuid', $uuid)->first();
+
+        $this->user = auth()->user();
 
         $this->name = $this->project->name;
         $this->description = $this->project->description;

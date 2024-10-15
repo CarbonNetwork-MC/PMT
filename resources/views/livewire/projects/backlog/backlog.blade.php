@@ -33,7 +33,7 @@
             </div> 
         </div>
     </div>
-    <div class="w-flex flex flex-grow gap-x-4 mt-4">
+    <div class="w-full flex flex-grow gap-x-4 mt-4">
         <div class="w-1/4 3xl:w-1/5 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
             <div class="flex justify-between">
                 <p class="text-lg font-bold dark:text-white">{{ __('backlog.buckets') }}</p>
@@ -365,7 +365,7 @@
                                 <button @click="open = !open" class="text-{{ $selectedCardColor }}-500 border border-{{ $selectedCardColor }}-400 hover:bg-{{ $selectedCardColor }}-500 focus:ring-2 focus:ring-{{ $selectedCardColor }}-500 hover:text-black font-medium rounded-lg text-sm px-5 py-1 text-center">
                                     {{ $selectedCard->approval_status }}
                                 </button>
-                                <div x-show="open" @click.away="open = false" class="z-10 absolute mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg divide-y divide-gray-100">
+                                <div x-show="open" @click.away="open = false" class="z-10 absolute top-16 mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg divide-y divide-gray-100">
                                     <div class="py-2 flex justify-center text-sm text-gray-300">
                                         Change Approval Status
                                     </div>
@@ -523,7 +523,10 @@
                                 class="border-0 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
                             </textarea>
                         @else
-                            <p wire:click="startEditingCardDescription" class="text-sm text-gray-700 dark:text-gray-200">{{ $selectedCard->description }}</p>
+                            <div class="flex gap-x-2" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                <p class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
+                                <i x-show="hover" wire:click="startEditingCardDescription('{{ $selectedCard->id }}')" class="fi fi-bs-pencil text-sm hover:text-sky-500 dark:text-white cursor-pointer"></i>
+                            </div>
                         @endif
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-800">
                         <div class="h-full grid grid-cols-3 gap-x-4">
@@ -606,9 +609,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                                </div>
+                                                @if ($isEditingTaskDescription && (int) $editingTaskId === $task->id)
+                                                    <textarea wire:model="taskDescription" wire:blur="saveTaskDescription('{{ $task->id }}')" 
+                                                        class="w-full border-0 mt-1 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
+                                                        {{ $task->description }}
+                                                    </textarea>
+                                                @else
+                                                    <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-ss-pencil text-xs hover:text-sky-500 dark:text-white"></i>
+                                                    </div>
+                                                @endif
                                                 <div class="flex justify-end">
                                                     <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
                                                         <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
@@ -739,9 +750,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                                </div>
+                                                @if ($isEditingTaskDescription && (int) $editingTaskId === $task->id)
+                                                    <textarea wire:model="taskDescription" wire:blur="saveTaskDescription('{{ $task->id }}')" 
+                                                        class="w-full border-0 mt-1 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
+                                                        {{ $task->description }}h
+                                                    </textarea>
+                                                @else
+                                                    <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-bs-pencil text-sm hover:text-sky-500 dark:text-white"></i>
+                                                    </div>
+                                                @endif
                                                 <div class="flex justify-end">
                                                     <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
                                                         <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
@@ -872,9 +891,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p class="text-sm dark:text-white">{{ $task->description }}</p>
-                                                </div>
+                                                @if ($isEditingTaskDescription && (int) $editingTaskId === $task->id)
+                                                    <textarea wire:model="taskDescription" wire:blur="saveTaskDescription('{{ $task->id }}')" 
+                                                        class="w-full border-0 mt-1 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
+                                                        {{ $task->description }}
+                                                    </textarea>
+                                                @else
+                                                    <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-ss-pencil text-xs hover:text-sky-500 dark:text-white"></i>
+                                                    </div>
+                                                @endif
                                                 <div class="flex justify-end">
                                                     <div @click="open = !open" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 px-2.5 py-1.5 rounded-full" x-data="{ open: false }">
                                                         <i wire:click="selectTask('{{ $task->id }}')" class="fi fi-sr-users flex items-center text-gray-700 dark:text-white cursor-pointer"></i>

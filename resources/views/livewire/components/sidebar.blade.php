@@ -87,6 +87,35 @@
                          </x-sidebar-nav-link>
                     </li>
                 @endif
+                @if ($user->role->id !== 1)
+                    <div class="my-24">
+                        <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+                    </div>
+                    @if ($user->role && json_decode($user->role->permissions)->view_other_projects)
+                        <li class="side-item-container">
+                            <x-sidebar-nav-link href="" :active="request()->routeIs('')">
+                                <i class="fi fi-sr-archive"></i>
+                                <span class="navItem ms-3">Manage Projects</span>
+                            </x-sidebar-nav-link>
+                        </li>
+                    @endif
+                    @if ($user->role && json_decode($user->role->permissions)->manage_users)
+                        <li class="side-item-container">
+                            <x-sidebar-nav-link href="" :active="request()->routeIs('')">
+                                <i class="fi fi-sr-admin-alt"></i>
+                                <span class="navItem ms-3">Manage Users</span>
+                            </x-sidebar-nav-link>
+                        </li>
+                    @endif
+                    @if ($user->role && json_decode($user->role->permissions)->manage_staff)
+                        <li class="side-item-container">
+                            <x-sidebar-nav-link href="" :active="request()->routeIs('')">
+                                <i class="fi fi-sr-user-crown"></i>
+                                <span class="navItem ms-3">Manage Staff</span>
+                            </x-sidebar-nav-link>
+                        </li>
+                    @endif
+                @endif
             </ul>
         </div>
     </div>
