@@ -119,14 +119,13 @@ class Board extends Component
 
         if ($sprint) {
             $this->sprint = $sprint;
-            
             $this->projectId = $this->sprint->project_id;
         } else {
-            $project = Project::find($this->uuid);
+            $project = Project::where('uuid', $this->uuid);
             if ($project) {
                 // Set the selected project
                 session()->put('selected_project', $this->uuid);
-
+                
                 $this->projectId = $this->uuid;
             }
         }
@@ -662,8 +661,6 @@ class Board extends Component
     public function moveCard($id) {
         // Get the card
         $card = Card::where('id', $id)->first();
-
-        // dd($this->selectedProject, $this->backlogOrSprint, $this->backlogOrSprintName, $this->sprintColumn, $this->position);
 
         if ($this->backlogOrSprint === 'backlog') {
             // Get the backlog

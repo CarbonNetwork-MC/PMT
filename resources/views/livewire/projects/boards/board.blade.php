@@ -82,7 +82,7 @@
                                 </div>
                             @endif
 
-                            @foreach ($sprint->cards->where('status', $column->internal_name) as $card)
+                            @foreach ($this->sprint->cards->where('status', $column->internal_name) as $card)
                                 <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $card->id }}" wire:key="card-{{ $card->id }}">
                                     <div class="w-full flex justify-between">
                                         <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
@@ -445,7 +445,7 @@
                                                     @forelse ($projectMembers as $member)
                                                         <li class="px-1">
                                                             @if ($selectedCard->assignees->contains('user_id', $member->user_id))
-                                                                <div wire:click="removeCardAssignee('{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                <div wire:click="removeCardAssignee('{{ $selectedCard->id }}', '{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
                                                                     <div class="flex items-center gap-x-2">
                                                                         <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                         <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -453,7 +453,7 @@
                                                                     <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                 </div>
                                                             @else
-                                                                <div wire:click="addCardAssignee('{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                <div wire:click="addCardAssignee('{{ $selectedCard->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                     <div class="flex items-center gap-x-2">
                                                                         <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                         <p class="dark:text-white">{{ $member->user->name }}</p>
