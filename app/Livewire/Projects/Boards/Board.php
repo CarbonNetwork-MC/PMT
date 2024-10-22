@@ -359,12 +359,11 @@ class Board extends Component
      * @return void 
      */
     public function updateCardOrder($cardId, $newColumn, $newIndex) {
-        // dd($cardId, $newColumn, $newIndex);
         // Get the card
         $card = Card::where('id', $cardId)->first();
 
         // Get all cards in the new column and sort them by their index
-        $cardsInColumn = Card::where('sprint_id', $this->sprint->id)->where('status', $newColumn)->orderBy('card_index')->get();
+        $cardsInColumn = Card::where('sprint_id', $this->sprint->uuid)->where('status', $newColumn)->orderBy('card_index')->get();
 
         // Check if there is a card with the same index, if so, increment the index of all cards in the new column
         $cardWithSameIndex = $cardsInColumn->where('card_index', $newIndex)->first();
