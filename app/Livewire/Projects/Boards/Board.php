@@ -115,7 +115,7 @@ class Board extends Component
         $this->uuid = $uuid;
 
         // Check if the uuid is a sprint or a project
-        $sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         if ($sprint) {
             $this->sprint = $sprint;
