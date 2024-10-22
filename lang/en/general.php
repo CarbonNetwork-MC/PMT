@@ -18,4 +18,6 @@ return [
 
     'cards' => 'Cards',
 
+    'load_more' => 'Load more',
+
 ];
