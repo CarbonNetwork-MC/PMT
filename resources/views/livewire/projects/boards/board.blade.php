@@ -67,7 +67,7 @@
                         })">
                         <div class="flex justify-between">
                             <div class="w-full flex gap-x-2">
-                                <p class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column->bg_color }} text-white px-1.5 py-0.5">{{ $sprint->cards->where('status', $column->internal_name)->count() }}</p>
+                                <p class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column->bg_color }} text-white px-1.5 py-0.5">{{ $this->sprint->cards->where('status', $column->internal_name)->count() }}</p>
                                 <p class="text-{{ $column->text_color }} font-bold">{{ __($column->name) }}</p>
                             </div>
                             <div>
