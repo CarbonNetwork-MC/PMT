@@ -48,6 +48,7 @@ class Overall extends Component
             'project_id' => $this->uuid,
             'action' => 'update',
             'data' => json_encode(['name' => $this->name, 'description' => $this->description]),
+            'table' => 'projects',
             'description' => 'Updated project settings',
         ]);
 

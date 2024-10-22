@@ -169,6 +169,7 @@ class Members extends Component
                 'project_id' => $this->project->uuid,
                 'action' => 'delete',
                 'data' => json_encode(['member' => $member]),
+                'table' => 'project_members',
                 'description' => 'Removed <b>' . $member->user->name . '</b> from the project',
             ]);
 

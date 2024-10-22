@@ -22,7 +22,7 @@ class Card extends Model
 
     public function sprint(): BelongsTo
     {
-        return $this->belongsTo(Sprint::class);
+        return $this->belongsTo(Sprint::class, 'sprint_id', 'uuid');
     }
 
     public function assignees(): HasMany

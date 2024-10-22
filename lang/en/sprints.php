@@ -10,7 +10,12 @@ return [
     |
     */
 
-    'sprint' => 'Sprint', 
+    'sprint' => 'Sprint',
+    'sprints' => 'Sprints',
+    'archived_sprints' => 'Archived Sprints',
+
+    'show_sprints' => 'Show Sprints',
+    'show_archived_sprints' => 'Show Archived Sprints',
 
     // Title
     'create_sprint' => 'Create Sprint',
@@ -62,6 +67,10 @@ return [
     'archive' => 'Archive',
     'unarchive' => 'Unarchive',
 
+    'search' => 'Search',
+
+    'no_archived_sprints_found' => 'No archived sprints found for this project.',
+
     // Tooltips
     'approval_status_approved' => 'This card is approved',
     'approval_status_needs_work' => 'This card needs work',
@@ -97,5 +106,8 @@ return [
 
     'dialog_delete_title_sprint' => 'Delete Sprint',
     'dialog_delete_text_sprint' => 'Are you sure you want to delete this sprint?',
+
+    'dialog_title_move_cards' => 'Complete Sprint',
+    'dialog_text_move_cards' => 'You are about to complete sprint <b>:name</b>. <br>There are <b>:count</b> incomplete cards. Choose a destination for these cards.',
 
 ];

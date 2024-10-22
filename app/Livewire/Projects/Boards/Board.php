@@ -65,6 +65,21 @@ class Board extends Component
         ]
     ];
 
+    public $completedSprintColumns = [
+        'done' => [
+            'internal_name' => 'done',
+            'name' => 'Done',
+            'text_color' => 'green-500',
+            'bg_color' => 'green-500'
+        ], 
+        'released' => [
+            'internal_name' => 'released',
+            'name' => 'Released',
+            'text_color' => 'sky-500',
+            'bg_color' => 'sky-500'
+        ]
+    ];
+
     public $approvalStatuses = [
         'None' => [
             'color_dark' => 'gray-500',
@@ -115,24 +130,28 @@ class Board extends Component
         $this->uuid = $uuid;
 
         // Check if the uuid is a sprint or a project
-        $sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         if ($sprint) {
             $this->sprint = $sprint;
-            
             $this->projectId = $this->sprint->project_id;
         } else {
-            $project = Project::find($this->uuid);
+            $project = Project::where('uuid', $this->uuid);
             if ($project) {
                 // Set the selected project
                 session()->put('selected_project', $this->uuid);
-
+                
                 $this->projectId = $this->uuid;
             }
         }
 
         // Set the columns as objects
         $this->columns = collect($this->columns)->map(function ($column) {
+            return (object) $column;
+        });
+
+        // Set the completed sprint columns as objects
+        $this->completedSprintColumns = collect($this->completedSprintColumns)->map(function ($column) {
             return (object) $column;
         });
 
@@ -242,7 +261,7 @@ class Board extends Component
         }
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -307,7 +326,7 @@ class Board extends Component
         $card->delete();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -344,7 +363,7 @@ class Board extends Component
         $card = Card::where('id', $cardId)->first();
 
         // Get all cards in the new column and sort them by their index
-        $cardsInColumn = Card::where('sprint_id', $this->sprint->id)->where('status', $newColumn)->orderBy('card_index')->get();
+        $cardsInColumn = Card::where('sprint_id', $this->sprint->uuid)->where('status', $newColumn)->orderBy('card_index')->get();
 
         // Check if there is a card with the same index, if so, increment the index of all cards in the new column
         $cardWithSameIndex = $cardsInColumn->where('card_index', $newIndex)->first();
@@ -365,7 +384,7 @@ class Board extends Component
         ]);
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -418,7 +437,7 @@ class Board extends Component
         ]);
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Update the selected Card
         $this->selectedCard = Card::where('id', $id)->with(['assignees.user', 'tasks.assignees.user'])->first();
@@ -474,7 +493,7 @@ class Board extends Component
         ]);
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Update the selected Card
         $this->selectedCard = Card::where('id', $this->editingCardId)->with(['assignees.user', 'tasks.assignees.user'])->first();
@@ -512,7 +531,7 @@ class Board extends Component
         ]);
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Update the selected Card
         $this->selectedCard = Card::where('id', $this->editingCardId)->with(['assignees.user', 'tasks.assignees.user'])->first();
@@ -539,16 +558,17 @@ class Board extends Component
      * Add an assignee to a card
      * 
      * @param int $id
+     * @param string $memberId
      * 
      * @return void
      */
-    public function addCardAssignee($id) {
+    public function addCardAssignee($id, $memberId) {
         // Get the clicked project member
-        $projectMember = ProjectMember::where('id', $id)->first();
+        $projectMember = ProjectMember::where('id', $memberId)->first();
 
         // Create the assignee
         CardAssignee::create([
-            'card_id' => $this->selectedCard->id,
+            'card_id' => $id,
             'user_id' => $projectMember->user_id
         ]);
 
@@ -556,7 +576,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -576,31 +596,32 @@ class Board extends Component
      * Remove an assignee from a card
      * 
      * @param int $id
+     * @param string $memberId
      * 
      * @return void
      */
-    public function removeCardAssignee($id) {
+    public function removeCardAssignee($id, $memberId) {
         // Get the clicked project member
-        $projectMember = ProjectMember::where('id', $id)->first();
+        $projectMember = ProjectMember::where('id', $memberId)->first();
         
         // Get the assignee
-        $assignee = CardAssignee::where('card_id', $this->selectedCard->id)->where('user_id', $projectMember->user_id)->first();
+        $assignee = CardAssignee::where('card_id', $id)->where('user_id', $projectMember->user_id)->first();
 
         // Delete the assignee
         $assignee->delete();
 
         // Update the selected Card
-        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+        $this->selectedCard = Card::where('id', $id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
             'user_id' => auth()->user()->uuid,
             'project_id' => $this->sprint->project_id,
             'sprint_id' => $this->sprint->uuid,
-            'card_id' => $this->selectedCard->id,
+            'card_id' => $id,
             'action' => 'delete',
             'data' => json_encode($projectMember),
             'table' => 'card_assignees',
@@ -635,7 +656,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -661,8 +682,6 @@ class Board extends Component
     public function moveCard($id) {
         // Get the card
         $card = Card::where('id', $id)->first();
-
-        // dd($this->selectedProject, $this->backlogOrSprint, $this->backlogOrSprintName, $this->sprintColumn, $this->position);
 
         if ($this->backlogOrSprint === 'backlog') {
             // Get the backlog
@@ -724,7 +743,7 @@ class Board extends Component
             $card->delete();
 
             // Update the sprint
-            $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+            $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
             // Create a new log
             Log::create([
@@ -768,7 +787,7 @@ class Board extends Component
             ]);
 
             // Update the sprint
-            $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+            $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
             // Create a new log
             Log::create([
@@ -851,7 +870,7 @@ class Board extends Component
         }
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -875,6 +894,8 @@ class Board extends Component
      * @return void
      */
     public function createTask($column) {
+        $this->taskDescription = null;
+
         $this->isCreatingTask = true;
         $this->createdTaskColumn = $column;
     }
@@ -925,7 +946,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -944,7 +965,7 @@ class Board extends Component
         // Reset the variables
         $this->isCreatingTask = false;
         $this->createdTaskColumn = null;
-        $this->description = null;
+        $this->taskDescription = null;
     }
 
     /**
@@ -984,7 +1005,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1044,7 +1065,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1087,7 +1108,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1126,7 +1147,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1165,7 +1186,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1215,7 +1236,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1281,7 +1302,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1346,7 +1367,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $card->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([
@@ -1399,7 +1420,7 @@ class Board extends Component
         $this->selectedCard = Card::where('id', $task->card_id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
-        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards.assignees.user', 'cards.tasks.assignees.user'])->first();
+        $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();
 
         // Create a new log
         Log::create([

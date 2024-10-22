@@ -52,6 +52,7 @@ class Admin extends Component
             'project_id' => $this->uuid,
             'action' => 'update',
             'data' => json_encode(['newOwner' => $this->newOwner, 'oldOwner' => auth()->user()->uuid]),
+            'table' => 'projects',
             'description' => 'Changed the owner of the project',
         ]);
 
