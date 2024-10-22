@@ -538,16 +538,17 @@ class Board extends Component
      * Add an assignee to a card
      * 
      * @param int $id
+     * @param string $memberId
      * 
      * @return void
      */
-    public function addCardAssignee($id) {
+    public function addCardAssignee($id, $memberId) {
         // Get the clicked project member
-        $projectMember = ProjectMember::where('id', $id)->first();
+        $projectMember = ProjectMember::where('id', $memberId)->first();
 
         // Create the assignee
         CardAssignee::create([
-            'card_id' => $this->selectedCard->id,
+            'card_id' => $id,
             'user_id' => $projectMember->user_id
         ]);
 
