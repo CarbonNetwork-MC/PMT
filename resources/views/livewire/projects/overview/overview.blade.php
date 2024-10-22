@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <div class="w-full grid grid-cols-3 mt-4">
+    <div class="w-full grid grid-cols-3 gap-x-2 mt-4">
         @foreach ($selectedProject->sprints->where('status', 'active') as $sprint)
             <div class="w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
                 <a href="{{ route('projects.board.render', ['uuid' => $sprint->uuid]) }}" class="text-lg font-bold hover:text-sky-500 dark:text-white">{{ $sprint->name }}</a>
