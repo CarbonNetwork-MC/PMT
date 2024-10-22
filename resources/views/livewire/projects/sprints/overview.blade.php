@@ -41,7 +41,7 @@
     @if ($showArchivedSprints === false)
         <div class="w-full grid grid-cols-2 gap-x-2 md:grid-cols-3 lg:grid-cols-4">
             @forelse ($sprints as $sprint)
-                <div class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
+                <div wire:key="sprint-{{ $sprint->uuid }}" class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
                     <div class="flex justify-between items-center">
                         <a href="{{ route('projects.board.render', ['uuid' => $sprint->uuid]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
                         <p class="text-xs font-semibold text-gray-500 dark:text-white">{{ $sprint->start_date }} - {{ $sprint->end_date }}</p>
@@ -107,7 +107,7 @@
                                 @if ($sprint->status == 'active')
                                     <div class="group">
                                         <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-white group-hover:text-blue-500">{{ __('sprints.complete') }}</p>
-                                        <button wire:click="completeSprint('{{ $sprint->uuid }}')" class="w-full flex justify-center">
+                                        <button wire:click="initiateSprintCompletion('{{ $sprint->uuid }}')" class="w-full flex justify-center">
                                             <i class="fi fi-br-stop-circle group-hover:text-blue-500 dark:text-white"></i>
                                         </button>
                                     </div>
@@ -173,7 +173,7 @@
                 </thead>
                 <tbody>
                     @forelse($archivedSprints as $sprint)
-                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                        <tr wire:key="archived-sprint-{{ $sprint->uuid }}" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <td class="p-2">{{ $sprint->name }}</td>
                             <td class="p-2">{{ $sprint->start_date }}</td>
                             <td class="p-2">{{ $sprint->end_date }}</td>
@@ -298,4 +298,46 @@
             </x-secondary-button>            
         </x-slot>
     </x-dialog-modal>
+
+    {{-- Move Cards Modal --}}
+    @if ($selectedSprint)
+        <x-dialog-modal wire:model="sprintNotDoneModal" >
+            <x-slot name="title">
+                {{ __('sprints.dialog_title_move_cards') }}
+            </x-slot>
+
+            <x-slot name="content" class="flex flex-col">
+                {!! __('sprints.dialog_text_move_cards', ['name' => $selectedSprint->name, 'count' => $numberOfIncompleteCards]) !!}
+                <br>
+                <div class="flex gap-x-2 mt-3">
+                    <select wire:model.live="sprintOrBacklog" class="w-full rounded-md shadow-sm form-select border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600">
+                        <option value="sprint">{{ __('sprints.sprint') }}</option>
+                        <option value="backlog">{{ __('sprints.backlog') }}</option>
+                    </select>
+
+                    <select wire:model="selectedSprintOrBacklog" class="w-full rounded-md shadow-sm form-select border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600">
+                        @if ($sprintOrBacklog == 'backlog')
+                            @foreach ($backlogs as $backlog)
+                                <option value="{{ $backlog->uuid }}">{{ $backlog->name }}</option>
+                            @endforeach
+                        @elseif ($sprintOrBacklog == 'sprint')
+                            @foreach ($activeSprints as $activeSprint)
+                                <option value="{{ $activeSprint->uuid }}">{{ $activeSprint->name }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+            </x-slot>
+
+            <x-slot name="footer">
+                <x-primary-button class="ml-2" wire:click="completeSprint('{{ $selectedSprint->uuid }}')" wire:loading.attr="disabled">
+                    {{ __('sprints.complete') }}
+                </x-primary-button>
+
+                <x-secondary-button wire:click="$toggle('sprintNotDoneModal')" wire:loading.attr="disabled">
+                    {{ __('sprints.cancel') }}
+                </x-secondary-button>
+            </x-slot>
+        </x-dialog-modal>
+    @endif
 </div>

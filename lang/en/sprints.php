@@ -107,4 +107,7 @@ return [
     'dialog_delete_title_sprint' => 'Delete Sprint',
     'dialog_delete_text_sprint' => 'Are you sure you want to delete this sprint?',
 
+    'dialog_title_move_cards' => 'Complete Sprint',
+    'dialog_text_move_cards' => 'You are about to complete sprint <b>:name</b>. <br>There are <b>:count</b> incomplete cards. Choose a destination for these cards.',
+
 ];
