@@ -65,6 +65,21 @@ class Board extends Component
         ]
     ];
 
+    public $completedSprintColumns = [
+        'done' => [
+            'internal_name' => 'done',
+            'name' => 'Done',
+            'text_color' => 'green-500',
+            'bg_color' => 'green-500'
+        ], 
+        'released' => [
+            'internal_name' => 'released',
+            'name' => 'Released',
+            'text_color' => 'sky-500',
+            'bg_color' => 'sky-500'
+        ]
+    ];
+
     public $approvalStatuses = [
         'None' => [
             'color_dark' => 'gray-500',
@@ -132,6 +147,11 @@ class Board extends Component
 
         // Set the columns as objects
         $this->columns = collect($this->columns)->map(function ($column) {
+            return (object) $column;
+        });
+
+        // Set the completed sprint columns as objects
+        $this->completedSprintColumns = collect($this->completedSprintColumns)->map(function ($column) {
             return (object) $column;
         });
 

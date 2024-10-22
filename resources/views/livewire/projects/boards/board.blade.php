@@ -3,318 +3,566 @@
         {{ __('sprints.sprint') }}
     </x-slot>
 
-    @if ($sprint !== null)
+    @if ($this->sprint !== null)
         <div class="w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
-            
-            @if ($sprint->status == 'active')
-                <div class="w-full flex justify-between text-xs">
-                    <div class="flex gap-x-4">
-                        <div>
-                            @if (round(\Carbon\Carbon::parse($sprint->end_date)->diffInDays(\Carbon\Carbon::now()) * -1) > 0)
+            <div class="w-full flex justify-between text-xs">
+                <div class="flex gap-x-4">
+                    @if ($this->sprint->status === 'done')
+                        <div class="flex flex-col items-center">
+                            <p class="font-bold uppercase dark:text-white">{{ __('sprints.done') }}</p>
+                            <i class="fi fi-ss-calendar-clock dark:text-white"></i>
+                        </div>
+                    @else
+                        @if (round(\Carbon\Carbon::parse($this->sprint->end_date)->diffInDays(\Carbon\Carbon::now()) * -1) > 0)
+                            <div>
                                 <p class="font-bold uppercase dark:text-white">{{ __('sprints.days_left') }}</p>
                                 <div class="flex gap-x-2">
                                     <i class="fi fi-ss-calendar-clock dark:text-white"></i>
-                                    <p class="dark:text-white">{{ round(\Carbon\Carbon::parse($sprint->end_date)->diffInDays(\Carbon\Carbon::now()) * -1) }}</p>
+                                    <p class="dark:text-white">{{ round(\Carbon\Carbon::parse($this->sprint->end_date)->diffInDays(\Carbon\Carbon::now()) * -1) }}</p>
                                 </div>
-                            @else
+                            </div>
+                        @else
+                            <div>
                                 <p class="font-bold uppercase text-rose-500">{{ __('sprints.days_overdue') }}</p>
                                 <div class="flex justify-center gap-x-2">
                                     <i class="fi fi-ss-calendar-clock text-rose-500"></i>
-                                    <p class="dark:text-white">{{ round(\Carbon\Carbon::parse($sprint->end_date)->diffInDays(\Carbon\Carbon::now())) }}</p>
+                                    <p class="dark:text-white">{{ round(\Carbon\Carbon::parse($this->sprint->end_date)->diffInDays(\Carbon\Carbon::now())) }}</p>
                                 </div>
-                            @endif
-                        </div>
-                        <div>
-                            <p class="font-bold uppercase dark:text-white">{{ __('sprints.dates') }}</p>
-                            <div class="flex gap-x-2">
-                                <i class="fi fi-ss-calendar dark:text-white"></i>
-                                <p class="dark:text-white">
-                                    {{ \Carbon\Carbon::parse($sprint->start_date)->format('d/m/Y') }}
-                                    -
-                                    {{ \Carbon\Carbon::parse($sprint->end_date)->format('d/m/Y') }}
-                                </p>
                             </div>
-                        </div>
-                        <div>
-                            <p class="font-bold uppercase dark:text-white">{{ __('sprints.cards_total') }}</p>
-                            <div class="flex gap-x-2">
-                                <i class="fi fi-ss-list-check dark:text-white"></i>
-                                <p class="dark:text-white">{{ $sprint->cards->count() }}</p>
-                            </div>
+                        @endif
+                    @endif
+                    <div>
+                        <p class="font-bold uppercase dark:text-white">{{ __('sprints.dates') }}</p>
+                        <div class="flex gap-x-2">
+                            <i class="fi fi-ss-calendar dark:text-white"></i>
+                            <p class="dark:text-white">
+                                {{ \Carbon\Carbon::parse($this->sprint->start_date)->format('d/m/Y') }}
+                                -
+                                {{ \Carbon\Carbon::parse($this->sprint->end_date)->format('d/m/Y') }}
+                            </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-x-2">
-                        <p class="text-gray-300">Potential place for card filtering</p>
+                    <div>
+                        <p class="font-bold uppercase dark:text-white">{{ __('sprints.cards_total') }}</p>
+                        <div class="flex gap-x-2">
+                            <i class="fi fi-ss-list-check dark:text-white"></i>
+                            <p class="dark:text-white">{{ $this->sprint->cards->count() }}</p>
+                        </div>
                     </div>
                 </div>
-            @else
-                            
-            @endif
+                <div class="flex items-center gap-x-2">
+                    <p class="text-gray-300">Potential place for card filtering</p>
+                </div>
+            </div>
         </div>
 
-        <div class="w-full flex flex-grow gap-x-4 mt-4">
-            <div class="w-full grid grid-cols-5 gap-x-4 bg-white dark:bg-gray-700 shadow-md rounded-lg p-4">
+        @if ($sprint->status === 'active')
+            <div class="w-full flex flex-grow gap-x-4 mt-4">
+                <div class="w-full grid grid-cols-5 gap-x-4 bg-white dark:bg-gray-700 shadow-md rounded-lg p-4">
+                    @foreach ($columns as $column)
+                        <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md p-2"
+                            x-data
+                            x-init="Sortable.create($refs.{{ $column->internal_name }}Tasks, {
+                                group: 'cards',
+                                animation: 150,
+                                onEnd: function (evt) {
+                                    @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
+                                }
+                            })">
+                            <div class="flex justify-between">
+                                <div class="w-full flex gap-x-2">
+                                    <p class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column->bg_color }} text-white px-1.5 py-0.5">{{ $this->sprint->cards->where('status', $column->internal_name)->count() }}</p>
+                                    <p class="text-{{ $column->text_color }} font-bold">{{ __($column->name) }}</p>
+                                </div>
+                                <div>
+                                    <i wire:click="createCard('{{ $column->internal_name }}')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
+                                </div>
+                            </div>
+                            {{-- Cards --}}
+                            <div class="mt-2" x-ref="{{ $column->internal_name }}Tasks" data-column="{{ $column->internal_name }}">
+                                @if ($isCreatingCard && $createdCardColumn === $column->internal_name)
+                                    <div class="bg-white dark:bg-gray-700 p-2 mb-2">
+                                        <input type="text" wire:model="name" wire:keydown.enter="storeCard('{{ $column->internal_name }}')" wire:blur="cancelCardCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-100 dark:placeholder:text-white" placeholder="{{ __('backlog.create_card') }}" autofocus>
+                                    </div>
+                                @endif
 
-                @foreach ($columns as $column)
-                    <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md p-2"
-                        x-data
-                        x-init="Sortable.create($refs.{{ $column->internal_name }}Tasks, {
-                            group: 'cards',
-                            animation: 150,
-                            onEnd: function (evt) {
-                                @this.call('updateCardOrder', evt.item.dataset.id, evt.to.dataset.column, evt.newIndex);
-                            }
-                        })">
-                        <div class="flex justify-between">
+                                @foreach ($this->sprint->cards->where('status', $column->internal_name) as $card)
+                                    <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $card->id }}" wire:key="card-{{ $card->id }}">
+                                        <div class="w-full flex justify-between">
+                                            <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
+                                            <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down'; dropdownDirectionX = (window.innerWidth - $el.getBoundingClientRect().right < 200) ? 'left' : 'right'" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down', dropdownDirectionX: 'right' }">
+                                                <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-32' : '-left-20')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
+                                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                        <li>
+                                                            <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li>
+                                                            <p wire:click="assignCardToMe('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.assign_me') }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li>
+                                                            <p @click="menuState = false; moveToState = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.move_to') }}</p>
+                                                        </li>
+                                                        <li>
+                                                            <p wire:click="copyCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.make_copy') }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li>
+                                                            <p wire:click="deleteCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.delete') }}</p>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-52' : '-left-40')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                        <li>
+                                                            <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to') }} - #{{ $card->id }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li class="p-2">
+                                                            <p class="dark:text-white">{{ __('sprints.select_destination') }}</p>
+                                                            {{-- Projects --}}
+                                                            <select wire:model.live="selectedProject" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                @forelse ($projects as $project)
+                                                                    <option value="{{ $project->uuid }}">{{ $project->name }}</option>
+                                                                @empty
+                                                                    <option value="">{{ __('sprints.select_project') }}</option>
+                                                                @endforelse
+                                                            </select>
+                                                            {{-- Backlog/Sprint --}}
+                                                            <select wire:model.live="backlogOrSprint" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                <option value="backlog">{{ __('sprints.backlog') }}</option>
+                                                                <option value="sprint">{{ __('sprints.sprint') }}</option>
+                                                            </select>
+                                                            {{-- Backlog / Sprint name --}}
+                                                            <select wire:model.live="backlogOrSprintName" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                @if ($backlogOrSprint === 'backlog')
+                                                                    @forelse ($backlogs as $backlog)
+                                                                        <option value="{{ $backlog->uuid }}">{{ $backlog->name }}</option>
+                                                                    @empty
+                                                                        <option value="">{{ __('sprints.select_backlog') }}</option>
+                                                                    @endforelse
+                                                                @elseif ($backlogOrSprint === 'sprint')
+                                                                    @forelse ($sprints as $sprint)
+                                                                        <option value="{{ $sprint->uuid }}">{{ $sprint->name }}</option>
+                                                                    @empty
+                                                                        <option value="">{{ __('sprints.select_sprint') }}</option>
+                                                                    @endforelse
+                                                                @endif
+                                                            </select>
+                                                            {{-- Sprint Column --}}
+                                                            @if ($backlogOrSprint === 'sprint') 
+                                                                <select wire:model="sprintColumn" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                    <option value="todo">{{ __('backlog.todo') }}</option>
+                                                                    <option value="doing">{{ __('backlog.doing') }}</option>
+                                                                    <option value="testing">{{ __('backlog.testing') }}</option>
+                                                                    <option value="done">{{ __('backlog.done') }}</option>
+                                                                    <option value="released">{{ __('backlog.released') }}</option>
+                                                                </select>
+                                                            @endif
+                                                            {{-- Position: Top/Bottom --}}
+                                                            <select wire:model="position" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                <option value="top">{{ __('backlog.top') }}</option>
+                                                                <option value="bottom">{{ __('backlog.bottom') }}</option>
+                                                            </select>
+                                                            {{-- Submit --}}
+                                                            <div class="flex justify-center mt-4">
+                                                                <button @click="moveTo = false" wire:click="moveCard('{{ $card->id }}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+                                                                    {{ __('backlog.move') }}
+                                                                </button>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p wire:click="selectCard('{{ $card->id }}')" class="text-sm text-gray-700 dark:text-gray-200 hover:text-sky-500 cursor-pointer">{{ $card->name }}</p>
+                                        <div class="flex gap-x-2">
+                                            @if ($card->approval_status !== 'None')
+                                                <div wire:click="selectCard('{{ $card->id }}')">
+                                                    @switch($card->approval_status)
+                                                        @case('Approved')
+                                                            <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                                <i class="fi fi-sr-checkbox text-emerald-400" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                            </div>
+
+                                                            <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                                {{ __('sprints.approval_status_approved') }}
+                                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                                            </div>
+                                                            @break
+                                                        @case('Needs work')
+                                                            <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                                <i class="fi fi-sr-pen-square text-amber-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                            </div>
+
+                                                            <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                                {{ __('sprints.approval_status_needs_work') }}
+                                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                                            </div>
+                                                            @break
+                                                        @case('Rejected')
+                                                            <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                                <i class="fi fi-sr-square-x text-rose-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                            </div> 
+
+                                                            <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                                {{ __('sprints.approval_status_rejected') }}
+                                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                                            </div>
+                                                            @break
+                                                    @endswitch
+                                                </div>
+                                            @endif
+                                            @if ($card->tasks->count() > 0)
+                                                <div wire:click="selectCard('{{ $card->id }}')" class="cursor-pointer">
+                                                    @if ($card->tasks->where('status', 'done')->count() === $card->tasks->count())
+                                                        <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-emerald-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                            <i class="fi fi-ss-list-check text-white"></i>
+                                                            <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                        </div>
+
+                                                        <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.tooltip-tasks-done') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                    @elseif ($card->tasks->where('status', 'doing')->count() > 0)
+                                                        <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-blue-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                            <i class="fi fi-ss-list-check text-white"></i>
+                                                            <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                        </div>
+
+                                                        <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.tooltip-tasks-doing') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                    @else
+                                                        <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-purple-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                            <i class="fi fi-ss-list-check text-white"></i>
+                                                            <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                        </div>
+
+                                                        <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.tooltip-tasks-none') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            @if ($card->description !== null)
+                                                <div wire:click="selectCard('{{ $card->id }}')" data-tooltip-target="description-{{ $card->id }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                    <i class="fi fi-rr-poll-h dark:text-white"></i>
+                                                </div>
+
+                                                <div id="description-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                    {{ __('sprints.tooltip-description') }}
+                                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="flex justify-end">
+                                            <div class="flex items-center gap-x-2 bg-gray-200 dark:bg-gray-800 px-2.5 py-1.5 rounded-full" x-data="{ userMenuState: false }">
+                                                <div @click="userMenuState = !userMenuState" class="relative">
+                                                    <i class="fi fi-sr-users text-sm flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
+                                                    <div x-show="userMenuState" @click.away="userMenuState = false" class="absolute z-10 mt-2 w-60 top-6 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+                                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                            <li class="flex justify-center items-center">
+                                                                <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
+                                                            </li>
+                                                            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                            @forelse ($projectMembers as $member)
+                                                                <li class="px-1">
+                                                                    @if ($card->assignees->contains('user_id', $member->user_id))
+                                                                        <div wire:click="removeCardAssignee('{{ $card->id }}', '{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                            <div class="flex items-center gap-x-2">
+                                                                                <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                                <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                            </div>
+                                                                            <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
+                                                                        </div>
+                                                                    @else
+                                                                        <div wire:click="addCardAssignee('{{ $card->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div class="flex items-center gap-x-2">
+                                                                                <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                                <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                </li>
+                                                            @empty
+                                                                <li>
+                                                                    <p class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.no_users_found') }}</p>
+                                                                </li>
+                                                            @endforelse
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                @if ($card->assignees->count() > 0)
+                                                    <div class="flex items-center gap-x-2">
+                                                        @foreach ($card->assignees->slice(0, 3) as $assignee)
+                                                            <img class="w-5 h-5 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                                                        @endforeach
+                                                        @if ($card->assignees->count() > 3)
+                                                            <p class="text-xs text-gray-700 dark:text-white">+{{ $card->assignees->count() - 3 }}</p>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <p class="text-xs text-gray-700 dark:text-white">{{ __('sprints.no_users_assigned') }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @else
+            <div class="w-full flex flex-grow gap-x-4 mt-4">
+                <div class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 bg-white dark:bg-gray-700 shadow-md rounded-lg p-4">
+                    @foreach ($completedSprintColumns as $column)
+                        <div class="w-full col-span-1 bg-gray-100 dark:bg-gray-800 rounded-md p-2">
                             <div class="w-full flex gap-x-2">
                                 <p class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column->bg_color }} text-white px-1.5 py-0.5">{{ $this->sprint->cards->where('status', $column->internal_name)->count() }}</p>
                                 <p class="text-{{ $column->text_color }} font-bold">{{ __($column->name) }}</p>
                             </div>
-                            <div>
-                                <i wire:click="createCard('{{ $column->internal_name }}')" class="fi fi-ss-plus dark:text-white cursor-pointer"></i>
-                            </div>
-                        </div>
-                        {{-- Cards --}}
-                        <div class="mt-2" x-ref="{{ $column->internal_name }}Tasks" data-column="{{ $column->internal_name }}">
-                            @if ($isCreatingCard && $createdCardColumn === $column->internal_name)
-                                <div class="bg-white dark:bg-gray-700 p-2 mb-2">
-                                    <input type="text" wire:model="name" wire:keydown.enter="storeCard('{{ $column->internal_name }}')" wire:blur="cancelCardCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-100 dark:placeholder:text-white" placeholder="{{ __('backlog.create_card') }}" autofocus>
-                                </div>
-                            @endif
-
-                            @foreach ($this->sprint->cards->where('status', $column->internal_name) as $card)
-                                <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $card->id }}" wire:key="card-{{ $card->id }}">
-                                    <div class="w-full flex justify-between">
-                                        <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
-                                        <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down'; dropdownDirectionX = (window.innerWidth - $el.getBoundingClientRect().right < 200) ? 'left' : 'right'" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down', dropdownDirectionX: 'right' }">
-                                            <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                            <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-32' : '-left-20')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
-                                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                    <li>
-                                                        <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
-                                                    </li>
-                                                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                    <li>
-                                                        <p wire:click="assignCardToMe('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.assign_me') }}</p>
-                                                    </li>
-                                                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                    <li>
-                                                        <p @click="menuState = false; moveToState = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.move_to') }}</p>
-                                                    </li>
-                                                    <li>
-                                                        <p wire:click="copyCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.make_copy') }}</p>
-                                                    </li>
-                                                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                    <li>
-                                                        <p wire:click="deleteCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.delete') }}</p>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-52' : '-left-40')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
-                                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                    <li>
-                                                        <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to') }} - #{{ $card->id }}</p>
-                                                    </li>
-                                                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                    <li class="p-2">
-                                                        <p class="dark:text-white">{{ __('sprints.select_destination') }}</p>
-                                                        {{-- Projects --}}
-                                                        <select wire:model.live="selectedProject" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
-                                                            @forelse ($projects as $project)
-                                                                <option value="{{ $project->uuid }}">{{ $project->name }}</option>
-                                                            @empty
-                                                                <option value="">{{ __('sprints.select_project') }}</option>
-                                                            @endforelse
-                                                        </select>
-                                                        {{-- Backlog/Sprint --}}
-                                                        <select wire:model.live="backlogOrSprint" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
-                                                            <option value="backlog">{{ __('sprints.backlog') }}</option>
-                                                            <option value="sprint">{{ __('sprints.sprint') }}</option>
-                                                        </select>
-                                                        {{-- Backlog / Sprint name --}}
-                                                        <select wire:model.live="backlogOrSprintName" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
-                                                            @if ($backlogOrSprint === 'backlog')
-                                                                @forelse ($backlogs as $backlog)
-                                                                    <option value="{{ $backlog->uuid }}">{{ $backlog->name }}</option>
-                                                                @empty
-                                                                    <option value="">{{ __('sprints.select_backlog') }}</option>
-                                                                @endforelse
-                                                            @elseif ($backlogOrSprint === 'sprint')
-                                                                @forelse ($sprints as $sprint)
-                                                                    <option value="{{ $sprint->uuid }}">{{ $sprint->name }}</option>
-                                                                @empty
-                                                                    <option value="">{{ __('sprints.select_sprint') }}</option>
-                                                                @endforelse
-                                                            @endif
-                                                        </select>
-                                                        {{-- Sprint Column --}}
-                                                        @if ($backlogOrSprint === 'sprint') 
-                                                            <select wire:model="sprintColumn" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
-                                                                <option value="todo">{{ __('backlog.todo') }}</option>
-                                                                <option value="doing">{{ __('backlog.doing') }}</option>
-                                                                <option value="testing">{{ __('backlog.testing') }}</option>
-                                                                <option value="done">{{ __('backlog.done') }}</option>
-                                                                <option value="released">{{ __('backlog.released') }}</option>
-                                                            </select>
-                                                        @endif
-                                                        {{-- Position: Top/Bottom --}}
-                                                        <select wire:model="position" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
-                                                            <option value="top">{{ __('backlog.top') }}</option>
-                                                            <option value="bottom">{{ __('backlog.bottom') }}</option>
-                                                        </select>
-                                                        {{-- Submit --}}
-                                                        <div class="flex justify-center mt-4">
-                                                            <button @click="moveTo = false" wire:click="moveCard('{{ $card->id }}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
-                                                                {{ __('backlog.move') }}
-                                                            </button>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p wire:click="selectCard('{{ $card->id }}')" class="text-sm text-gray-700 dark:text-gray-200 hover:text-sky-500 cursor-pointer">{{ $card->name }}</p>
-                                    <div class="flex gap-x-2">
-                                        @if ($card->approval_status !== 'None')
-                                            <div wire:click="selectCard('{{ $card->id }}')">
-                                                @switch($card->approval_status)
-                                                    @case('Approved')
-                                                        <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
-                                                            <i class="fi fi-sr-checkbox text-emerald-400" data-tooltip-target="approval-status-{{ $card->id }}"></i>
-                                                        </div>
-
-                                                        <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                            {{ __('sprints.approval_status_approved') }}
-                                                            <div class="tooltip-arrow" data-popper-arrow></div>
-                                                        </div>
-                                                        @break
-                                                    @case('Needs work')
-                                                        <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
-                                                            <i class="fi fi-sr-pen-square text-amber-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
-                                                        </div>
-
-                                                        <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                            {{ __('sprints.approval_status_needs_work') }}
-                                                            <div class="tooltip-arrow" data-popper-arrow></div>
-                                                        </div>
-                                                        @break
-                                                    @case('Rejected')
-                                                        <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
-                                                            <i class="fi fi-sr-square-x text-rose-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
-                                                        </div> 
-
-                                                        <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                            {{ __('sprints.approval_status_rejected') }}
-                                                            <div class="tooltip-arrow" data-popper-arrow></div>
-                                                        </div>
-                                                        @break
-                                                @endswitch
-                                            </div>
-                                        @endif
-                                        @if ($card->tasks->count() > 0)
-                                            <div wire:click="selectCard('{{ $card->id }}')" class="cursor-pointer">
-                                                @if ($card->tasks->where('status', 'done')->count() === $card->tasks->count())
-                                                    <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-emerald-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
-                                                        <i class="fi fi-ss-list-check text-white"></i>
-                                                        <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
-                                                    </div>
-
-                                                    <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                        {{ __('sprints.tooltip-tasks-done') }}
-                                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                                    </div>
-                                                @elseif ($card->tasks->where('status', 'doing')->count() > 0)
-                                                    <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-blue-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
-                                                        <i class="fi fi-ss-list-check text-white"></i>
-                                                        <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
-                                                    </div>
-
-                                                    <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                        {{ __('sprints.tooltip-tasks-doing') }}
-                                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                                    </div>
-                                                @else
-                                                    <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-purple-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
-                                                        <i class="fi fi-ss-list-check text-white"></i>
-                                                        <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
-                                                    </div>
-
-                                                    <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                        {{ __('sprints.tooltip-tasks-none') }}
-                                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        @endif
-                                        @if ($card->description !== null)
-                                            <div wire:click="selectCard('{{ $card->id }}')" data-tooltip-target="description-{{ $card->id }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
-                                                <i class="fi fi-rr-poll-h dark:text-white"></i>
-                                            </div>
-
-                                            <div id="description-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                                {{ __('sprints.tooltip-description') }}
-                                                <div class="tooltip-arrow" data-popper-arrow></div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="flex justify-end">
-                                        <div class="flex items-center gap-x-2 bg-gray-200 dark:bg-gray-800 px-2.5 py-1.5 rounded-full" x-data="{ userMenuState: false }">
-                                            <div @click="userMenuState = !userMenuState" class="relative">
-                                                <i class="fi fi-sr-users text-sm flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
-                                                <div x-show="userMenuState" @click.away="userMenuState = false" class="absolute z-10 mt-2 w-60 top-6 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+                            <div class="mt-2">
+                                @foreach ($this->sprint->cards->where('status', $column->internal_name) as $card)
+                                    <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md" wire:key="card-{{ $card->id }}">
+                                        <div class="w-full flex justify-between">
+                                            <p class="flex items-center text-gray-400 text-xs">#{{ $card->id }}</p>
+                                            <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down'; dropdownDirectionX = (window.innerWidth - $el.getBoundingClientRect().right < 200) ? 'left' : 'right'" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down', dropdownDirectionX: 'right' }">
+                                                <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
+                                                <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-32' : '-left-20')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
                                                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                        <li class="flex justify-center items-center">
-                                                            <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
+                                                        <li>
+                                                            <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
                                                         </li>
                                                         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
-                                                        @forelse ($projectMembers as $member)
-                                                            <li class="px-1">
-                                                                @if ($card->assignees->contains('user_id', $member->user_id))
-                                                                    <div wire:click="removeCardAssignee('{{ $card->id }}', '{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
-                                                                        <div class="flex items-center gap-x-2">
-                                                                            <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
-                                                                            <p class="dark:text-white">{{ $member->user->name }}</p>
-                                                                        </div>
-                                                                        <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
-                                                                    </div>
-                                                                @else
-                                                                    <div wire:click="addCardAssignee('{{ $card->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
-                                                                        <div class="flex items-center gap-x-2">
-                                                                            <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
-                                                                            <p class="dark:text-white">{{ $member->user->name }}</p>
-                                                                        </div>
-                                                                    </div>
+                                                        <li>
+                                                            <p wire:click="assignCardToMe('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.assign_me') }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li>
+                                                            <p @click="menuState = false; moveToState = true" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.move_to') }}</p>
+                                                        </li>
+                                                        <li>
+                                                            <p wire:click="copyCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.make_copy') }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li>
+                                                            <p wire:click="deleteCard('{{ $card->id }}')" @click="menuState = false" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.delete') }}</p>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8') + ' ' + (dropdownDirectionX === 'left' ? '-left-52' : '-left-40')" class="absolute z-10 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                        <li>
+                                                            <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to') }} - #{{ $card->id }}</p>
+                                                        </li>
+                                                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                        <li class="p-2">
+                                                            <p class="dark:text-white">{{ __('sprints.select_destination') }}</p>
+                                                            {{-- Projects --}}
+                                                            <select wire:model.live="selectedProject" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                @forelse ($projects as $project)
+                                                                    <option value="{{ $project->uuid }}">{{ $project->name }}</option>
+                                                                @empty
+                                                                    <option value="">{{ __('sprints.select_project') }}</option>
+                                                                @endforelse
+                                                            </select>
+                                                            {{-- Backlog/Sprint --}}
+                                                            <select wire:model.live="backlogOrSprint" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                <option value="backlog">{{ __('sprints.backlog') }}</option>
+                                                                <option value="sprint">{{ __('sprints.sprint') }}</option>
+                                                            </select>
+                                                            {{-- Backlog / Sprint name --}}
+                                                            <select wire:model.live="backlogOrSprintName" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                @if ($backlogOrSprint === 'backlog')
+                                                                    @forelse ($backlogs as $backlog)
+                                                                        <option value="{{ $backlog->uuid }}">{{ $backlog->name }}</option>
+                                                                    @empty
+                                                                        <option value="">{{ __('sprints.select_backlog') }}</option>
+                                                                    @endforelse
+                                                                @elseif ($backlogOrSprint === 'sprint')
+                                                                    @forelse ($sprints as $sprint)
+                                                                        <option value="{{ $sprint->uuid }}">{{ $sprint->name }}</option>
+                                                                    @empty
+                                                                        <option value="">{{ __('sprints.select_sprint') }}</option>
+                                                                    @endforelse
                                                                 @endif
-                                                            </li>
-                                                        @empty
-                                                            <li>
-                                                                <p class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.no_users_found') }}</p>
-                                                            </li>
-                                                        @endforelse
+                                                            </select>
+                                                            {{-- Sprint Column --}}
+                                                            @if ($backlogOrSprint === 'sprint') 
+                                                                <select wire:model="sprintColumn" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                    <option value="todo">{{ __('backlog.todo') }}</option>
+                                                                    <option value="doing">{{ __('backlog.doing') }}</option>
+                                                                    <option value="testing">{{ __('backlog.testing') }}</option>
+                                                                    <option value="done">{{ __('backlog.done') }}</option>
+                                                                    <option value="released">{{ __('backlog.released') }}</option>
+                                                                </select>
+                                                            @endif
+                                                            {{-- Position: Top/Bottom --}}
+                                                            <select wire:model="position" class="w-full mt-2 border-sky-500 bg-gray-100 dark:bg-gray-800 text-sm rounded-lg text-gray-600 dark:text-gray-400">
+                                                                <option value="top">{{ __('backlog.top') }}</option>
+                                                                <option value="bottom">{{ __('backlog.bottom') }}</option>
+                                                            </select>
+                                                            {{-- Submit --}}
+                                                            <div class="flex justify-center mt-4">
+                                                                <button @click="moveTo = false" wire:click="moveCard('{{ $card->id }}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+                                                                    {{ __('backlog.move') }}
+                                                                </button>
+                                                            </div>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </div>
-                                            @if ($card->assignees->count() > 0)
-                                                <div class="flex items-center gap-x-2">
-                                                    @foreach ($card->assignees->slice(0, 3) as $assignee)
-                                                        <img class="w-5 h-5 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
-                                                    @endforeach
-                                                    @if ($card->assignees->count() > 3)
-                                                        <p class="text-xs text-gray-700 dark:text-white">+{{ $card->assignees->count() - 3 }}</p>
+                                        </div>
+                                        <p wire:click="selectCard('{{ $card->id }}')" class="text-sm text-gray-700 dark:text-gray-200 hover:text-sky-500 cursor-pointer">{{ $card->name }}</p>
+                                        <div class="flex gap-x-2">
+                                            @if ($card->approval_status !== 'None')
+                                                <div wire:click="selectCard('{{ $card->id }}')">
+                                                    @switch($card->approval_status)
+                                                        @case('Approved')
+                                                            <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                                <i class="fi fi-sr-checkbox text-emerald-400" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                            </div>
+
+                                                            <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                                {{ __('sprints.approval_status_approved') }}
+                                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                                            </div>
+                                                            @break
+                                                        @case('Needs work')
+                                                            <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                                <i class="fi fi-sr-pen-square text-amber-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                            </div>
+
+                                                            <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                                {{ __('sprints.approval_status_needs_work') }}
+                                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                                            </div>
+                                                            @break
+                                                        @case('Rejected')
+                                                            <div class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                                <i class="fi fi-sr-square-x text-rose-500" data-tooltip-target="approval-status-{{ $card->id }}"></i>
+                                                            </div> 
+
+                                                            <div id="approval-status-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                                {{ __('sprints.approval_status_rejected') }}
+                                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                                            </div>
+                                                            @break
+                                                    @endswitch
+                                                </div>
+                                            @endif
+                                            @if ($card->tasks->count() > 0)
+                                                <div wire:click="selectCard('{{ $card->id }}')" class="cursor-pointer">
+                                                    @if ($card->tasks->where('status', 'done')->count() === $card->tasks->count())
+                                                        <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-emerald-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                            <i class="fi fi-ss-list-check text-white"></i>
+                                                            <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                        </div>
+
+                                                        <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.tooltip-tasks-done') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                    @elseif ($card->tasks->where('status', 'doing')->count() > 0)
+                                                        <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-blue-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                            <i class="fi fi-ss-list-check text-white"></i>
+                                                            <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                        </div>
+
+                                                        <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.tooltip-tasks-doing') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
+                                                    @else
+                                                        <div data-tooltip-target="tasks-{{ $card->id }}" class="bg-purple-400 flex gap-x-2 py-[0.1875rem] px-2 text-xs rounded-md">
+                                                            <i class="fi fi-ss-list-check text-white"></i>
+                                                            <p class="text-white">{{ $card->tasks->where('status', 'done')->count() }} / {{ $card->tasks->count() }}</p>
+                                                        </div>
+
+                                                        <div id="tasks-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                            {{ __('sprints.tooltip-tasks-none') }}
+                                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                                        </div>
                                                     @endif
                                                 </div>
-                                            @else
-                                                <p class="text-xs text-gray-700 dark:text-white">{{ __('sprints.no_users_assigned') }}</p>
+                                            @endif
+                                            @if ($card->description !== null)
+                                                <div wire:click="selectCard('{{ $card->id }}')" data-tooltip-target="description-{{ $card->id }}" class="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-md text-sm cursor-pointer">
+                                                    <i class="fi fi-rr-poll-h dark:text-white"></i>
+                                                </div>
+
+                                                <div id="description-{{ $card->id }}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                                    {{ __('sprints.tooltip-description') }}
+                                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                                </div>
                                             @endif
                                         </div>
+                                        <div class="flex justify-end">
+                                            <div class="flex items-center gap-x-2 bg-gray-200 dark:bg-gray-800 px-2.5 py-1.5 rounded-full" x-data="{ userMenuState: false }">
+                                                <div @click="userMenuState = !userMenuState" class="relative">
+                                                    <i class="fi fi-sr-users text-sm flex items-center text-gray-700 dark:text-white cursor-pointer"></i>
+                                                    <div x-show="userMenuState" @click.away="userMenuState = false" class="absolute z-10 mt-2 w-60 top-6 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+                                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                            <li class="flex justify-center items-center">
+                                                                <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.card') }} #{{ $card->id }}</p>
+                                                            </li>
+                                                            <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-600">
+                                                            @forelse ($projectMembers as $member)
+                                                                <li class="px-1">
+                                                                    @if ($card->assignees->contains('user_id', $member->user_id))
+                                                                        <div wire:click="removeCardAssignee('{{ $card->id }}', '{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                            <div class="flex items-center gap-x-2">
+                                                                                <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                                <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                            </div>
+                                                                            <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
+                                                                        </div>
+                                                                    @else
+                                                                        <div wire:click="addCardAssignee('{{ $card->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div class="flex items-center gap-x-2">
+                                                                                <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
+                                                                                <p class="dark:text-white">{{ $member->user->name }}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                </li>
+                                                            @empty
+                                                                <li>
+                                                                    <p class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">{{ __('sprints.no_users_found') }}</p>
+                                                                </li>
+                                                            @endforelse
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                @if ($card->assignees->count() > 0)
+                                                    <div class="flex items-center gap-x-2">
+                                                        @foreach ($card->assignees->slice(0, 3) as $assignee)
+                                                            <img class="w-5 h-5 rounded-full" src="{{ $assignee->user->profile_photo_url }}" alt="{{ $assignee->user->name }}">
+                                                        @endforeach
+                                                        @if ($card->assignees->count() > 3)
+                                                            <p class="text-xs text-gray-700 dark:text-white">+{{ $card->assignees->count() - 3 }}</p>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <p class="text-xs text-gray-700 dark:text-white">{{ __('sprints.no_users_assigned') }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
-        </div>
+        @endif
     @else
         <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-md flex justify-center items-center p-4">
             <p class="text-sm dark:text-white">{{ __('sprints.no_sprints_found') }}</p>
