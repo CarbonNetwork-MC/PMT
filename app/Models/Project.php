@@ -41,4 +41,9 @@ class Project extends Model
     {
         return $this->hasMany(ProjectMember::class, 'project_id', 'uuid');
     }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(Log::class, 'project_id', 'uuid');
+    }
 }
