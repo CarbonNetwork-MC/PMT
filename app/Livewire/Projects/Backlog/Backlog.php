@@ -174,6 +174,9 @@ class Backlog extends Component
         // Create a new bucket
         $bucket = BacklogModel::create($data);
 
+        // Set the selected bucket to the new bucket
+        $this->selectedBucket = $bucket;
+
         // Create a new Log
         Log::create([
             'user_id' => auth()->user()->uuid,
