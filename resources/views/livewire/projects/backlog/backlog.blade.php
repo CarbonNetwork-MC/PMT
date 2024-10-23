@@ -632,7 +632,7 @@
                                                                 @foreach ($projectMembers as $member)
                                                                     <li class="px-1">
                                                                         @if ($task->assignees->contains('user_id', $member->user_id))
-                                                                            <div wire:click="removeTaskAssignee({{ $member->id }})" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="removeTaskAssignee('{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -640,7 +640,7 @@
                                                                                 <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                             </div>
                                                                         @else
-                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="addTaskAssignee('{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -773,7 +773,7 @@
                                                                 @foreach ($projectMembers as $member)
                                                                     <li class="px-1">
                                                                         @if ($task->assignees->contains('user_id', $member->user_id))
-                                                                            <div wire:click="removeTaskAssignee({{ $member->id }})" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="removeTaskAssignee('{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -781,7 +781,7 @@
                                                                                 <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                             </div>
                                                                         @else
-                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="addTaskAssignee('{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -914,7 +914,7 @@
                                                                 @foreach ($projectMembers as $member)
                                                                     <li class="px-1">
                                                                         @if ($task->assignees->contains('user_id', $member->user_id))
-                                                                            <div wire:click="removeTaskAssignee({{ $member->id }})" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="removeTaskAssignee('{{ $member->id }}')" class="w-full flex justify-between bg-gray-300 dark:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -922,7 +922,7 @@
                                                                                 <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                             </div>
                                                                         @else
-                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="addTaskAssignee('{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
