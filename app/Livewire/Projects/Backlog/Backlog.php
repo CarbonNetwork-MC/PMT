@@ -96,6 +96,12 @@ class Backlog extends Component
         // Check the session if the user has already selected a backlog and select it, if not, select the first one.
         if (session()->has('selected_backlog')) {
             $this->selectedBucket = BacklogModel::where('uuid', session('selected_backlog'))->with('cards.tasks')->first();
+            if (!$this->selectedBucket) {
+                $this->selectedBucket = BacklogModel::where('project_id', $this->uuid)->with('cards')->first();
+
+                // Set the selected backlog in the session
+                session()->put('selected_backlog', $this->selectedBucket->uuid);
+            }
         } else {
             $this->selectedBucket = $this->buckets->first();
         }
@@ -194,6 +200,10 @@ class Backlog extends Component
 
         // Update the buckets
         $this->buckets = BacklogModel::where('project_id', $this->uuid)->with('cards')->get();
+
+        // Reset the variables
+        $this->name = null;
+        $this->description = null;
     }
 
     /**
@@ -332,6 +342,10 @@ class Backlog extends Component
 
         // Update the selected bucket
         $this->selectedBucket = BacklogModel::where('uuid', $this->selectedBucket->uuid)->with('cards')->first();
+
+        // Reset the variables
+        $this->name = null;
+        $this->description = null;
     }
 
     /**
