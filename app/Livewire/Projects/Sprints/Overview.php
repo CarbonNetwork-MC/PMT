@@ -94,6 +94,9 @@ class Overview extends Component
 
         // Close the modal
         $this->createSprintModal = false;
+
+        // Reset the variables
+        $this->name = null;
     }
 
     /**
