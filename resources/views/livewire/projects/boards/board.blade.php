@@ -943,7 +943,7 @@
                                                     </div>
                                                 @endif
                                                 <div class="flex justify-end">
-                                                    <div @click="menuState = !menuState" class="relative flex gapx--2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
+                                                    <div @click="menuState = !menuState" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
                                                         <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
@@ -962,7 +962,7 @@
                                                                                 <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                             </div>
                                                                         @else
-                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="addTaskAssignee('{{ $task->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -1103,7 +1103,7 @@
                                                                                 <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                             </div>
                                                                         @else
-                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="addTaskAssignee('{{ $task->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
@@ -1244,7 +1244,7 @@
                                                                                 <i class="fi fi-ss-user-check flex items-center dark:text-white"></i>
                                                                             </div>
                                                                         @else
-                                                                            <div wire:click="addTaskAssignee({{ $member->id }})" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
+                                                                            <div wire:click="addTaskAssignee('{{ $task->id }}', '{{ $member->id }}')" class="w-full hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer p-2">
                                                                                 <div class="flex items-center gap-x-2">
                                                                                     <img class="w-6 h-6 rounded-full" src="{{ $member->user->profile_photo_url }}" alt="{{ $member->user->name }}">
                                                                                     <p class="dark:text-white">{{ $member->user->name }}</p>
