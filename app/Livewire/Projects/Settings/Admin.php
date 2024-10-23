@@ -85,84 +85,54 @@ class Admin extends Component
      */
     public function deleteProject() {
         // Find the project
-        $project = Project::where('uuid', $this->projectId)->first();
+        $project = Project::where('uuid', $this->projectId)->with(['members.user', 'logs', 'sprints.cards.assignees.user', 'sprints.cards.tasks.assignees.user', 'backlogs.cards.assignees.user', 'backlogs.cards.tasks.assignees.user'])->first();
+
+        // dd($project);
+        // 7564a9f6-fdce-4637-8e37-b976540c7acc
+        // 9c42c7e8-4e75-44e5-8496-3576968a74c0
+
+        // Delete the project members
+        $project->members()->delete();
+
+        // Delete the logs
+        $project->logs()->delete();
+
+        // Delete the sprint cards with their assignees
+        $sprints = $project->sprints;
+        foreach ($sprints as $sprint) {
+            $cards = $sprint->cards;
+            foreach ($cards as $card) {
+                $tasks = $card->tasks;
+                foreach ($tasks as $task) {
+                    $task->assignees()->delete();
+                }
+                $card->tasks()->delete();
+                $card->assignees()->delete();
+            }
+            $sprint->cards()->delete();
+        }
+
+        $project->sprints()->delete();
+
+        // Delete the backlog cards with their assignees
+        $backlogs = $project->backlogs;
+        foreach ($backlogs as $backlog) {
+            $cards = $backlog->cards;
+            foreach ($cards as $card) {
+                $tasks = $card->tasks;
+                foreach ($tasks as $task) {
+                    $task->assignees()->delete();
+                }
+                $card->tasks()->delete();
+                $card->assignees()->delete();
+            }
+            $backlog->cards()->delete();
+        }
+
+        $project->backlogs()->delete();
 
         // Delete the project
         $project->delete();
-
-        // Delete all project members
-        ProjectMember::where('project_id', $this->projectId)->delete();
-
-        // Delete all sprints, cards and tasks
-        $sprints = Sprint::where('project_id', $this->projectId)->get();
-        foreach ($sprints as $sprint) {
-            $cards = Card::where('sprint_id', $sprint->id)->with('assignees')->get();
-            foreach ($cards as $card) {
-                $card->assignees()->delete();
-                $card->delete();
-            }
-
-            $tasks = Task::where('sprint_id', $sprint->id)->with('assignees')->get();
-            foreach ($tasks as $task) {
-                $task->assignees()->delete();
-                $task->delete();
-            }
-
-            $sprint->delete();
-        }
-
-        // Create a new Log - Delete Project
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->projectId,
-            'action' => 'delete',
-            'table' => 'projects',
-            'data' => json_encode(['project_id' => $this->projectId, 'project' => $project]),
-            'description' => 'Deleted project <b>' . $project->name . '</b>',
-        ]);
-
-        // Create a new Log - Delete Project Members
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->projectId,
-            'action' => 'delete',
-            'table' => 'project_members',
-            'data' => json_encode(['project_id' => $this->projectId]),
-            'description' => 'Deleted all project members',
-        ]);
-
-        // Create a new Log - Delete Sprints
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->projectId,
-            'action' => 'delete',
-            'table' => 'sprints',
-            'data' => json_encode(['project_id' => $this->projectId]),
-            'description' => 'Deleted all sprints',
-        ]);
-
-        // Create a new Log - Delete Cards
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->projectId,
-            'action' => 'delete',
-            'table' => 'cards',
-            'data' => json_encode(['project_id' => $this->projectId]),
-            'description' => 'Deleted all cards',
-        ]);
-
-        // Create a new Log - Delete Tasks
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->projectId,
-            'action' => 'delete',
-            'table' => 'tasks',
-            'data' => json_encode(['project_id' => $this->projectId]),
-            'description' => 'Deleted all tasks',
-        ]);
-
-        // Toast
-        $this->dispatch('projectDeleted', ['message' => 'The project has been deleted.']);
 
         // Redirect to the projects overview
         return redirect()->route('projects.projects.render');
