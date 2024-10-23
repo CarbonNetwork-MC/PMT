@@ -20,6 +20,8 @@ use App\Models\BacklogTaskAssignee;
 class Board extends Component
 {
     public $user;
+    public $projectMember;
+
     public $uuid;
     public $projectId;
 
@@ -144,6 +146,8 @@ class Board extends Component
                 $this->projectId = $this->uuid;
             }
         }
+
+        $this->projectMember = ProjectMember::where('user_id', auth()->user()->uuid)->where('project_id', $this->projectId)->first();
 
         // Set the columns as objects
         $this->columns = collect($this->columns)->map(function ($column) {
@@ -573,7 +577,7 @@ class Board extends Component
         ]);
 
         // Update the selected Card
-        $this->selectedCard = Card::where('id', $this->selectedCard->id)->with(['assignees.user', 'tasks.assignees.user'])->first();
+        $this->selectedCard = Card::where('id', $id)->with(['assignees.user', 'tasks.assignees.user'])->first();
 
         // Update the sprint
         $this->sprint = Sprint::where('uuid', $this->uuid)->with(['cards' => function($query) {$query->orderBy('card_index');}, 'cards.assignees.user', 'cards.tasks.assignees.user'])->first();

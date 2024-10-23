@@ -101,7 +101,9 @@ class Backlog extends Component
         }
 
         // Set backlogOrSprintName to the selected bucket
-        $this->backlogOrSprintName = $this->selectedBucket->uuid;
+        if ($this->selectedBucket) {
+            $this->backlogOrSprintName = $this->selectedBucket->uuid;
+        }
         
         // Get the number of cards in the selected bucket
         foreach ($this->buckets as $bucket) {

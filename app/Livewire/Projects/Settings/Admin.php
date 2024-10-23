@@ -96,13 +96,15 @@ class Admin extends Component
         // Delete all sprints, cards and tasks
         $sprints = Sprint::where('project_id', $this->projectId)->get();
         foreach ($sprints as $sprint) {
-            $cards = Card::where('sprint_id', $sprint->id)->get();
+            $cards = Card::where('sprint_id', $sprint->id)->with('assignees')->get();
             foreach ($cards as $card) {
+                $card->assignees()->delete();
                 $card->delete();
             }
 
-            $tasks = Task::where('sprint_id', $sprint->id)->get();
+            $tasks = Task::where('sprint_id', $sprint->id)->with('assignees')->get();
             foreach ($tasks as $task) {
+                $task->assignees()->delete();
                 $task->delete();
             }
 
