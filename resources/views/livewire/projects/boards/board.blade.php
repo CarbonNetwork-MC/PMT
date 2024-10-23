@@ -572,7 +572,7 @@
             </div>
         @endif
     @else
-        <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-md flex justify-center items-center p-4">
+        <div class="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md flex justify-center items-center p-4">
             <p class="text-sm dark:text-white">{{ __('sprints.no_sprints_found') }}</p>
         </div>
     @endif
