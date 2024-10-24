@@ -4,6 +4,7 @@ namespace App\Livewire\Utils;
 
 use App\Models\Card;
 use App\Models\Sprint;
+use App\Models\Setting;
 use Livewire\Component;
 use App\Models\BugReport as BugReportModel;
 
@@ -14,11 +15,13 @@ class BugReport extends Component
     public $description;
     public $page;
 
-    public $bugReportsSprintID = '3ca65bf7-a026-4c05-87bf-b7d7162b7d9d';
+    public $bugReportsSprintID;
 
     public function mount()
     {
         $this->user = auth()->user();
+
+        $this->bugReportsSprintID = Setting::where('name', 'bug_reports_sprint_id')->first()->value;
     }
 
     /**
