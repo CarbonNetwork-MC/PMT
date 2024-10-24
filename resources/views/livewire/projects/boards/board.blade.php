@@ -842,7 +842,7 @@
                         @else
                             <div class="flex gap-x-2" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
                                 @if ($selectedCard->description !== null)
-                                    <p class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{{ $selectedCard->description }}</p>
+                                    <p class="text-sm text-gray-700 dark:text-gray-200 cursor-pointer">{!! $selectedCard->description !!}</p>
                                 @else
                                     <p class="text-sm text-gray-400 dark:text-gray-200 cursor-pointer">{{ __('sprints.no_description') }}</p>
                                 @endif
