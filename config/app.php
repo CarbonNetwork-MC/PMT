@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This is the version of the application. This value is used when the
+    | application needs to display the version of the application. You can
+    | set this in your ".env" file.
+    |
+    */
+
+    'version' => env('APP_VERSION', '1.0'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

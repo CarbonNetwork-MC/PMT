@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CheckPermission;
 use App\Livewire\Dashboard;
+use App\Livewire\Utils\BugReport;
 use App\Livewire\Projects\Projects;
 use App\Livewire\Admin\ManageUsers;
 use App\Livewire\Admin\ManageStaff;
@@ -37,7 +38,10 @@ Route::middleware([
     // Project - Settings
     Route::get('/projects/{uuid}/settings/overall', OverallSettings::class)->name('projects.settings.overall.render');
     Route::get('/projects/{uuid}/settings/members', MembersSettings::class)->name('projects.settings.members.render');
-    Route::get('/projects/{uuid}/settings/admin', AdminSettings::class)->name('projects.settings.admin.render');  
+    Route::get('/projects/{uuid}/settings/admin', AdminSettings::class)->name('projects.settings.admin.render');
+
+    // Utils
+    Route::get('/report-a-bug', BugReport::class)->name('utils.bug-report.render');
 
     // Admin
     Route::get('/admin/manage-projects', ManageProjects::class)->middleware('permission:view_other_projects')->name('admin.manage-projects.render');
