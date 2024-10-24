@@ -112,6 +112,14 @@
                                 </x-sidebar-nav-link>
                             </li>
                         @endif
+                        @if ($user->role && json_decode($user->role->permissions)->manage_app_settings)
+                            <li class="side-item-container">
+                                <x-sidebar-nav-link href="{{ route('admin.app-settings.render') }}" :active="request()->routeIs('admin.app-settings.render')">
+                                    <i class="fi fi-sr-settings"></i>
+                                    <span class="navItem ms-3">App Settings</span>
+                                </x-sidebar-nav-link>
+                            </li>
+                        @endif
                     @endif
                 </div>
                 <div class="flex justify-between text-white">
