@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->int('role_id')->default(1);
+            $table->integer('role_id')->default(1);
             $table->string('color_hex', 6)->nullable();
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
