@@ -32,7 +32,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'color_hex',
+        'role_id',
     ];
 
     /**
