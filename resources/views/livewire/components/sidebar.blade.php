@@ -104,14 +104,6 @@
                                 </x-sidebar-nav-link>
                             </li>
                         @endif
-                        @if ($user->role && json_decode($user->role->permissions)->manage_staff)
-                            <li class="side-item-container">
-                                <x-sidebar-nav-link href="{{ route('admin.manage-staff.render') }}" :active="request()->routeIs('admin.manage-staff.render')">
-                                    <i class="fi fi-sr-user-crown"></i>
-                                    <span class="navItem ms-3">Manage Staff</span>
-                                </x-sidebar-nav-link>
-                            </li>
-                        @endif
                         @if ($user->role && json_decode($user->role->permissions)->manage_app_settings)
                             <li class="side-item-container">
                                 <x-sidebar-nav-link href="{{ route('admin.app-settings.render') }}" :active="request()->routeIs('admin.app-settings.render')">
