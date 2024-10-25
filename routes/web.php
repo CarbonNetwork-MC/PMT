@@ -1,12 +1,10 @@
 <?php
 
-use App\Http\Middleware\CheckPermission;
-use App\Livewire\Admin\AppSettings;
 use App\Livewire\Dashboard;
 use App\Livewire\Utils\BugReport;
+use App\Livewire\Admin\AppSettings;
 use App\Livewire\Projects\Projects;
 use App\Livewire\Admin\ManageUsers;
-use App\Livewire\Admin\ManageStaff;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Admin\ManageProjects;
 use App\Livewire\Projects\Boards\Board;
@@ -47,6 +45,5 @@ Route::middleware([
     // Admin
     Route::get('/admin/manage-projects', ManageProjects::class)->middleware('permission:view_other_projects')->name('admin.manage-projects.render');
     Route::get('/admin/manage-users', ManageUsers::class)->middleware('permission:manage_users')->name('admin.manage-users.render');
-    Route::get('/admin/manage-staff', ManageStaff::class)->middleware('permission:manage_staff')->name('admin.manage-staff.render');
     Route::get('/admin/app-settings', AppSettings::class)->middleware('permission:manage_app_settings')->name('admin.app-settings.render');
 });
