@@ -885,9 +885,9 @@
                                             <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
-                                                    <div class="relative" x-data="{ menuState: false, moveToState: false }">
+                                                    <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down';" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down' }">
                                                         <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
+                                                        <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8')" class="absolute z-50 -left-40 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
                                                                     <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -912,7 +912,7 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
-                                                        <div x-show="moveToState" @click.outside="moveToState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                        <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8')" class="absolute z-50 -left-56 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
                                                                     <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to_column') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -945,7 +945,7 @@
                                                 <div class="flex justify-end">
                                                     <div @click="menuState = !menuState" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
-                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
+                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 -left-20 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li class="flex justify-center items-center">
                                                                     <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -1026,9 +1026,9 @@
                                             <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
-                                                    <div class="relative" x-data="{ menuState: false, moveToState: false }">
+                                                    <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down';" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down' }">
                                                         <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
+                                                        <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8')" class="absolute z-50 -left-40 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
                                                                     <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -1053,7 +1053,7 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
-                                                        <div x-show="moveToState" @click.outside="moveToState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                        <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8')" class="absolute z-50 -left-56 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
                                                                     <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to_column') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -1086,7 +1086,7 @@
                                                 <div class="flex justify-end">
                                                     <div @click="menuState = !menuState" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
-                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
+                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 -left-20 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li class="flex justify-center items-center">
                                                                     <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -1167,9 +1167,9 @@
                                             <div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move" data-id="{{ $task->id }}" wire:key="task-{{ $task->id }}">
                                                 <div class="flex justify-between">
                                                     <p class="flex items-center text-gray-400 text-xs">#{{ $task->id }}</p>
-                                                    <div class="relative" x-data="{ menuState: false, moveToState: false }">
+                                                    <div class="relative" @click="dropdownDirectionY = (window.innerHeight - $el.getBoundingClientRect().bottom < 300) ? 'up' : 'down';" x-data="{ menuState: false, moveToState: false, dropdownDirectionY: 'down' }">
                                                         <i @click="menuState = !menuState" class="fi fi-sr-menu-dots-vertical text-xs dark:text-white cursor-pointer"></i>
-                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
+                                                        <div x-show="menuState" @click.outside="menuState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8')" class="absolute z-10 -left-40 bg-white dark:bg-gray-800 rounded-lg shadow w-44">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
                                                                     <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.actions') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -1194,7 +1194,7 @@
                                                                 </li>
                                                             </ul>
                                                         </div>
-                                                        <div x-show="moveToState" @click.outside="moveToState = false" class="absolute z-10 top-8 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
+                                                        <div x-show="moveToState" @click.outside="moveToState = false" x-bind:class="(dropdownDirectionY === 'up' ? 'bottom-8' : 'top-8')" class="absolute z-10 -left-56 bg-white dark:bg-gray-800 rounded-lg shadow w-60">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li>
                                                                     <p class="flex justify-center text-gray-400 dark:text-gray-300">{{ __('sprints.move_to_column') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
@@ -1227,7 +1227,7 @@
                                                 <div class="flex justify-end">
                                                     <div @click="menuState = !menuState" class="relative flex gap-x-2 bg-gray-200 dark:bg-gray-600 mt-2 px-2.5 py-1.5 rounded-full" x-data="{ menuState: false }">
                                                         <i class="fi fi-sr-users text-gray-700 dark:text-white cursor-pointer"></i>
-                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-10 top-10 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
+                                                        <div x-show="menuState" @click.outside="menuState = false" class="absolute z-50 top-10 -left-20 mt-2 w-60 bg-white dark:bg-gray-700 rounded-md shadow">
                                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                                 <li class="flex justify-center items-center">
                                                                     <p class="text-gray-400 dark:text-gray-300 text-sm">{{ __('sprints.users') }} - {{ __('sprints.task') }} #{{ $task->id }}</p>
