@@ -95,6 +95,7 @@ return [
 
     'assign_me' => 'Assign Me',
     'move_to' => 'Move to',
+    'move_to_column' => 'Move to Column',
     'make_copy' => 'Make a Copy',
 
     // Delete Dialog
