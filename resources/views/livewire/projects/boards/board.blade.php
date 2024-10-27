@@ -938,7 +938,7 @@
                                                     </textarea>
                                                 @else
                                                     <div class="flex justify-between mt-1 cursor-pointer group" x-on:mouseover="hover = true" x-on:mouseout="hover = false" x-data="{ hover: false }">
-                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{{ $task->description }}</p>
+                                                        <p class="w-full text-sm group-hover:text-sky-500 dark:text-white">{!! nl2br(e($task->description)) !!}</p>
                                                         <i x-show="hover" wire:click="startEditingTaskDescription('{{ $task->id }}')" class="fi fi-ss-pencil text-xs hover:text-sky-500 dark:text-white"></i>
                                                     </div>
                                                 @endif
