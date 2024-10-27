@@ -834,7 +834,7 @@
                     </div>
 
                     {{-- Description & Tasks --}}
-                    <div class="h-full flex flex-col bg-white dark:bg-gray-700 p-4 mt-2">
+                    <div class="h-full flex flex-col bg-white dark:bg-gray-700 p-4 mt-2 overflow-hidden">
                         @if ($isEditingCardDescription)
                             <textarea wire:model="description" wire:blur="saveCardDescription" 
                                 class="border-0 px-2 py-1 border-b-2 border-gray-600 dark:border-gray-300 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-gray-400">
@@ -851,9 +851,9 @@
                             
                         @endif
                         <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-800">
-                        <div class="h-full grid grid-cols-3 gap-x-4">
+                        <div class="h-[90%] grid grid-cols-3 gap-x-4 overflow-hidden">
                             {{-- Tasks - Todo --}}
-                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800"
+                            <div class="h-full flex flex-col flex-grow col-span-1 bg-gray-100 dark:bg-gray-800 shadow-md overflow-y-auto"
                                 x-data
                                 x-init="Sortable.create($refs.todoTasks, {
                                     group: 'tasks',
@@ -873,7 +873,7 @@
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
                                     </div>
                                 </div>
-                                <div class="p-2" x-ref="todoTasks" data-column="todo">
+                                <div class="h-full p-2 mb-2 overflow-y-auto" x-ref="todoTasks" data-column="todo">
                                     @if ($isCreatingTask && $createdTaskColumn === 'todo')
                                         <div class="bg-white dark:bg-gray-700 p-2 mb-2">
                                             <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('todo')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-white" placeholder="{{ __('backlog.create_task') }}">
@@ -994,7 +994,7 @@
                             </div>
 
                             {{-- Tasks - Doing --}}
-                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800"
+                            <div class="h-full flex flex-col flex-grow col-span-1 bg-gray-100 dark:bg-gray-800 shadow-md overflow-y-auto"
                                 x-data
                                 x-init="Sortable.create($refs.doingTasks, {
                                     group: 'tasks',
@@ -1014,7 +1014,7 @@
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
                                     </div>
                                 </div>
-                                <div class="p-2" x-ref="doingTasks" data-column="doing">
+                                <div class="h-full p-2 mb-2 overflow-y-auto" x-ref="doingTasks" data-column="doing">
                                     @if ($isCreatingTask && $createdTaskColumn === 'doing')
                                         <div class="bg-white dark:bg-gray-700 p-2 mb-2">
                                             <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('doing')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-white" placeholder="{{ __('backlog.create_task') }}">
@@ -1135,7 +1135,7 @@
                             </div>
 
                             {{-- Tasks - Done --}}
-                            <div class="h-full col-span-1 bg-gray-100 dark:bg-gray-800"
+                            <div class="h-full flex flex-col flex-grow col-span-1 bg-gray-100 dark:bg-gray-800 shadow-md overflow-y-auto"
                                 x-data
                                 x-init="Sortable.create($refs.doneTasks, {
                                     group: 'tasks',
@@ -1155,7 +1155,7 @@
                                         <i class="fi fi-sr-plus flex items-center text-sm text-black dark:text-white"></i>
                                     </div>
                                 </div>
-                                <div class="p-2" x-ref="doneTasks" data-column="done">
+                                <div class="h-full p-2 mb-2 overflow-y-auto" x-ref="doneTasks" data-column="done">
                                     @if ($isCreatingTask && $createdTaskColumn === 'done')
                                         <div class="bg-white dark:bg-gray-700 p-2 mb-2">
                                             <input type="text" wire:model="taskDescription" wire:keydown.enter="storeTask('done')" wire:blur="cancelTaskCreation" class="w-full text-sm px-2 py-1 border-0 border-b-2 border-emerald-500 bg-transparent focus:outline-none focus:border-blue-500 text-lg text-gray-600 dark:text-white" placeholder="{{ __('backlog.create_task') }}">
