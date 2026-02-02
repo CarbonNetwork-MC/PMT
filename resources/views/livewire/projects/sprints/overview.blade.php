@@ -315,7 +315,7 @@
                         <option value="backlog">{{ __('sprints.backlog') }}</option>
                     </select>
 
-                    <select wire:model="selectedSprintOrBacklog" class="w-full rounded-md shadow-sm form-select border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600">
+                    <select wire:model.live="selectedSprintOrBacklogUuid" class="w-full rounded-md shadow-sm form-select border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600">
                         @if ($sprintOrBacklog == 'backlog')
                             @foreach ($backlogs as $backlog)
                                 <option value="{{ $backlog->uuid }}">{{ $backlog->name }}</option>

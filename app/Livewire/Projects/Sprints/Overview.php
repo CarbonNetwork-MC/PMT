@@ -36,6 +36,7 @@ class Overview extends Component
     public $sprintIsDone = false;
     public $sprintOrBacklog = 'sprint';
     public $selectedSprintOrBacklog;
+    public $selectedSprintOrBacklogUuid;
 
     public $name, $start_date, $end_date, $status;
 
@@ -56,6 +57,9 @@ class Overview extends Component
     public function updated($key, $value) {
         if ($key == 'search') {
             $this->archivedSprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 1)->where('name', 'like', '%' . $value . '%')->with('cards')->orderBy('start_date')->get();
+        }
+        if ($key == 'selectedSprintOrBacklogUuid') {
+            $this->selectedSprintOrBacklog = Sprint::where('uuid', $value)->first();
         }
     }
 
