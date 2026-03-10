@@ -143,7 +143,7 @@ class Backlog extends Component
             ]);
         } else if ($key === 'backlogOrSprint' && $value === 'sprint') {
             // Get all sprints for the selected project
-            $this->sprints = Sprint::where('project_id', $this->selectedProject)->orderBy('start_date')->get();
+            $this->sprints = Sprint::where('project_id', $this->selectedProject)->where('status', 'active')->orderBy('start_date')->get();
         }
     }
 
