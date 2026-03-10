@@ -3,7 +3,6 @@
 namespace App\Livewire\Projects\Settings;
 
 use App\Models\Log;
-use App\Models\Role;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectMember;

@@ -3,9 +3,6 @@
 namespace App\Livewire\Projects\Settings;
 
 use App\Models\Log;
-use App\Models\Task;
-use App\Models\Card;
-use App\Models\Sprint;
 use App\Models\Project;
 use Livewire\Component;
 use App\Models\ProjectMember;
@@ -86,10 +83,6 @@ class Admin extends Component
     public function deleteProject() {
         // Find the project
         $project = Project::where('uuid', $this->projectId)->with(['members.user', 'logs', 'sprints.cards.assignees.user', 'sprints.cards.tasks.assignees.user', 'backlogs.cards.assignees.user', 'backlogs.cards.tasks.assignees.user'])->first();
-
-        // dd($project);
-        // 7564a9f6-fdce-4637-8e37-b976540c7acc
-        // 9c42c7e8-4e75-44e5-8496-3576968a74c0
 
         // Delete the project members
         $project->members()->delete();
