@@ -27,6 +27,7 @@ return [
     'name' => 'Name',
     'start_date' => 'Start Date',
     'end_date' => 'End Date',
+    'archived_at' => 'Archived At',
     'dates' => 'Start/End Date',
     'status' => 'Status',
     'days' => 'Days',

@@ -174,7 +174,9 @@
                 <tbody>
                     @forelse($archivedSprints as $sprint)
                         <tr wire:key="archived-sprint-{{ $sprint->uuid }}" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                            <td class="p-2">{{ $sprint->name }}</td>
+                            <td class="p-2">
+                                <a href="{{ route('projects.board.render', ['uuid' => $sprint->uuid]) }}" class="font-medium text-gray-900 dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
+                            </td>
                             <td class="p-2">{{ $sprint->start_date }}</td>
                             <td class="p-2">{{ $sprint->end_date }}</td>
                             <td class="p-2">{{ $sprint->archived_at }}</td>
