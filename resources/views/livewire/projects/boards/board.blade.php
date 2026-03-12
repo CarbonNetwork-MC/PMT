@@ -50,9 +50,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-x-2">
-                    <p class="text-gray-300">Potential place for card filtering</p>
-                </div>
             </div>
         </div>
 
