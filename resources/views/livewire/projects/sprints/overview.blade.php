@@ -16,6 +16,11 @@
                 'icon' => '',
                 'url' => route('projects.dashboard.render', ['uuid' => $project->uuid]),
                 'label' => $project->name,
+            ],
+            [
+                'icon' => '',
+                'url' => route('projects.sprints.render', ['uuid' => $project->uuid]),
+                'label' => __('projects.titles.sprints'),
             ]
         ]" />
     </x-slot>

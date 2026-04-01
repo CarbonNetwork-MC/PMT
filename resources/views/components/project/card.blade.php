@@ -1,4 +1,4 @@
-@props(['project'])
+@props(['project', 'memberCount' => 0])
 
 <a 
     href="{{ route('projects.dashboard.render', ['uuid' => $project->uuid]) }}" 
@@ -13,7 +13,7 @@
         </div>
         <div class="flex">
             <i class="fi fi-sr-users-alt dark:text-white"></i>
-            <p class="ml-2 text-gray-800 dark:text-white">{{ $project->members->count() }}</p>
+            <p class="ml-2 text-gray-800 dark:text-white">{{ $memberCount }}</p>
         </div>
     </div>
 </a>

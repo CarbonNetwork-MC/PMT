@@ -8,7 +8,8 @@ use Livewire\Component;
 class Projects extends Component
 {
     public $user;
-    public $projects;
+    public $projects = [];
+    public $projectCount = 0;
 
     public function mount() {
         $this->user = auth()->user();
@@ -17,7 +18,9 @@ class Projects extends Component
                 $query->where('user_uuid', $this->user->uuid);
             })
             ->with(['owner', 'members.user'])
+            ->orderBy('created_at')
             ->get();
+        $this->projectCount = $this->projects ? count($this->projects) : 0;
     }
 
     public function render()

@@ -46,7 +46,7 @@
                 {{-- Projects --}}
                 <x-sidebar.nav-item
                     :href="route('projects.render')"
-                    :active="request()->routeIs('projects.render')"
+                    :active="request()->routeIs('projects.render') || request()->routeIs('projects.new.render')"
                     icon="fi fi-sr-department-structure"
                     :label="__('sidebar.projects.title')"
                 />
@@ -54,11 +54,44 @@
                 @if ($selectedProject)
                     <x-containers.divider margin="my-4" />
 
+                    {{-- Project Dashboard --}}
                     <x-sidebar.nav-item
                         :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
                         :active="request()->routeIs('projects.dashboard.*')"
-                        icon="fi fi-rr-briefcase"
+                        icon="fi fi-br-grid-alt"
                         :label="__('sidebar.projects.dashboard')"
+                    />
+
+                    {{-- Project Board --}}
+                    <x-sidebar.nav-item
+                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
+                        :active="false"
+                        icon="fi fi-sr-game-board-alt"
+                        :label="__('sidebar.projects.board')"
+                    />
+
+                    {{-- Project Sprints --}}
+                    <x-sidebar.nav-item
+                        :href="route('projects.sprints.render', ['uuid' => $selectedProject->uuid])"
+                        :active="request()->routeIs('projects.sprints.*')"
+                        icon="fi fi-br-running"
+                        :label="__('sidebar.projects.sprints')"
+                    />
+                    
+                    {{-- Project Backlog --}}
+                    <x-sidebar.nav-item
+                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
+                        :active="false"
+                        icon="fi fi-br-cubes-stacked"
+                        :label="__('sidebar.projects.backlog')"
+                    />
+
+                    {{-- Project Settings --}}
+                    <x-sidebar.nav-item
+                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
+                        :active="false"
+                        icon="fi fi-br-settings-sliders"
+                        :label="__('sidebar.projects.settings')"
                     />
                 @endif
             </nav>

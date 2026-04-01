@@ -4,8 +4,10 @@ use App\Http\Controllers\AuthController;
 
 use App\Livewire\Dashboard;
 
+use App\Livewire\Projects\NewProject;
 use App\Livewire\Projects\Projects;
 use App\Livewire\Projects\Dashboard\Dashboard as ProjectDashboard;
+use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +35,8 @@ Route::middleware(['auth'])->group(function() {
     // ? Projects
     Route::prefix('/projects')->group(function() {
         Route::get('/', Projects::class)->name('projects.render');
+        Route::get('/new', NewProject::class)->name('projects.new.render');
         Route::get('/{uuid}/dashboard', ProjectDashboard::class)->name('projects.dashboard.render');
+        Route::get('/{uuid}/sprints', SprintsOverview::class)->name('projects.sprints.render');
     });
 });

@@ -14,8 +14,12 @@ return [
 
     // ? Projects
     'projects' => [
-        'title' => 'Projects',
+        'backlog' => 'Backlog',
+        'board' => 'Board',
         'dashboard' => 'Project Dashboard',
+        'title' => 'Projects',
+        'sprints' => 'Sprints',
+        'settings' => 'Settings',
     ]
 
 ];
