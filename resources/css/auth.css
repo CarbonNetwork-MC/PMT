@@ -1,7 +1,7 @@
 .auth-background {
     width: 100vw !important;
     height: 100vh !important;
-    background-image: url('/resources/images/auth-background.png');
+    background-image: url('/resources/images/auth-background.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position-y: -5rem;
