@@ -12,4 +12,10 @@ return [
     // ? Public
     'dashboard' => 'Dashboard',
 
+    // ? Projects
+    'projects' => [
+        'title' => 'Projects',
+        'dashboard' => 'Project Dashboard',
+    ]
+
 ];

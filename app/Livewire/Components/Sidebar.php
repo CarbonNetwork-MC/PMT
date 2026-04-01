@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components;
 
+use App\Models\Project;
 use Livewire\Component;
 
 class Sidebar extends Component
@@ -17,7 +18,7 @@ class Sidebar extends Component
             ? asset('storage/' . $this->user->profile_picture)
             : null;
 
-        // TODO: Get the user's selected project from the request.
+        $this->selectedProject = request()->route('uuid') ? Project::where('uuid', request()->route('uuid'))->first() : null;
     }
 
     public function render()

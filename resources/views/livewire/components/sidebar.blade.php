@@ -42,6 +42,25 @@
                     icon="fi fi-rr-home"
                     :label="__('sidebar.dashboard')"
                 />
+
+                {{-- Projects --}}
+                <x-sidebar.nav-item
+                    :href="route('projects.render')"
+                    :active="request()->routeIs('projects.render')"
+                    icon="fi fi-sr-department-structure"
+                    :label="__('sidebar.projects.title')"
+                />
+
+                @if ($selectedProject)
+                    <x-containers.divider margin="my-4" />
+
+                    <x-sidebar.nav-item
+                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
+                        :active="request()->routeIs('projects.dashboard.*')"
+                        icon="fi fi-rr-briefcase"
+                        :label="__('sidebar.projects.dashboard')"
+                    />
+                @endif
             </nav>
         @endif
 
@@ -61,26 +80,26 @@
         <!-- Footer -->
         <div class="mt-auto">
             @if ($user->hasRole('Superadmin'))
-            {{-- Admin Section --}}
-            <x-sidebar.nav-divider />
+                {{-- Admin Section --}}
+                <x-sidebar.nav-divider />
 
-            <div class="mb-2">
-                @if (request()->routeIs('admin.*'))
-                    <x-sidebar.nav-item
-                        :href="route('dashboard.render')"
-                        :active="false"
-                        icon="fi fi-rr-arrow-small-left"
-                        :label="__('sidebar.back_to_dashboard')"
-                    />
-                @else
-                    {{-- <x-sidebar.nav-item
-                        :href="route('admin.dashboard.render')"
-                        :active="request()->routeIs('admin.dashboard.*')"
-                        icon="fi fi-rr-admin-alt"
-                        :label="__('sidebar.management')"
-                    /> --}}
-                @endif
-            </div>
+                <div class="mb-2">
+                    @if (request()->routeIs('admin.*'))
+                        <x-sidebar.nav-item
+                            :href="route('dashboard.render')"
+                            :active="false"
+                            icon="fi fi-rr-arrow-small-left"
+                            :label="__('sidebar.back_to_dashboard')"
+                        />
+                    @else
+                        {{-- <x-sidebar.nav-item
+                            :href="route('admin.dashboard.render')"
+                            :active="request()->routeIs('admin.dashboard.*')"
+                            icon="fi fi-rr-admin-alt"
+                            :label="__('sidebar.management')"
+                        /> --}}
+                    @endif
+                </div>
             @endif
 
             <div class="border-t border-zinc-200 dark:border-zinc-800 pt-3">
