@@ -24,10 +24,20 @@ return [
         'name' => 'Name',
         'start-date' => 'Start Date',
         'end-date' => 'End Date',
+
+        'cards' => 'Cards',
+        'days_to_start' => 'Days to Start',
+        'days_left' => 'Days Left',
+        'done' => 'Done',
     ],
 
     'buttons' => [
-        'new-sprint' => 'New Sprint',
+        'archive_sprint' => 'Archive Sprint',
+        'complete_sprint' => 'Complete Sprint',
+        'delete_sprint' => 'Delete Sprint',
+        'edit_sprint' => 'Edit Sprint',
+        'new_sprint' => 'New Sprint',
+        'start_sprint' => 'Start Sprint',
     ],
 
     'messages' => [

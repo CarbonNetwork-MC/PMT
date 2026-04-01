@@ -59,14 +59,16 @@
             </div>
             
             <x-buttons.primary-button href="{{ route('projects.sprints.new.render', ['uuid' => $project->uuid]) }}">
-                {{ __('sprints.buttons.new-sprint') }}
+                {{ __('sprints.buttons.new_sprint') }}
             </x-buttons.primary-button>
         </div>
     </x-containers.main>
 
     <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
         @forelse ($sprints as $sprint)
-            {{ $sprint->uuid }}
+            {{-- TODO: link to board for $sprint --}}
+            {{-- TODO: burndown chart for $sprint --}}
+            <x-project.sprint-card :sprint="$sprint" />
         @empty
 
         @endforelse

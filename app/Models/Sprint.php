@@ -19,6 +19,12 @@ class Sprint extends Model
         'archived_at',
         'archived_by',
     ];
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'archived_at' => 'datetime',
+        'is_archived' => 'boolean',
+    ];
 
     public function project(): BelongsTo {
         return $this->belongsTo(Project::class, 'project_uuid', 'uuid');
