@@ -24,6 +24,10 @@ return [
     'labels' => [
         'name' => 'Project Name',
         'description' => 'Project Description',
-    ]
+    ],
+
+    'toast' => [
+        'project-created' => 'Project created successfully!',
+    ],
 
 ];

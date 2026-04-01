@@ -86,6 +86,14 @@
                         :label="__('sidebar.projects.backlog')"
                     />
 
+                    {{-- Sprint Archive --}}
+                    <x-sidebar.nav-item
+                    :href="route('projects.sprints.render', ['uuid' => $selectedProject->uuid])"
+                    :active="false"
+                    icon="fi fi-br-archive"
+                    :label="__('sidebar.projects.archive')"
+                    />
+
                     {{-- Project Settings --}}
                     <x-sidebar.nav-item
                         :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"

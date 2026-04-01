@@ -33,9 +33,10 @@ class NewProject extends Component
             'table' => 'projects',
             'data' => json_encode($data),
             'description' => "Created project <b>" . $data['name'] . "</b>",
+            'environment' => config('app.env') 
         ]);
 
-        return redirect()->route('projects.dashboard.render', ['uuid' => $project->uuid]);
+        return redirect()->route('projects.dashboard.render', ['uuid' => $project->uuid])->success(__('projects.toast.project-created'));
     }
 
     public function render()

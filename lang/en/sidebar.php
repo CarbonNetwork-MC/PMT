@@ -14,6 +14,7 @@ return [
 
     // ? Projects
     'projects' => [
+        'archive' => 'Sprint Archive',
         'backlog' => 'Backlog',
         'board' => 'Board',
         'dashboard' => 'Project Dashboard',

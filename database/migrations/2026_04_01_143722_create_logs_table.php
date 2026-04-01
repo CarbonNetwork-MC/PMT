@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('table');
             $table->json('data');
             $table->text('description')->nullable();
-            $table->enum('environment', ['production', 'staging', 'development']);
+            $table->enum('environment', ['local', 'staging', 'production']);
             $table->timestamps();
         });
     }
