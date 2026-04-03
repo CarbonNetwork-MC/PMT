@@ -48,19 +48,20 @@
                 {{-- Main Select Container --}}
                 @php
                     if ($isRtl) {
-                        $suffixButtonClass = $this->suffixButton ? 'las-rounded-l-none' : 'las-rounded-l-md';
+                        $suffixButtonClass = $this->suffixButton ? 'las-rounded-l-none' : 'las-rounded-md';
                     } else {
                         $suffixButtonClass = $this->suffixButton ? 'las-rounded-r-none' : 'las-rounded-r-md';
                     }
                 @endphp
                 <div class="las-select-trigger las-relative las-flex las-min-h-[40px] las-flex-1 
-            las-cursor-text las-items-center las-rounded-l-md {{ $suffixButtonClass }} 
-            las-border las-border-gray-300 las-bg-white las-px-3 las-py-2 las-text-sm 
-            las-transition-colors hover:las-border-gray-400 focus-within:las-outline-none 
-            focus-within:las-ring-2 focus-within:las-ring-primary-500 
-            focus-within:las-ring-offset-2 focus-within:las-z-10 {{ $this->suffixButton ? 'focus-within:las-border-r-0' : '' }}"
-                    x-on:click="if ($refs.search) { $refs.search.focus(); openDropdown(); } else { 
-            openDropdown(); }">
+                    las-cursor-text las-items-center rounded-base! {{ $suffixButtonClass }} 
+                    las-border las-border-gray-300 las-bg-white las-px-3 las-py-2 las-text-sm 
+                    las-transition-colors hover:las-border-gray-400 focus-within:las-outline-none 
+                    focus-within:las-ring-2 focus-within:las-ring-primary-500 
+                    focus-within:las-ring-offset-2 focus-within:las-z-10 {{ $this->suffixButton ? 'focus-within:las-border-r-0' : '' }}"
+                            x-on:click="if ($refs.search) { $refs.search.focus(); openDropdown(); } else { 
+                    openDropdown(); }"
+                >
                     {{-- Selected Values / Tags --}}
                     <div class="las-flex las-min-w-0 las-flex-1 las-flex-wrap las-items-center las-gap-1.5">
                         @if ($this->multiple)
@@ -109,7 +110,7 @@
                             @if ($this->searchable)
                                 <input x-ref="search" type="text" wire:model.live.debounce.300ms="search"
                                     placeholder="{{ count($selectedOptions) ? '' : $placeholder }}"
-                                    class="las-min-w-[120px] las-flex-1 las-border-0 las-bg-transparent las-p-0 las-text-base las-text-gray-900 placeholder:las-text-gray-400 focus:las-outline-none focus:las-ring-0"
+                                    class="las-min-w-[120px] las-flex-1 las-border-0 rounded-base las-bg-transparent las-p-0 las-text-base las-text-gray-900 placeholder:las-text-gray-400 focus:las-outline-none focus:las-ring-0"
                                     x-on:click="openDropdown()" autocomplete="off">
                             @endif
                         @else
@@ -125,13 +126,13 @@
                                 @else
                                     {{-- Default single select display --}}
                                     <span
-                                        class="las-flex-1 las-truncate las-text-base las-text-gray-900">{{ $selectedOptions[0]['label'] }}</span>
+                                        class="las-flex-1 las-truncate las-text-base las-text-gray-900 cursor-pointer">{{ $selectedOptions[0]['label'] }}</span>
                                 @endif
                             @else
                                 @if ($this->searchable)
                                     <input x-ref="search" type="text" wire:model.live.debounce.300ms="search"
                                         placeholder="{{ $placeholder }}"
-                                        class="las-w-full las-border-0 las-bg-transparent las-p-0 las-text-base las-text-gray-900 placeholder:las-text-gray-400 focus:las-outline-none focus:las-ring-0"
+                                        class="las-w-full las-border-0 rounded-base las-bg-transparent las-p-0 las-text-base las-text-gray-900 placeholder:las-text-gray-400 focus:las-outline-none focus:las-ring-0 cursor-pointer"
                                         x-on:click="openDropdown()" autocomplete="off">
                                 @endif
                             @endif
@@ -139,7 +140,7 @@
                     </div>
 
                     {{-- Action Icons --}}
-                    <div class="las-flex las-shrink-0 las-items-center las-gap-1 las-pl-2">
+                    <div class="las-flex las-shrink-0 las-items-center las-gap-1 las-pl-2 cursor-pointer">
                         @if ($hasSelection && $this->clearable)
                             <button type="button"
                                 class="las-icon-button las-flex las-h-5 las-w-5 las-shrink-0 las-items-center las-justify-center las-rounded-sm las-text-gray-400 hover:las-text-gray-900 focus:las-outline-none"
@@ -154,7 +155,7 @@
                         @endif
 
                         <button type="button"
-                            class="las-icon-button las-flex las-h-5 las-w-5 las-shrink-0 las-items-center las-justify-center las-text-gray-400"
+                            class="las-icon-button las-flex las-h-5 las-w-5 las-shrink-0 las-items-center las-justify-center las-text-gray-400 cursor-pointer"
                             x-on:click.stop="toggle()">
                             <svg class="las-h-4 las-w-4 las-transition-transform las-duration-200"
                                 x-bind:class="{ 'las-rotate-180': open }" viewBox="0 0 15 15" fill="none"
@@ -246,7 +247,7 @@
                                 @endphp
 
                                 <div wire:key="async-select-option-{{ md5($optionValue) }}"
-                                    class="las-relative las-flex las-items-center las-gap-2 las-rounded-sm las-px-2 las-py-1.5 las-text-base las-outline-none las-transition-colors {{ $isDisabled ? 'las-cursor-not-allowed las-opacity-50' : 'las-cursor-default las-select-none' }}"
+                                    class="las-relative las-flex las-items-center las-gap-2 las-rounded-sm las-px-2 las-py-1.5 las-text-base las-outline-none las-transition-colors {{ $isDisabled ? 'las-cursor-not-allowed las-opacity-50' : 'las-cursor-pointer las-select-none' }}"
                                     :class="{
                                         'las-bg-primary-50 las-text-primary-900': highlighted ===
                                             {{ $globalIndex }} && !{{ $isDisabled ? 'true' : 'false' }},
@@ -336,7 +337,7 @@
                             @endphp
 
                             <div wire:key="async-select-option-{{ md5($optionValue) }}"
-                                class="las-relative las-flex las-items-center las-gap-2 las-rounded-sm las-px-2 las-py-1.5 las-text-base las-outline-none las-transition-colors {{ $isDisabled ? 'las-cursor-not-allowed las-opacity-50' : 'las-cursor-default las-select-none' }}"
+                                class="las-relative las-flex las-items-center las-gap-2 las-rounded-sm las-px-2 las-py-1.5 las-text-base las-outline-none las-transition-colors {{ $isDisabled ? 'las-cursor-not-allowed las-opacity-50' : 'las-cursor-pointer las-select-none' }}"
                                 :class="{
                                     'las-bg-primary-50 las-text-primary-900': highlighted === {{ $index }} && !
                                         {{ $isDisabled ? 'true' : 'false' }},
