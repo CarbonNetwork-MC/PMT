@@ -96,8 +96,8 @@
 
                     {{-- Project Settings --}}
                     <x-sidebar.nav-item
-                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
-                        :active="false"
+                        :href="route('projects.settings.general.render', ['uuid' => $selectedProject->uuid])"
+                        :active="request()->routeIs('projects.settings.*')"
                         icon="fi fi-br-settings-sliders"
                         :label="__('sidebar.projects.settings')"
                     />

@@ -13,11 +13,8 @@ return new class extends Migration
     {
         Schema::create('project_permissions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_role_id');
             $table->string('permission');
             $table->timestamps();
-
-            $table->foreign('project_role_id')->references('id')->on('project_roles')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
