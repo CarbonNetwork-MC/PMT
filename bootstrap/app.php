@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsProjectOwner;
 use App\Http\Middleware\EnsureUserIsProjectOwnerOrAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -13,7 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'owner-or-admin' => EnsureUserIsProjectOwnerOrAdmin::class,
+            'project-owner-or-admin' => EnsureUserIsProjectOwnerOrAdmin::class,
+        ]);
+    })
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'project-owner' => EnsureUserIsProjectOwner::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
