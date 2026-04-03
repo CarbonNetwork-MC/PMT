@@ -12,7 +12,7 @@ class General extends Component
     public $name;
     public $description;
     
-    public $isProjectOwnerOrAdmin;
+    public $isProjectOwner;
 
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
@@ -20,14 +20,7 @@ class General extends Component
         $this->name = $this->project->name;
         $this->description = $this->project->description;
 
-        $this->isProjectOwnerOrAdmin =
-            auth()->user()->uuid === $this->project->owner_uuid
-            || $this->project->members()
-                ->where('user_uuid', auth()->user()->uuid)
-                ->whereHas('role', function ($q) {
-                    $q->where('slug', 'admin');
-                })
-                ->exists();
+        $this->isProjectOwner = auth()->user()->uuid === $this->project->owner_uuid;
     }
 
     public function save() {

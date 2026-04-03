@@ -4,7 +4,7 @@
             {{ $title }}
         </h1>
         <span class="text-gray-600 dark:text-gray-400">
-            {{ $description ?? '' }}
+            {!! $description ?? '' !!}
         </span>
     </div>
     <div class="col-span-1 lg:col-span-2">

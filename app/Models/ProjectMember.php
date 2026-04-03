@@ -11,8 +11,9 @@ class ProjectMember extends Model
     protected $keyType = 'string';
     public $incrementing = false;
     protected $fillable = [
-        'project_id',
+        'project_uuid',
         'user_uuid',
+        'project_role_id',
     ];
 
     public function project(): BelongsTo {

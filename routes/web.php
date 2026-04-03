@@ -7,6 +7,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Projects\NewProject;
 use App\Livewire\Projects\Projects;
 use App\Livewire\Projects\Dashboard\Dashboard as ProjectDashboard;
+use App\Livewire\Projects\Settings\Admin as ProjectSettingsAdmin;
 use App\Livewire\Projects\Settings\General as ProjectSettingsGeneral;
 use App\Livewire\Projects\Sprints\NewSprint;
 use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
@@ -45,5 +46,6 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/{uuid}/sprints/new', NewSprint::class)->name('projects.sprints.new.render');
 
         Route::get('/{uuid}/settings/general', ProjectSettingsGeneral::class)->name('projects.settings.general.render');
+        Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)->name('projects.settings.admin.render')->middleware('project-owner');
     });
 });

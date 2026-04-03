@@ -35,13 +35,21 @@
             <x-navigation.tabs 
                 :active="'general'"
                 :tabs="[
-                    ['key' => 'general', 'label' => 'General', 'href' => '#'],
-                    ['key' => 'members', 'label' => 'Members', 'href' => '#'],
+                    [
+                        'key' => 'general', 
+                        'label' => 'General', 
+                        'href' => route('projects.settings.general.render', ['uuid' => $project->uuid])
+                    ],
+                    [
+                        'key' => 'members', 
+                        'label' => 'Members', 
+                        'href' => route('projects.settings.members.render', ['uuid' => $project->uuid])
+                    ],
                     [
                         'key' => 'admin',
                         'label' => 'Admin',
-                        'href' => '#',
-                        'disabled' => !$isProjectOwnerOrAdmin
+                        'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid]),
+                        'disabled' => !$isProjectOwner
                     ],
                 ]"
             />
