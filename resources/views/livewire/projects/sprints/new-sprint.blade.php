@@ -45,12 +45,12 @@
 
             {{-- Start Date --}}
             <div class="col-span-1">
-                <x-forms.date-input label="{{ __('sprints.labels.start-date') }}" wire:model="start_date" required />
+                <x-forms.date-input label="{{ __('sprints.labels.start_date') }}" wire:model="start_date" required />
             </div>
 
             {{-- End Date --}}
             <div class="col-span-1">
-                <x-forms.date-input label="{{ __('sprints.labels.end-date') }}" wire:model="end_date" required />
+                <x-forms.date-input label="{{ __('sprints.labels.end_date') }}" wire:model="end_date" required />
             </div>
         </div>
 

@@ -70,7 +70,81 @@
             {{-- TODO: burndown chart for $sprint --}}
             <x-project.sprint-card :sprint="$sprint" />
         @empty
-
+            <div class="col-span-3 lg:col-span-4 3xl:col-span-5 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
+                <p class="text-center text-gray-600 dark:text-gray-300">
+                    {{ __('sprints.messages.no_sprints') }}
+                </p>
+            </div>
         @endforelse
     </div>
+
+    {{-- Edit Sprint Modal --}}
+    <x-modals.big-modal wire:model="showEditModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {!! __('sprints.modals.edit_sprint_title', ['name' => $editingSprint->name ?? '']) !!}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <div class="flex justify-center py-4">
+                <div class="w-4/5 grid grid-cols-2 gap-x-4 gap-y-6">
+                    {{-- Name --}}
+                    <div class="col-span-1">
+                        <x-forms.text-input wire:model="name" label="{{ __('sprints.labels.name') }}" placeholder="{{ __('sprints.labels.name') }}" required />
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="col-span-1">
+                        <x-forms.select
+                            wire:model="status"
+                            label="{{ __('sprints.labels.status') }}"
+                            :options="collect($statuses)->mapWithKeys(fn($s) => [$s => __('sprints.statuses.' . $s)])->toArray()"
+                            placeholder="{{ __('sprints.labels.select_status') }}"
+                            required
+                        />
+                    </div>
+
+                    {{-- Start Date --}}
+                    <div class="col-span-1">
+                        <x-forms.date-input wire:model="start_date" label="{{ __('sprints.labels.start_date') }}" required />
+                    </div>
+
+                    {{-- End Date --}}
+                    <div class="col-span-1">
+                        <x-forms.date-input wire:model="end_date" label="{{ __('sprints.labels.end_date') }}" required />
+                    </div>
+                </div>
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showEditModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.primary-button wire:click="updateSprint">
+                {{ __('general.buttons.save') }}
+            </x-buttons.primary-button>
+        </x-slot>
+    </x-modals.big-modal>
+
+    {{-- Delete Sprint Modal --}}
+    <x-modals.modal wire:model="showDeleteModal">
+        <x-slot name="title">
+            <p class="text-center text-red-500">
+                {{ __('sprints.modals.delete_sprint_title', ['name' => $deletingSprint->name ?? '']) }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-center">
+                {!! __('sprints.modals.delete_sprint_message', ['name' => $deletingSprint->name ?? '']) !!}
+            </p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showDeleteModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.danger-button wire:click="deleteSprint({{ $deletingSprint->uuid ?? '' }})">
+                {{ __('general.buttons.delete') }}
+            </x-buttons.danger-button>
+        </x-slot>
+    </x-modals.modal>
 </div>

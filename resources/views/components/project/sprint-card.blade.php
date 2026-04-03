@@ -10,47 +10,48 @@
                 @switch($sprint->status)
                     @case('planned')
                         <li>
-                            <a href="#" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600">
+                            <p wire:click="startSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
                                 <i class="fi fi-br-play-circle"></i>
                                 {{ __('sprints.buttons.start_sprint') }}
-                            </a>
+                            </p>
                         </li>
                         @break
                     @case('active')
                         <li>
-                            <a href="#" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600">
+                            <p wire:click="completeSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
                                 <i class="fi fi-br-stop-circle"></i>
                                 {{ __('sprints.buttons.complete_sprint') }}
-                            </a>
+                            </p>
                         </li>
                         @break
                     @case('completed')
                         <li>
-                            <a href="#" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600">
+                            <p wire:click="archiveSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
                                 <i class="fi fi-sr-box"></i>
                                 {{ __('sprints.buttons.archive_sprint') }}
-                            </a>
+                            </p>
                         </li>
                         @break
                 @endswitch
 
                 <li>
-                    <a href="#" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600">
+                    <p wire:click="editSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
                         <i class="fi fi-rs-pencil"></i>
                         {{ __('sprints.buttons.edit_sprint') }}
-                    </a>
+                    </p>
                 </li>
                 <li>
-                    <a href="#" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-red-400 dark:hover:bg-gray-600">
+                    <p wire:click="deleteSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-red-400 dark:hover:bg-gray-600 cursor-pointer">
                         <i class="fi fi-rs-trash"></i>
                         {{ __('sprints.buttons.delete_sprint') }}
-                    </a>
+                    </p>
                 </li>
             </ul>
         </div>
     </div>
     
-    <div class="mt-1">
+    <div class="mt-1 flex justify-between items-center">
+        {{-- Information left - Icons --}}
         <div class="flex gap-2">
             <div class="flex flex-col">
                 <div>
@@ -105,6 +106,29 @@
                     <p class="dark:text-gray-300">{{ count($sprint->cards) }}</p>
                 </div>
             </div>
+        </div>
+
+        {{-- Information right - Date --}}
+        @php
+            $start = $sprint->start_date;
+            $end = $sprint->end_date;
+        @endphp
+
+        <div class="flex flex-col items-end">
+            <p class="text-2xs font-semibold uppercase text-gray-500 dark:text-gray-300">
+                {{ __('sprints.labels.duration') }}
+            </p>
+            <p class="dark:text-gray-300 font-medium">
+                @if($start->format('Y') === $end->format('Y'))
+                    @if($start->format('M') === $end->format('M'))
+                        {{ $start->format('M d') }} – {{ $end->format('d, Y') }}
+                    @else
+                        {{ $start->format('M d') }} – {{ $end->format('M d, Y') }}
+                    @endif
+                @else
+                    {{ $start->format('M d, Y') }} – {{ $end->format('M d, Y') }}
+                @endif
+            </p>
         </div>
     </div>
 
