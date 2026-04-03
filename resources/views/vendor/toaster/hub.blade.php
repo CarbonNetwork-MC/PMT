@@ -53,7 +53,7 @@
                 </div>
 
                 <!-- Message -->
-                <div class="ms-2.5 text-sm border-s border-default ps-3.5" x-text="toast.message"></div>
+                <div class="ms-2.5 text-sm border-s border-default ps-3.5" x-html="toast.message"></div>
 
                 <!-- Close -->
                 <button @click="toast.dispose()"
