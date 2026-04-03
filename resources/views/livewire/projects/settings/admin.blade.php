@@ -94,7 +94,10 @@
         </x-slot>
         <x-slot name="content">
             <p class="text-gray-600 dark:text-gray-300 text-center">
-                {!! __('settings.messages.change_owner_warning') !!}
+                {{ __('settings.messages.change_owner_warning') }}
+            </p>
+            <p class="text-red-500 text-center">
+                {!! __('settings.messages.action_cannot_be_undone') !!}
             </p>
 
             {{-- Select new owner --}}
@@ -131,7 +134,10 @@
         </x-slot>
         <x-slot name="content">
             <p class="text-gray-600 dark:text-gray-300 text-center">
-                {!! __('settings.messages.delete_project_warning') !!}
+                {{ __('settings.messages.delete_project_warning') }}
+            </p>
+            <p class="text-red-500 text-center">
+                {!! __('settings.messages.action_cannot_be_undone') !!}
             </p>
         </x-slot>
         <x-slot name="footer">
