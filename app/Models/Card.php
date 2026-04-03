@@ -15,6 +15,7 @@ class Card extends Model
         'column_id',
         'approval_status',
         'card_index',
+        'deadline',
     ];
 
     public function sprint(): BelongsTo {

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('column_id');
             $table->enum('approval_status', ['None', 'Approved', 'Needs Work', 'Rejected'])->default('None');
             $table->integer('card_index')->default(0);
+            $table->timestamp('deadline')->nullable();
             $table->timestamps();
 
             $table->foreign('sprint_uuid')->references('uuid')->on('sprints')->onUpdate('cascade')->onDelete('cascade');

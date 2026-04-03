@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Task extends Model
 {
@@ -14,6 +13,9 @@ class Task extends Model
         'description',
         'column_id',
         'task_index',
+        'deadline',
+        'estimated_time',
+        'actual_time',
     ];
 
     public function card(): BelongsTo {

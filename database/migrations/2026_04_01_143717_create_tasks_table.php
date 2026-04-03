@@ -17,6 +17,9 @@ return new class extends Migration
             $table->text('description');
             $table->unsignedBigInteger('column_id');
             $table->integer('task_index')->default(0);
+            $table->timestamp('deadline')->nullable();
+            $table->decimal('estimated_time', 8, 2)->nullable();
+            $table->decimal('actual_time', 8, 2)->nullable();
             $table->timestamps();
 
             $table->foreign('card_id')->references('id')->on('cards')->onUpdate('cascade')->onDelete('cascade');
