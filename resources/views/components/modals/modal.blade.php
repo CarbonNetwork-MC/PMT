@@ -9,7 +9,7 @@
     x-on:show.window="$nextTick(() => $el.querySelector('[data-autofocus]')?.focus())"
     class="overflow-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full h-full"
 >
-    <div x-show="show" class="relative p-4 w-full h-full flex items-center justify-center bg-gray-900/40">
+    <div x-show="show" class="relative p-4 w-full h-full flex items-center justify-center bg-gray-900/60">
         <div class="relative flex flex-col lg:w-lg bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-sm">
             <div class="w-full flex justify-between px-3 py-2 bg-gray-200 dark:bg-gray-800 rounded-t-lg">
                 <h2 class="w-full font-bold text-lg">{{ $title ?? '' }}</h2>
