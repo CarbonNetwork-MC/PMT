@@ -4,7 +4,7 @@
     'size' => '',
     'required' => false,
     'disabled' => false,
-    'options' => [], // ['value' => 'Label']
+    'options' => [],
     'placeholder' => 'Select an option',
 ])
 
@@ -16,11 +16,39 @@
     };
 @endphp
 
-<div 
-    x-data="init()"
+<div
+    x-data="{
+        open: false,
+        value: @entangle($attributes->wire('model')).live,
+        options: @js($options),
+        isMobile: window.innerWidth < 768,
+        activeIndex: -1,
+
+        get selectedLabel() {
+            return this.options[this.value] ?? '{{ $placeholder }}';
+        },
+
+        openDropdown() {
+            this.open = true;
+            this.activeIndex = Math.max(
+                Object.keys(this.options).indexOf(this.value),
+                0
+            );
+        },
+
+        closeDropdown() {
+            this.open = false;
+            this.activeIndex = -1;
+        },
+
+        select(index) {
+            const keys = Object.keys(this.options);
+            this.value = keys[index];
+            this.closeDropdown();
+        }
+    }"
     class="relative max-w-sm"
 >
-    {{-- Label --}}
     @if ($label)
         <label class="block mb-2.5 text-sm font-medium text-heading">
             {{ $label }}
@@ -28,22 +56,20 @@
         </label>
     @endif
 
-    {{-- Native select for mobile --}}
     <select
         x-show="isMobile"
+        x-model="value"
         id="{{ $id }}"
         name="{{ $id }}"
-        x-model="value"
-        :disabled="{{ $disabled ? 'true' : 'false' }}"
+        @disabled($disabled)
         class="w-full bg-gray-100 border border-default-medium rounded-base text-sm text-black shadow-xs focus:ring-brand focus:border-brand {{ $sizeClasses }}"
     >
-        <option value="" disabled selected>{{ $placeholder }}</option>
-        @foreach ($options as $key => $label)
-            <option value="{{ $key }}">{{ $label }}</option>
+        <option value="" disabled>{{ $placeholder }}</option>
+        @foreach ($options as $key => $optionLabel)
+            <option value="{{ $key }}">{{ $optionLabel }}</option>
         @endforeach
     </select>
 
-    {{-- Trigger --}}
     <button
         x-show="!isMobile"
         type="button"
@@ -57,7 +83,7 @@
         @keydown.enter.prevent="if (open && activeIndex >= 0) select(activeIndex)"
         @keydown.escape="closeDropdown()"
         @keydown.tab="closeDropdown()"
-        :disabled="{{ $disabled ? 'true' : 'false' }}"
+        @disabled($disabled)
         class="w-full flex justify-between items-center bg-gray-100 border border-default-medium rounded-base text-sm text-black shadow-xs focus:ring-brand focus:border-brand {{ $sizeClasses }}"
     >
         <span x-text="selectedLabel" class="truncate"></span>
@@ -67,12 +93,11 @@
         </svg>
     </button>
 
-    {{-- Dropdown --}}
-    <div 
+    <div
         role="listbox"
         :id="'{{ $id }}-listbox'"
         x-show="open && !isMobile"
-        @click.outside="open = false"
+        @click.outside="closeDropdown()"
         x-transition
         class="absolute z-50 mt-2 w-full bg-white text-black border border-default-medium rounded-base shadow-lg max-h-60 overflow-auto"
     >
@@ -82,50 +107,10 @@
                 :aria-selected="value === key"
                 @click="select(index)"
                 class="px-3 py-2 hover:bg-gray-200 cursor-pointer"
-                :class="{
-                    'bg-blue-400 hover:bg-blue-500!': value === key,
-                }"
+                :class="{ 'bg-blue-400': value === key }"
             >
                 <span x-text="options[key]"></span>
             </div>
         </template>
     </div>
-
-    {{-- Hidden input for form submission --}}
-    <input type="hidden" :name="'{{ $id }}'" x-model="value">
-
-    <script>
-        function init() {
-            return {
-                open: false,
-                value: @entangle($attributes->wire('model')).defer ?? '',
-                options: @js($options),
-                isMobile: window.innerWidth < 768,
-                activeIndex: -1,
-
-                get selectedLabel() {
-                    return this.options[this.value] ?? '{{ $placeholder }}';
-                },
-
-                openDropdown() {
-                    this.open = true;
-                    this.activeIndex = Math.max(
-                        Object.keys(this.options).indexOf(this.value),
-                        0
-                    );
-                },
-
-                closeDropdown() {
-                    this.open = false;
-                    this.activeIndex = -1;
-                },
-
-                select(index) {
-                    const keys = Object.keys(this.options);
-                    this.value = keys[index];
-                    this.closeDropdown();
-                }
-            }
-        }
-    </script>
 </div>
