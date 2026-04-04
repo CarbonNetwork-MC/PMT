@@ -37,17 +37,17 @@
                 :tabs="[
                     [
                         'key' => 'general', 
-                        'label' => 'General', 
+                        'label' => __('settings.nav.general'), 
                         'href' => route('projects.settings.general.render', ['uuid' => $project->uuid])
                     ],
                     [
                         'key' => 'members', 
-                        'label' => 'Members', 
+                        'label' => __('settings.nav.members'), 
                         'href' => route('projects.settings.members.render', ['uuid' => $project->uuid])
                     ],
                     [
                         'key' => 'admin',
-                        'label' => 'Admin',
+                        'label' => __('settings.nav.admin'),
                         'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid]),
                         'disabled' => !$isProjectOwner
                     ],

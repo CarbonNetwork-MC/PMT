@@ -63,4 +63,10 @@ return [
         'select_new_owner' => 'Select a new owner',
     ],
 
+    'nav' => [
+        'general' => 'General',
+        'members' => 'Members',
+        'admin' => 'Admin',
+    ]
+
 ];
