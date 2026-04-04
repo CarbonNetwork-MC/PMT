@@ -112,7 +112,12 @@
                         wire:model="newOwnerId"
                         label="{{ __('settings.labels.new_owner') }}"
                         placeholder="{{ __('settings.placeholders.select_new_owner') }}"
-                        :options="$projectMembers->mapWithKeys(fn($m) => [$m->user_uuid => $m->user->name . ' (' . $m->role->name . ')'])->toArray()"
+                        :options="$projectMembers->map(function($member) {
+                            return [
+                                'value' => $member->user_uuid,
+                                'label' => $member->user->name . ' (' . $member->role->name . ')'
+                            ];
+                        })"
                         required
                     />
                 </div>

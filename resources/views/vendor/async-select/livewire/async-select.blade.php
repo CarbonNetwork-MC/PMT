@@ -132,7 +132,7 @@
                                 @if ($this->searchable)
                                     <input x-ref="search" type="text" wire:model.live.debounce.300ms="search"
                                         placeholder="{{ $placeholder }}"
-                                        class="las-w-full las-border-0 rounded-base las-bg-transparent las-p-0 las-text-base las-text-gray-900 placeholder:las-text-gray-400 focus:las-outline-none focus:las-ring-0 cursor-pointer"
+                                        class="las-w-full las-border-0 rounded-base las-bg-transparent las-p-0 las-text-gray-900 placeholder:las-text-gray-400 focus:las-outline-none focus:las-ring-0 font-rw-semibold text-sm cursor-pointer"
                                         x-on:click="openDropdown()" autocomplete="off">
                                 @endif
                             @endif

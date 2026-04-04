@@ -96,10 +96,16 @@
                     {{-- Status --}}
                     <div class="col-span-1">
                         <x-forms.select
+                            placeholder="{{ __('sprints.labels.select_status') }}"
                             wire:model="status"
                             label="{{ __('sprints.labels.status') }}"
-                            :options="collect($statuses)->mapWithKeys(fn($s) => [$s => __('sprints.statuses.' . $s)])->toArray()"
-                            placeholder="{{ __('sprints.labels.select_status') }}"
+                            {{-- :options="collect($statuses)->mapWithKeys(fn($s) => [$s => __('sprints.statuses.' . $s)])->toArray()" --}}
+                            :options="collect($statuses)->map(function ($status) {
+                                return [
+                                    'value' => $status,
+                                    'label' => __('sprints.statuses.' . $status),
+                                ];
+                            })"
                             required
                         />
                     </div>

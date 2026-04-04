@@ -123,7 +123,10 @@
                     <x-forms.select 
                         wire:model="newRole" 
                         :label="__('settings.labels.member_role')" 
-                        :options="$roles->mapWithKeys(fn($role) => [$role->id => $role->name])" 
+                        :options="$roles->map(fn($role) => [
+                            'value' => $role->id,
+                            'label' => $role->name
+                        ])" 
                     />
                 </div>
             </div>
@@ -160,7 +163,10 @@
                         <x-forms.select 
                             wire:model="newMemberRole" 
                             :label="__('settings.labels.member_role')" 
-                            :options="$roles->mapWithKeys(fn($role) => [$role->id => $role->name])" 
+                            :options="$roles->map(fn($role) => [
+                                'value' => $role->id,
+                                'label' => $role->name
+                            ])" 
                         />
                     </div>
                 </div>
