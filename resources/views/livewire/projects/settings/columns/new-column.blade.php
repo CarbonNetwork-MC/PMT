@@ -63,6 +63,11 @@
                             required
                         />
                     </div>
+
+                    {{-- Position --}}
+                    <div class="col-span-1">
+                        <x-forms.number-input label="{{ __('settings.labels.position') }}" wire:model="position" min="{{ $minColumns }}" max="{{ $maxColumns }}" required />
+                    </div>
                 </div>
 
                 <div class="mt-4">
