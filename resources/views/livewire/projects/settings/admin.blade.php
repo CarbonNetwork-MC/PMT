@@ -133,7 +133,7 @@
                 </x-buttons.danger-button>
             </div>
         </x-slot>
-    <x-modals.modal>
+    </x-modals.modal>
 
     {{-- Delete Project Modal --}}
     <x-modals.modal size="lg" wire:model="showDeleteProjectModal">
@@ -160,5 +160,5 @@
                 </x-buttons.danger-button>
             </div>
         </x-slot>
-    <x-modals.modal>
+    </x-modals.modal>
 </div>

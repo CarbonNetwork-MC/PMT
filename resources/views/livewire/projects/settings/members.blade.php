@@ -180,7 +180,7 @@
                 {{ __('settings.buttons.add_member') }}
             </x-buttons.primary-button>
         </x-slot>
-    <x-modals.modal>
+    </x-modals.modal>
 
     {{-- Remove Member Modal --}}
     <x-modals.modal wire:model="showRemoveMemberModal">
