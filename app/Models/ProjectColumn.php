@@ -10,6 +10,7 @@ class ProjectColumn extends Model
     protected $fillable = [
         'project_uuid',
         'name',
+        'color',
     ];
 
     public function project(): BelongsTo {
