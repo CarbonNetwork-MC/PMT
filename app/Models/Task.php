@@ -11,7 +11,7 @@ class Task extends Model
     protected $fillable = [
         'card_id',
         'description',
-        'column_id',
+        'status',
         'task_index',
         'deadline',
         'estimated_time',
@@ -20,10 +20,6 @@ class Task extends Model
 
     public function card(): BelongsTo {
         return $this->belongsTo(Card::class, 'card_id');
-    }
-
-    public function column(): BelongsTo {
-        return $this->belongsTo(ProjectColumn::class, 'column_id');
     }
 
     public function assignees(): HasMany {

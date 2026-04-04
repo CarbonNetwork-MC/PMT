@@ -4,6 +4,7 @@ namespace App\Livewire\Projects\Settings;
 
 use App\Models\Project;
 use App\Models\ProjectColumn;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
@@ -40,12 +41,37 @@ class ProjectColumns extends Component
     }
 
     public function confirmRemoveColumn() {
-        $column = ProjectColumn::findOrFail($this->removeColumnId);
-        $column->delete();
+        DB::transaction(function () {
+            $column = ProjectColumn::findOrFail($this->removeColumnId);
 
-        $this->projectColumns = ProjectColumn::where('project_uuid', $this->project->uuid)->with(['color'])->orderBy('position')->get();
+            // Determine fallback column (first available excluding current)
+            $fallbackColumn = ProjectColumn::where('project_uuid', $this->project->uuid)
+                ->where('id', '!=', $column->id)
+                ->orderBy('position')
+                ->first();
 
-        // TODO: Move tasks to the first column or the next available column
+            // Move cards to fallback column if it exists
+            if ($fallbackColumn) {
+                $column->cards()->update([
+                    'column_id' => $fallbackColumn->id,
+                ]);
+            }
+
+            $column->delete();
+
+            // Re-fetch and normalize positions
+            $columns = ProjectColumn::where('project_uuid', $this->project->uuid)
+                ->orderBy('position')
+                ->get();
+
+            foreach ($columns as $index => $col) {
+                $col->update([
+                    'position' => $index + 1,
+                ]);
+            }
+
+            $this->projectColumns = $columns;
+        });
 
         $this->showRemoveColumnModal = false;
 
