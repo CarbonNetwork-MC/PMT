@@ -15,6 +15,7 @@ return [
         'general' => 'General Settings',
         'members' => 'Members',
         'new_column' => 'New Column',
+        'edit_column' => 'Edit Column',
         'settings' => 'Settings',
 
         'add_member' => 'Add Member',
@@ -67,6 +68,7 @@ return [
     'toast' => [
         'column_added' => 'Column <b>:name</b> has been added.',
         'column_removed' => 'Column has been removed.',
+        'column_updated' => 'Column <b>:name</b> has been updated.',
         'max_columns_reached' => 'Maximum number of columns (5) has been reached.',
         'member_added' => '<b>:name</b> has been added to the project.',
         'member_removed' => '<b>:name</b> has been removed from the project.',

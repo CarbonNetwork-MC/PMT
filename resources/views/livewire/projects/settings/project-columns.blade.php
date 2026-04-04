@@ -62,7 +62,7 @@
 
             <div class="mt-8 mx-4">
                 <div class="flex justify-end">
-                    <x-buttons.primary-button>
+                    <x-buttons.primary-button href="{{ route('projects.settings.columns.new.render', ['uuid' => $project->uuid]) }}">
                         {{ __('settings.buttons.add_column') }}
                     </x-buttons.primary-button>
                 </div>
@@ -104,7 +104,7 @@
                                         @endif
                                     </x-tables.table-data>
                                     <x-tables.table-actions>
-                                        <x-tables.primary-action wire:click="$emit('editColumn', '{{ $column->id }}')">
+                                        <x-tables.primary-action href="{{ route('projects.settings.columns.edit.render', ['uuid' => $project->uuid, 'columnId' => $column->id]) }}">
                                             {{ __('general.buttons.edit') }}
                                         </x-tables.primary-action>
                                         <x-tables.danger-action wire:click="removeColumn('{{ $column->id }}')">

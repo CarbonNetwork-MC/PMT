@@ -29,6 +29,11 @@
             return selected ? selected.label : '{{ $placeholder }}';
         },
 
+        get selectedClass() {
+            const selected = this.options.find(o => o.value === this.value);
+            return selected?.class ?? 'text-black';
+        },
+
         openDropdown() {
             this.open = true;
             this.activeIndex = Math.max(
@@ -88,7 +93,7 @@
         @disabled($disabled)
         class="w-full flex justify-between items-center bg-gray-100 border border-default-medium rounded-base text-sm text-black shadow-xs focus:ring-brand focus:border-brand {{ $sizeClasses }}"
     >
-        <span x-text="selectedLabel" class="truncate text- font-rw-semibold" :class="value ? 'text-black' : 'text-gray-400'"></span>
+        <span x-text="selectedLabel" class="truncate font-rw-semibold" :class="value ? selectedClass : 'text-gray-400'"></span>
 
         <svg class="w-4 h-4 ml-2 transition-transform" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-width="2" d="M6 9l6 6 6-6"/>

@@ -29,8 +29,8 @@
             ],
             [
                 'icon' => '',
-                'url' => route('projects.settings.columns.new.render', ['uuid' => $project->uuid]),
-                'label' => __('settings.titles.new_column'),
+                'url' => route('projects.settings.columns.edit.render', ['uuid' => $project->uuid, 'columnId' => $column->id]),
+                'label' => __('settings.titles.edit_column'),
             ]
         ]" />
     </x-slot>
@@ -39,7 +39,7 @@
         <div class="w-2/3">
             <x-containers.main>
                 <x-containers.title>
-                    {{ __('settings.titles.new_column') }}
+                    {{ __('settings.titles.edit_column') }}
                 </x-containers.title>
 
                 <div class="grid grid-cols-4 gap-4 mt-6">
@@ -56,7 +56,7 @@
                             :options="$colors->map(function($color) {
                                 return [
                                     'value' => $color->id,
-                                    'label' => ucfirst($color->name),
+                                    'label' => $color->name,
                                     'class' => 'text-' . $color->name . '-' . $color->text_color,
                                 ];
                             })"
@@ -66,7 +66,13 @@
 
                     {{-- Position --}}
                     <div class="col-span-1">
-                        <x-forms.number-input label="{{ __('settings.labels.position') }}" wire:model="position" min="{{ $minColumns }}" max="{{ $maxColumns }}" required />
+                        <x-forms.number-input
+                            label="{{ __('settings.labels.position') }}"
+                            wire:model="position"
+                            min="1"
+                            :max="$project->columns()->count()"
+                            required
+                        />
                     </div>
                 </div>
 
@@ -87,9 +93,8 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end items-center gap-4 mt-6">
-                    <x-forms.required-fields />
-                    <x-buttons.primary-button wire:click="save">
+                <div class="flex justify-end mt-6">
+                    <x-buttons.primary-button wire:click="update">
                         {{ __('general.buttons.save') }}
                     </x-buttons.primary-button>
                 </div>
