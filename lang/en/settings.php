@@ -32,12 +32,19 @@ return [
     ],
     
     'labels' => [
+        'color' => 'Color',
+        'column_name' => 'Column Name',
         'new_owner' => 'New Owner',
         'member_name' => 'Member Name',
         'member_role' => 'Member Role',
+        'position' => 'Position',
+
+        'background_color' => 'Background',
+        'text_color' => 'Text',
     ],
 
     'buttons' => [
+        'add_column' => 'Add Column',
         'add_member' => 'Add Member',
         'change_owner' => 'Change Owner',
         'change_role' => 'Change Role',

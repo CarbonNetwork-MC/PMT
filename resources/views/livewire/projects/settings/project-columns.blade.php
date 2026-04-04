@@ -61,7 +61,67 @@
             />
 
             <div class="mt-8 mx-4">
-                columns
+                <div class="flex justify-end">
+                    <x-buttons.primary-button>
+                        {{ __('settings.buttons.add_column') }}
+                    </x-buttons.primary-button>
+                </div>
+
+                <div class="mt-4">
+                    <x-tables.table-striped>
+                        <x-slot name="headers">
+                            <tr>
+                                <x-tables.table-header>{{ __('settings.labels.position') }}</x-tables.table-header>
+                                <x-tables.table-header>{{ __('settings.labels.column_name') }}</x-tables.table-header>
+                                <x-tables.table-header>{{ __('settings.labels.color') }}</x-tables.table-header>
+                                <th></th>
+                            </tr>
+                        </x-slot>
+                        <x-slot name="rows">
+                            @forelse ($projectColumns as $column)
+                                <x-tables.table-row>
+                                    <x-tables.table-data>{{ $column->position }}</x-tables.table-data>
+                                    <x-tables.table-data>{{ $column->name }}</x-tables.table-data>
+                                    <x-tables.table-data>
+                                        @if ($column->color)
+                                            <div class="grid grid-cols-3">
+                                                <div class="col-span-1">
+                                                    <p class="text-{{ $column->color->name }}-{{ $column->color->text_color }}">
+                                                        {{ ucfirst($column->color->name) }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-span-1 flex gap-x-2">
+                                                    <p>{{ __('settings.labels.text_color') }}</p>
+                                                    <div class="w-6 h-6 rounded bg-{{ $column->color->name }}-{{ $column->color->text_color }}"></div>
+                                                </div>
+                                                <div class="col-span-1 flex gap-x-2">
+                                                    <p>{{ __('settings.labels.background_color') }}</p>
+                                                    <div class="w-6 h-6 rounded bg-{{ $column->color->name }}-{{ $column->color->background_color }}"></div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            -
+                                        @endif
+                                    </x-tables.table-data>
+                                    <x-tables.table-actions>
+                                        <x-tables.primary-action wire:click="$emit('editColumn', '{{ $column->id }}')">
+                                            {{ __('general.buttons.edit') }}
+                                        </x-tables.primary-action>
+                                        <x-tables.danger-action wire:click="$emit('confirmDeleteColumn', '{{ $column->id }}')">
+                                            {{ __('general.buttons.remove') }}
+                                        </x-tables.danger-action>
+                                    </x-tables.table-actions>
+                                    </x-tables.table-row>
+                            @empty
+                                <x-tables.table-row>
+                                    <x-tables.empty-state :colspan="3">
+                                        {{ __('settings.columns.no_columns') }}
+                                    </x-tables.empty-state>
+                                </x-tables.table-row>
+                            @endforelse
+                        </x-slot>
+                    </x-tables.table-striped>
+                </div>
             </div>
         </x-containers.main>
     </div>

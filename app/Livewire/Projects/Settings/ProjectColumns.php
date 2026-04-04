@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects\Settings;
 
 use App\Models\Project;
+use App\Models\ProjectColumn;
 use Livewire\Component;
 
 class ProjectColumns extends Component
@@ -18,6 +19,7 @@ class ProjectColumns extends Component
 
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
+        $this->projectColumns = ProjectColumn::where('project_uuid', $this->project->uuid)->with(['color'])->orderBy('position')->get();
 
         $this->isProjectOwner = auth()->user()->uuid === $this->project->owner_uuid;
         $this->isProjectAdmin = $this->project->members()
