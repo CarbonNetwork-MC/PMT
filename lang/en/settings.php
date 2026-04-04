@@ -14,6 +14,7 @@ return [
         'columns' => 'Board Columns',
         'general' => 'General Settings',
         'members' => 'Members',
+        'new_column' => 'New Column',
         'settings' => 'Settings',
 
         'add_member' => 'Add Member',
@@ -39,6 +40,7 @@ return [
         'new_owner' => 'New Owner',
         'member_name' => 'Member Name',
         'member_role' => 'Member Role',
+        'name' => 'Name',
         'position' => 'Position',
 
         'background_color' => 'Background',
@@ -63,11 +65,13 @@ return [
     ],
 
     'toast' => [
+        'column_added' => 'Column <b>:name</b> has been added.',
+        'column_removed' => 'Column has been removed.',
+        'max_columns_reached' => 'Maximum number of columns (5) has been reached.',
         'member_added' => '<b>:name</b> has been added to the project.',
         'member_removed' => '<b>:name</b> has been removed from the project.',
         'owner_changed' => 'Project ownership has been transferred to <b>:newOwner</b>.',
         'project_deleted' => 'Project has been deleted.',
-        'column_removed' => 'Column has been removed.',
         'role_changed' => '<b>:name</b>\'s role has been updated.',
     ],
 
