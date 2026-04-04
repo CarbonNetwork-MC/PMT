@@ -95,8 +95,6 @@
                                                 {{ __('settings.buttons.remove') }}
                                             </x-tables.danger-action>
                                         </x-tables.table-actions>
-                                    @else
-                                        <x-tables.table-data></x-tables.table-data>
                                     @endif
                                 </x-tables.table-row>
                             @empty

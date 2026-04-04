@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->char('project_uuid', 36);
             $table->string('name');
+            $table->integer('position');
             $table->unsignedBigInteger('color_id')->nullable();
             $table->timestamps();
 

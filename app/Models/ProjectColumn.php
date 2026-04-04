@@ -10,10 +10,15 @@ class ProjectColumn extends Model
     protected $fillable = [
         'project_uuid',
         'name',
-        'color',
+        'position',
+        'color_id',
     ];
 
     public function project(): BelongsTo {
         return $this->belongsTo(Project::class, 'project_uuid', 'uuid');
+    }
+
+    public function color(): BelongsTo {
+        return $this->belongsTo(ColumnColor::class, 'color_id');
     }
 }
