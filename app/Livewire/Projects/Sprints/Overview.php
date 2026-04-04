@@ -29,6 +29,8 @@ class Overview extends Component
     public $showEditModal = false;
     public $showDeleteModal = false;
 
+    public $showModal = true;
+
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();

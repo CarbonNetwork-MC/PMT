@@ -91,7 +91,7 @@
     </div>
 
     {{-- Transfer Ownership Modal --}}
-    <x-modals.big-modal wire:model="showChangeOwnerModal">
+    <x-modals.modal size="lg" wire:model="showChangeOwnerModal">
         <x-slot name="title">
             <p class="text-center">
                 {{ __('settings.titles.change_owner') }}
@@ -133,10 +133,10 @@
                 </x-buttons.danger-button>
             </div>
         </x-slot>
-    </x-modals.big-modal>
+    <x-modals.modal>
 
     {{-- Delete Project Modal --}}
-    <x-modals.big-modal wire:model="showDeleteProjectModal">
+    <x-modals.modal size="lg" wire:model="showDeleteProjectModal">
         <x-slot name="title">
             <p class="text-center">
                 {{ __('settings.titles.delete_project') }}
@@ -160,5 +160,5 @@
                 </x-buttons.danger-button>
             </div>
         </x-slot>
-    </x-modals.big-modal>
+    <x-modals.modal>
 </div>

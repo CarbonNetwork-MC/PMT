@@ -142,7 +142,7 @@
     </x-modals.modal>
 
     {{-- Add Member Modal --}}
-    <x-modals.big-modal wire:model="showAddMemberModal">
+    <x-modals.modal size="lg" wire:model="showAddMemberModal">
         <x-slot name="title">
             <p class="text-center">
                 {{ __('settings.titles.add_member') }}
@@ -180,7 +180,7 @@
                 {{ __('settings.buttons.add_member') }}
             </x-buttons.primary-button>
         </x-slot>
-    </x-modals.big-modal>
+    <x-modals.modal>
 
     {{-- Remove Member Modal --}}
     <x-modals.modal wire:model="showRemoveMemberModal">

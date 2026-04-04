@@ -79,7 +79,7 @@
     </div>
 
     {{-- Edit Sprint Modal --}}
-    <x-modals.big-modal wire:model="showEditModal">
+    <x-modals.modal size="lg" wire:model="showEditModal">
         <x-slot name="title">
             <p class="text-center">
                 {!! __('sprints.modals.edit_sprint_title', ['name' => $editingSprint->name ?? '']) !!}
@@ -130,7 +130,7 @@
                 {{ __('general.buttons.save') }}
             </x-buttons.primary-button>
         </x-slot>
-    </x-modals.big-modal>
+    </x-modals.modal>
 
     {{-- Delete Sprint Modal --}}
     <x-modals.modal wire:model="showDeleteModal">
@@ -153,4 +153,11 @@
             </x-buttons.danger-button>
         </x-slot>
     </x-modals.modal>
+
+    <x-modals.simple-modal wire:model="showModal">
+        <div class="flex flex-col items-center gap-4 py-4">
+            <i class="fi fi-sr-check text-green-500 text-4xl"></i>
+            <p class="text-center text-lg dark:text-white">{{ __('sprints.messages.sprint_updated') }}</p>
+        </div>
+    </x-modals.simple-modal>
 </div>

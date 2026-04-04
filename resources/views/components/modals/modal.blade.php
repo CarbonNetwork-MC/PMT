@@ -1,4 +1,14 @@
-@props(['title' => null, 'content' => null, 'footer' => null])
+@props(['title' => null, 'content' => null, 'footer' => null, 'size' => 'md'])
+
+@php
+    $sizeClasses = match ($size) {
+        'sm' => 'max-w-md',
+        'md' => 'max-w-xl',
+        'lg' => 'max-w-3xl',
+        'xl' => 'max-w-5xl',
+        default => 'max-w-xl',
+    };
+@endphp
 
 <div 
     x-data="{ show: @entangle($attributes->wire('model')) }"
@@ -16,7 +26,7 @@
     <div class="relative flex justify-center pt-16 px-4">
         <div 
             x-show="show"
-            class="relative w-full max-w-xl bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg"
+            class="relative w-full {{ $sizeClasses }} bg-white dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg"
         >
             <!-- Header -->
             <div class="flex justify-between px-4 py-2 bg-gray-200 dark:bg-gray-800 rounded-t-lg">
