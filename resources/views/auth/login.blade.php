@@ -38,10 +38,12 @@
                             </div>
                             <label for="remember" class="ms-2 text-sm font-rw-semibold text-white">{{ __('auth.form.remember_me') }}</label>
                         </div>
-                        <div class="font-rw-semibold text-white text-sm mb-5">
-                            {{ __('auth.form.no_account') }}
-                            <a href="{{ route('register') }}" class="text-green-500 hover:underline">{{ __('auth.form.register') }}</a>.
-                        </div>
+                        @if (config('app.allow_registration'))
+                            <div class="font-rw-semibold text-white text-sm mb-5">
+                                {{ __('auth.form.no_account') }}
+                                <a href="{{ route('register') }}" class="text-green-500 hover:underline">{{ __('auth.form.register') }}</a>.
+                            </div>
+                        @endif
                         <div class="flex items-center justify-end gap-x-4 mt-4">
                             @if (Route::has('password.request'))
                                 <a class="underline text-sm text-white hover:text-gray-900 dark:hover:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" href="{{ route('password.request') }}">

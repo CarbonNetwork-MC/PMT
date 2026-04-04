@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Registration
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether new users are allowed to register
+    |
+    */
+
+    'allow_registration' => env('ALLOW_REGISTRATION', true),
+
 ];

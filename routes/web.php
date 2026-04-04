@@ -27,9 +27,11 @@ Route::middleware('guest')->group(function() {
         ->name('login.post');
 
     // ? Register
-    Route::get('/register', fn() => view('auth.register'))->name('register');
+    Route::get('/register', fn() => view('auth.register'))
+        ->middleware('check-registration')
+        ->name('register');
     Route::post('/register', [AuthController::class, 'register'])
-        ->middleware('throttle:5,1')
+        ->middleware(['check-registration', 'throttle:5,1'])
         ->name('register.post');
 });
 
