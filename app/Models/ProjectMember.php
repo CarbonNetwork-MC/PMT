@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProjectMember extends Model
 {
+    protected $primaryKey = 'user_uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
-        'project_id',
+        'project_uuid',
         'user_uuid',
+        'project_role_id',
     ];
 
     public function project(): BelongsTo {

@@ -10,7 +10,7 @@
     class="fixed inset-0 z-50 overflow-y-auto"
 >
     <!-- Background overlay -->
-    <div class="fixed inset-0 bg-gray-900/40"></div>
+    <div class="fixed inset-0 bg-gray-900/60"></div>
 
     <!-- Modal container -->
     <div class="relative flex justify-center pt-16 px-4">

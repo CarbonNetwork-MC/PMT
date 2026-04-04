@@ -6,7 +6,7 @@
     x-show="show"
     class="overflow-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full h-full"
 >
-    <div x-show="show" class="relative p-4 w-full h-full flex items-center justify-center bg-gray-900/40">
+    <div x-show="show" class="relative p-4 w-full h-full flex items-center justify-center bg-gray-900/60">
         <div class="relative flex flex-col lg:w-lg bg-white rounded-lg shadow-sm dark:bg-gray-700">
             <div class="w-full flex justify-end pr-3 pt-2">
                 <button type="button" @click="show = false" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
