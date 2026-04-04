@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 
+use App\Livewire\Colors;
 use App\Livewire\Dashboard;
 
 use App\Livewire\Projects\NewProject;
@@ -52,4 +53,9 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/{uuid}/settings/columns', ProjectSettingsColumns::class)->name('projects.settings.columns.render');
         Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)->name('projects.settings.admin.render')->middleware('project-owner');
     });
+});
+
+// ? Colors (Replacement for the old tailwind safelist, this page is not visitable for users, it is used for loading the tailwind colors)
+Route::middleware(['auth', 'role:Superadmin'])->group(function() {
+    Route::get('/colors', Colors::class)->name('colors.render');
 });
