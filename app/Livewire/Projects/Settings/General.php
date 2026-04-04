@@ -14,6 +14,7 @@ class General extends Component
     public $description;
     
     public $isProjectOwner;
+    public $isProjectAdmin;
 
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
@@ -22,6 +23,12 @@ class General extends Component
         $this->description = $this->project->description;
 
         $this->isProjectOwner = auth()->user()->uuid === $this->project->owner_uuid;
+        $this->isProjectAdmin = $this->project->members()
+            ->where('user_uuid', auth()->user()->uuid)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Admin');
+            })
+            ->exists();
     }
 
     public function save() {

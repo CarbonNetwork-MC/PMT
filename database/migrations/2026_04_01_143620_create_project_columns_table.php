@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->char('project_uuid', 36);
             $table->string('name');
+            $table->integer('position');
+            $table->unsignedBigInteger('color_id')->nullable();
             $table->timestamps();
 
             $table->foreign('project_uuid')->references('uuid')->on('projects')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('color_id')->references('id')->on('column_colors')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

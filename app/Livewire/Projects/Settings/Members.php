@@ -21,6 +21,7 @@ class Members extends Component
     public $search = '';
 
     public $isProjectOwner;
+    public $isProjectAdmin;
 
     public $userToModify;
     public $newRole;
@@ -64,6 +65,12 @@ class Members extends Component
         $this->users = $this->getUsers();
 
         $this->isProjectOwner = auth()->user()->uuid === $this->project->owner_uuid;
+        $this->isProjectAdmin = $this->project->members()
+            ->where('user_uuid', auth()->user()->uuid)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Admin');
+            })
+            ->exists();
     }
 
     public function updated($key, $value) {

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('card_id');
             $table->text('description');
-            $table->unsignedBigInteger('column_id');
+            $table->enum('status', ['todo', 'in_progress', 'done'])->default('todo');
             $table->integer('task_index')->default(0);
             $table->timestamp('deadline')->nullable();
             $table->decimal('estimated_time', 8, 2)->nullable();
@@ -23,7 +23,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('card_id')->references('id')->on('cards')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('column_id')->references('id')->on('project_columns')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

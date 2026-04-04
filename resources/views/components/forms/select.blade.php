@@ -25,13 +25,19 @@
         activeIndex: -1,
 
         get selectedLabel() {
-            return this.options[this.value] ?? '{{ $placeholder }}';
+            const selected = this.options.find(o => o.value === this.value);
+            return selected ? selected.label : '{{ $placeholder }}';
+        },
+
+        get selectedClass() {
+            const selected = this.options.find(o => o.value === this.value);
+            return selected?.class ?? 'text-black';
         },
 
         openDropdown() {
             this.open = true;
             this.activeIndex = Math.max(
-                Object.keys(this.options).indexOf(this.value),
+                this.options.findIndex(o => o.value === this.value),
                 0
             );
         },
@@ -41,11 +47,10 @@
             this.activeIndex = -1;
         },
 
-        select(index) {
-            const keys = Object.keys(this.options);
-            this.value = keys[index];
-            this.closeDropdown();
-        }
+        select(value) {
+                this.value = value;
+                this.closeDropdown();
+            }
     }"
     class="relative max-w-sm"
 >
@@ -65,8 +70,10 @@
         class="w-full bg-gray-100 border border-default-medium rounded-base text-sm text-black shadow-xs focus:ring-brand focus:border-brand {{ $sizeClasses }}"
     >
         <option value="" disabled>{{ $placeholder }}</option>
-        @foreach ($options as $key => $optionLabel)
-            <option value="{{ $key }}">{{ $optionLabel }}</option>
+        @foreach ($options as $option)
+            <option value="{{ $option['value'] }}">
+                {{ $option['label'] }}
+            </option>
         @endforeach
     </select>
 
@@ -78,15 +85,15 @@
         aria-haspopup="listbox"
         :aria-controls="'{{ $id }}-listbox'"
         @click="open ? closeDropdown() : openDropdown()"
-        @keydown.arrow-down.prevent="openDropdown(); activeIndex = Math.min(activeIndex + 1, Object.keys(options).length - 1)"
+        @keydown.arrow-down.prevent="openDropdown(); activeIndex = Math.min(activeIndex + 1, options.length - 1)"
         @keydown.arrow-up.prevent="openDropdown(); activeIndex = Math.max(activeIndex - 1, 0)"
-        @keydown.enter.prevent="if (open && activeIndex >= 0) select(activeIndex)"
+        @keydown.enter.prevent="if (open && activeIndex >= 0) select(options[activeIndex].value)"
         @keydown.escape="closeDropdown()"
         @keydown.tab="closeDropdown()"
         @disabled($disabled)
         class="w-full flex justify-between items-center bg-gray-100 border border-default-medium rounded-base text-sm text-black shadow-xs focus:ring-brand focus:border-brand {{ $sizeClasses }}"
     >
-        <span x-text="selectedLabel" class="truncate"></span>
+        <span x-text="selectedLabel" class="truncate font-rw-semibold" :class="value ? selectedClass : 'text-gray-400'"></span>
 
         <svg class="w-4 h-4 ml-2 transition-transform" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-width="2" d="M6 9l6 6 6-6"/>
@@ -101,15 +108,17 @@
         x-transition
         class="absolute z-50 mt-2 w-full bg-white text-black border border-default-medium rounded-base shadow-lg max-h-60 overflow-auto"
     >
-        <template x-for="(key, index) in Object.keys(options)" :key="key">
+        <template x-for="(option, index) in options" :key="option.value">
             <div
                 role="option"
-                :aria-selected="value === key"
-                @click="select(index)"
+                :aria-selected="value === option.value"
+                @click="select(option.value)"
                 class="px-3 py-2 hover:bg-gray-200 cursor-pointer"
-                :class="{ 'bg-blue-400': value === key }"
+                :class="[
+                    value === option.value ? 'bg-blue-400 text-white' : ''
+                ]"
             >
-                <span x-text="options[key]"></span>
+                <span :class="option.class" x-text="option.label"></span>
             </div>
         </template>
     </div>

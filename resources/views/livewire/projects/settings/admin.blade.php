@@ -37,17 +37,22 @@
                 :tabs="[
                     [
                         'key' => 'general', 
-                        'label' => 'General', 
+                        'label' => __('settings.nav.general'), 
                         'href' => route('projects.settings.general.render', ['uuid' => $project->uuid])
                     ],
                     [
                         'key' => 'members', 
-                        'label' => 'Members', 
+                        'label' => __('settings.nav.members'), 
                         'href' => route('projects.settings.members.render', ['uuid' => $project->uuid])
                     ],
                     [
+                        'key' => 'columns',
+                        'label' => __('settings.nav.columns'),
+                        'href' => route('projects.settings.columns.render', ['uuid' => $project->uuid]),
+                    ],
+                    [
                         'key' => 'admin',
-                        'label' => 'Admin',
+                        'label' => __('settings.nav.admin'),
                         'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid])
                     ],
                 ]"
@@ -107,7 +112,12 @@
                         wire:model="newOwnerId"
                         label="{{ __('settings.labels.new_owner') }}"
                         placeholder="{{ __('settings.placeholders.select_new_owner') }}"
-                        :options="$projectMembers->mapWithKeys(fn($m) => [$m->user_uuid => $m->user->name . ' (' . $m->role->name . ')'])->toArray()"
+                        :options="$projectMembers->map(function($member) {
+                            return [
+                                'value' => $member->user_uuid,
+                                'label' => $member->user->name . ' (' . $member->role->name . ')'
+                            ];
+                        })"
                         required
                     />
                 </div>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 
+use App\Livewire\Colors;
 use App\Livewire\Dashboard;
 
 use App\Livewire\Projects\NewProject;
@@ -10,6 +11,9 @@ use App\Livewire\Projects\Dashboard\Dashboard as ProjectDashboard;
 use App\Livewire\Projects\Settings\Admin as ProjectSettingsAdmin;
 use App\Livewire\Projects\Settings\General as ProjectSettingsGeneral;
 use App\Livewire\Projects\Settings\Members as ProjectSettingsMembers;
+use App\Livewire\Projects\Settings\ProjectColumns as ProjectSettingsColumns;
+use App\Livewire\Projects\Settings\Columns\NewColumn as ProjectSettingsColumnsNewColumn;
+use App\Livewire\Projects\Settings\Columns\EditColumn as ProjectSettingsColumnsEditColumn;
 use App\Livewire\Projects\Sprints\NewSprint;
 use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 
@@ -48,6 +52,14 @@ Route::middleware(['auth'])->group(function() {
 
         Route::get('/{uuid}/settings/general', ProjectSettingsGeneral::class)->name('projects.settings.general.render');
         Route::get('/{uuid}/settings/members', ProjectSettingsMembers::class)->name('projects.settings.members.render');
+        Route::get('/{uuid}/settings/columns', ProjectSettingsColumns::class)->name('projects.settings.columns.render');
+        Route::get('/{uuid}/settings/columns/new', ProjectSettingsColumnsNewColumn::class)->name('projects.settings.columns.new.render');
+        Route::get('/{uuid}/settings/columns/{columnId}/edit', ProjectSettingsColumnsEditColumn::class)->name('projects.settings.columns.edit.render');
         Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)->name('projects.settings.admin.render')->middleware('project-owner');
     });
+});
+
+// ? Colors (Replacement for the old tailwind safelist, this page is not visitable for users, it is used for loading the tailwind colors)
+Route::middleware(['auth', 'role:Superadmin'])->group(function() {
+    Route::get('/colors', Colors::class)->name('colors.render');
 });
