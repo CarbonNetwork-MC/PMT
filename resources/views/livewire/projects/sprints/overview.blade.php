@@ -153,11 +153,4 @@
             </x-buttons.danger-button>
         </x-slot>
     </x-modals.modal>
-
-    <x-modals.simple-modal wire:model="showModal">
-        <div class="flex flex-col items-center gap-4 py-4">
-            <i class="fi fi-sr-check text-green-500 text-4xl"></i>
-            <p class="text-center text-lg dark:text-white">{{ __('sprints.messages.sprint_updated') }}</p>
-        </div>
-    </x-modals.simple-modal>
 </div>
