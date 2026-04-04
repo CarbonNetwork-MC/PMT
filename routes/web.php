@@ -10,6 +10,7 @@ use App\Livewire\Projects\Dashboard\Dashboard as ProjectDashboard;
 use App\Livewire\Projects\Settings\Admin as ProjectSettingsAdmin;
 use App\Livewire\Projects\Settings\General as ProjectSettingsGeneral;
 use App\Livewire\Projects\Settings\Members as ProjectSettingsMembers;
+use App\Livewire\Projects\Settings\ProjectColumns as ProjectSettingsColumns;
 use App\Livewire\Projects\Sprints\NewSprint;
 use App\Livewire\Projects\Sprints\Overview as SprintsOverview;
 
@@ -48,6 +49,7 @@ Route::middleware(['auth'])->group(function() {
 
         Route::get('/{uuid}/settings/general', ProjectSettingsGeneral::class)->name('projects.settings.general.render');
         Route::get('/{uuid}/settings/members', ProjectSettingsMembers::class)->name('projects.settings.members.render');
+        Route::get('/{uuid}/settings/columns', ProjectSettingsColumns::class)->name('projects.settings.columns.render');
         Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)->name('projects.settings.admin.render')->middleware('project-owner');
     });
 });

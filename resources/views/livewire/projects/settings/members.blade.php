@@ -46,6 +46,12 @@
                         'href' => route('projects.settings.members.render', ['uuid' => $project->uuid])
                     ],
                     [
+                        'key' => 'columns',
+                        'label' => __('settings.nav.columns'),
+                        'href' => route('projects.settings.columns.render', ['uuid' => $project->uuid]),
+                        'disabled' => !$isProjectAdmin && !$isProjectOwner
+                    ],
+                    [
                         'key' => 'admin',
                         'label' => __('settings.nav.admin'),
                         'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid]),

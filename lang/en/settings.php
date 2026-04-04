@@ -11,6 +11,7 @@ return [
 
     'titles' => [
         'admin' => 'Admin Settings',
+        'columns' => 'Board Columns',
         'general' => 'General Settings',
         'members' => 'Members',
         'settings' => 'Settings',
@@ -66,6 +67,7 @@ return [
     'nav' => [
         'general' => 'General',
         'members' => 'Members',
+        'columns' => 'Columns',
         'admin' => 'Admin',
     ]
 

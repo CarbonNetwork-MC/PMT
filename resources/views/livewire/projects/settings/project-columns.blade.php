@@ -24,8 +24,8 @@
             ],
             [
                 'icon' => '',
-                'url' => route('projects.settings.general.render', ['uuid' => $project->uuid]),
-                'label' => __('settings.titles.general'),
+                'url' => route('projects.settings.columns.render', ['uuid' => $project->uuid]),
+                'label' => __('settings.titles.columns'),
             ]
         ]" />
     </x-slot>
@@ -33,7 +33,7 @@
     <div class="flex justify-center">
         <x-containers.main class="w-2/3">
             <x-navigation.tabs 
-                :active="'general'"
+                :active="'columns'"
                 :tabs="[
                     [
                         'key' => 'general', 
@@ -61,31 +61,7 @@
             />
 
             <div class="mt-8 mx-4">
-                <x-project.settings-card 
-                    title="{{ __('settings.titles.name') }}"
-                    description="{{ __('settings.descriptions.name') }}"
-                >
-                    <x-slot name="content">
-                        <x-forms.text-input wire:model="name" placeholder="{{ __('settings.placeholders.name') }}" />
-                    </x-slot>
-                </x-project.settings-card>
-
-                <x-containers.divider height="0.5" />
-
-                <x-project.settings-card 
-                    title="{{ __('settings.titles.description') }}"
-                    description="{{ __('settings.descriptions.description') }}"
-                >
-                    <x-slot name="content">
-                        <x-forms.text-area wire:model="description" placeholder="{{ __('settings.placeholders.description') }}" />
-                    </x-slot>
-                </x-project.settings-card>
-
-                <div class="flex justify-end items-center mt-16">
-                    <x-buttons.primary-button wire:click="save">
-                        {{ __('general.buttons.save') }}
-                    </x-buttons.primary-button>
-                </div>
+                columns
             </div>
         </x-containers.main>
     </div>
