@@ -16,11 +16,13 @@ return [
         'members' => 'Members',
         'settings' => 'Settings',
 
+        'add_member' => 'Add Member',
         'change_owner' => 'Change Owner',
         'change_role' => 'Change Role',
         'description' => 'Description',
         'delete_project' => 'Delete Project',
         'name' => 'Name',
+        'remove_column' => 'Remove Column',
         'remove_member' => 'Remove Member',
     ],
 
@@ -53,18 +55,20 @@ return [
     ],
 
     'messages' => [
+        'action_cannot_be_undone' => '<b>This action cannot be undone.</b>',
         'change_owner_warning' => 'Are you sure you want to transfer ownership of this project to another member?',
         'delete_project_warning' => 'Are you sure you want to delete this project?',
+        'remove_column_confirmation' => 'Are you sure you want to remove this column? All tasks in this column will be moved to the first column or the next available column.',
         'remove_member_warning' => 'Are you sure you want to remove this member from the project?',
-        'action_cannot_be_undone' => '<b>This action cannot be undone.</b>',
     ],
 
     'toast' => [
-        'owner_changed' => 'Project ownership has been transferred to <b>:newOwner</b>.',
-        'project_deleted' => 'Project has been deleted.',
-        'role_changed' => '<b>:name</b>\'s role has been updated.',
         'member_added' => '<b>:name</b> has been added to the project.',
         'member_removed' => '<b>:name</b> has been removed from the project.',
+        'owner_changed' => 'Project ownership has been transferred to <b>:newOwner</b>.',
+        'project_deleted' => 'Project has been deleted.',
+        'column_removed' => 'Column has been removed.',
+        'role_changed' => '<b>:name</b>\'s role has been updated.',
     ],
 
     'placeholders' => [

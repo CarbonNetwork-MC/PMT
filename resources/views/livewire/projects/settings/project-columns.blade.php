@@ -107,7 +107,7 @@
                                         <x-tables.primary-action wire:click="$emit('editColumn', '{{ $column->id }}')">
                                             {{ __('general.buttons.edit') }}
                                         </x-tables.primary-action>
-                                        <x-tables.danger-action wire:click="$emit('confirmDeleteColumn', '{{ $column->id }}')">
+                                        <x-tables.danger-action wire:click="removeColumn('{{ $column->id }}')">
                                             {{ __('general.buttons.remove') }}
                                         </x-tables.danger-action>
                                     </x-tables.table-actions>
@@ -125,4 +125,26 @@
             </div>
         </x-containers.main>
     </div>
+
+    {{-- Remove Column Modal --}}
+    <x-modals.modal wire:model="showRemoveColumnModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('settings.titles.remove_column') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-center">
+                {{ __('settings.messages.remove_column_confirmation') }}
+            </p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showRemoveColumnModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.danger-button wire:click="confirmRemoveColumn">
+                {{ __('general.buttons.remove') }}
+            </x-buttons.danger-button>
+        </x-slot>
+    </x-modals.modal>
 </div>
