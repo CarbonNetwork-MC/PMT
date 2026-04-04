@@ -66,9 +66,8 @@
 
     <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
         @forelse ($sprints as $sprint)
-            {{-- TODO: link to board for $sprint --}}
             {{-- TODO: burndown chart for $sprint --}}
-            <x-project.sprint-card :sprint="$sprint" />
+            <x-project.sprint-card projectUuid="{{ $project->uuid }}" :sprint="$sprint" />
         @empty
             <div class="col-span-3 lg:col-span-4 3xl:col-span-5 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
                 <p class="text-center text-gray-600 dark:text-gray-300">

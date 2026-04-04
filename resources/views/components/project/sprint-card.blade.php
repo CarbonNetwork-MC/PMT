@@ -1,8 +1,8 @@
-@props(['sprint'])
+@props(['projectUuid', 'sprint'])
 
 <div class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4" wire:key="sprint-{{ $sprint->uuid }}">
     <div class="flex justify-between items-center">
-        <a href="" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
+        <a href="{{ route('projects.board.render', ['uuid' => $projectUuid, 'sprintUuid' => $sprint->uuid]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
         <i class="fi fi-bs-menu-dots dark:text-white cursor-pointer" data-dropdown-toggle="sprint-dropdown-{{ $sprint->uuid }}"></i>
 
         <div id="sprint-dropdown-{{ $sprint->uuid }}" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">

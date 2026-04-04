@@ -63,12 +63,27 @@
                     />
 
                     {{-- Project Board --}}
-                    <x-sidebar.nav-item
-                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
-                        :active="false"
-                        icon="fi fi-sr-game-board-alt"
-                        :label="__('sidebar.projects.board')"
-                    />
+                    @if ($selectedProject->sprints->where('status', 'active')->count() <= 1)
+                        <x-sidebar.nav-item
+                            :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
+                            :active="false"
+                            icon="fi fi-sr-game-board-alt"
+                            :label="__('sidebar.projects.board')"
+                        />
+                    @else
+                        <x-sidebar.nav-group :groupKey="'boards'" wire:key="boards" label="{{ __('sidebar.projects.board') }}" icon="sr-game-board-alt">
+                            @foreach ($selectedProject->sprints->where('status', 'active') as $sprint)
+                                <x-sidebar.nav-group-item
+                                    href="{{ route('projects.board.render', ['uuid' => $selectedProject->uuid, 'sprintUuid' => $sprint->uuid]) }}"
+                                    :active="request()->routeIs('projects.board.*') && request()->route('sprintUuid') === $sprint->uuid"
+                                    wire:key="board-{{ $sprint->uuid }}"
+                                    icon="rs-clipboard-list-check"
+                                >
+                                    {{ $sprint->name }}
+                                </x-sidebar.nav-group-item>
+                            @endforeach
+                        </x-sidebar.nav-group>
+                    @endif
 
                     {{-- Project Sprints --}}
                     <x-sidebar.nav-item
@@ -290,10 +305,11 @@
                     this.isCollapsed ? '' : 'flex'
                 ].join(' ');
             },
-            navSubLinkClass(active) {
+            navSubLinkClass(active, hasIcon) {
                 return [
-                    'ml-11 block rounded-lg px-2 py-1.5 text-sm text-zinc-700',
-                    active ? 'bg-green-500/20 dark:text-zinc-300' : 'hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800'
+                    'block rounded-lg px-2 py-1.5 text-sm text-zinc-700',
+                    active ? 'bg-green-500/20 dark:text-zinc-300' : 'hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800',
+                    hasIcon ? 'ml-6' : 'ml-11'
                 ].join(' ');
             },
         }

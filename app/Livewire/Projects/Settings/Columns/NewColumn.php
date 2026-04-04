@@ -53,9 +53,10 @@ class NewColumn extends Component
             $count = $columns->count();
 
             if ($count >= $this->maxColumns) {
-                return redirect()
+                redirect()
                     ->route('projects.settings.columns.render', ['uuid' => $this->project->uuid])
                     ->error(__('settings.toast.max_columns_reached'));
+                return;
             }
 
             // Clamp position
