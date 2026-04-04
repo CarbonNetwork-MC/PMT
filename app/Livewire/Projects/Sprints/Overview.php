@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Sprints;
 
+use App\Models\Log;
 use App\Models\Project;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
@@ -66,6 +67,21 @@ class Overview extends Component
         $this->updateCounts();
         $this->showEditModal = false;
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->editingSprint->uuid,
+            'action' => 'update',
+            'table' => 'sprints',
+            'data' => json_encode([
+                'name' => $this->editingSprint->name,
+                'start_date' => $this->editingSprint->start_date,
+                'end_date' => $this->editingSprint->end_date,
+                'status' => $this->editingSprint->status,
+            ]),
+            'description' => __('logs.sprints.updated', ['sprint' => $this->editingSprint->name]),
+        ]);
+
         Toaster::success(__('sprints.toast.sprint-updated'));
     }
 
@@ -81,6 +97,21 @@ class Overview extends Component
         $this->updateCounts();
         $this->showDeleteModal = false;
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->deletingSprint->uuid,
+            'action' => 'delete',
+            'table' => 'sprints',
+            'data' => json_encode([
+                'name' => $this->deletingSprint->name,
+                'start_date' => $this->deletingSprint->start_date,
+                'end_date' => $this->deletingSprint->end_date,
+                'status' => $this->deletingSprint->status,
+            ]),
+            'description' => __('logs.sprints.deleted', ['sprint' => $this->deletingSprint->name]),
+        ]);
+
         Toaster::success(__('sprints.toast.sprint-deleted'));
     }
 
@@ -90,6 +121,21 @@ class Overview extends Component
 
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
         $this->updateCounts();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $sprint->uuid,
+            'action' => 'update',
+            'table' => 'sprints',
+            'data' => json_encode([
+                'name' => $sprint->name,
+                'start_date' => $sprint->start_date,
+                'end_date' => $sprint->end_date,
+                'status' => $sprint->status,
+            ]),
+            'description' => __('logs.sprints.status_changed', ['sprint' => $sprint->name, 'status' => $sprint->status]),
+        ]);
 
         Toaster::success(__('sprints.toast.start_sprint', ['name' => $sprint->name]));
     }
@@ -101,6 +147,21 @@ class Overview extends Component
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
         $this->updateCounts();
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $sprint->uuid,
+            'action' => 'update',
+            'table' => 'sprints',
+            'data' => json_encode([
+                'name' => $sprint->name,
+                'start_date' => $sprint->start_date,
+                'end_date' => $sprint->end_date,
+                'status' => $sprint->status,
+            ]),
+            'description' => __('logs.sprints.status_changed', ['sprint' => $sprint->name, 'status' => $sprint->status]),
+        ]);
+
         Toaster::success(__('sprints.toast.complete_sprint', ['name' => $sprint->name]));
     }
 
@@ -110,6 +171,21 @@ class Overview extends Component
 
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
         $this->updateCounts();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $sprint->uuid,
+            'action' => 'update',
+            'table' => 'sprints',
+            'data' => json_encode([
+                'name' => $sprint->name,
+                'start_date' => $sprint->start_date,
+                'end_date' => $sprint->end_date,
+                'status' => $sprint->status,
+            ]),
+            'description' => __('logs.sprints.archived', ['sprint' => $sprint->name]),
+        ]);
 
         Toaster::success(__('sprints.toast.archive_sprint', ['name' => $sprint->name]));
     }

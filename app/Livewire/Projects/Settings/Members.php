@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Models\Log;
 use App\Models\Project;
 use App\Models\ProjectMember;
 use App\Models\ProjectRole;
@@ -103,6 +104,19 @@ class Members extends Component
         $member->project_role_id = $this->newRole;
         $member->save();
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'update',
+            'table' => 'project_members',
+            'data' => json_encode([
+                'user_uuid' => $member->user_uuid,
+                'project_role_id' => $member->project_role_id,
+            ]),
+            'description' => __('logs.project_members.role_changed', ['user' => $this->userToModify['user'], 'role' => $this->newRole]),
+            'environment' => config('app.env'),
+        ]);
+
         $this->showChangeRoleModal = false;
 
         return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.role_changed', ['name' => $this->userToModify['user']]));
@@ -113,6 +127,19 @@ class Members extends Component
             'project_uuid' => $this->project->uuid,
             'user_uuid' => $this->newMemberUuid,
             'project_role_id' => $this->newMemberRole,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'create',
+            'table' => 'project_members',
+            'data' => json_encode([
+                'user_uuid' => $member->user_uuid,
+                'project_role_id' => $member->project_role_id,
+            ]),
+            'description' => __('logs.project_members.added', ['user' => $member->user->name, 'role' => $member->role->name]),
+            'environment' => config('app.env'),
         ]);
 
         return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.member_added', ['name' => $member->user->name]));
@@ -129,6 +156,19 @@ class Members extends Component
             ->first();
 
         $member->delete();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'delete',
+            'table' => 'project_members',
+            'data' => json_encode([
+                'user_uuid' => $member->user_uuid,
+                'project_role_id' => $member->project_role_id,
+            ]),
+            'description' => __('logs.project_members.removed', ['user' => $this->userToModify['user']]),
+            'environment' => config('app.env'),
+        ]);
 
         return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('general.toast.member_removed', ['name' => $this->userToModify['user']]));
     }

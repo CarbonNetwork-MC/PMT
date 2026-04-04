@@ -32,7 +32,7 @@ class NewProject extends Component
             'action' => 'create',
             'table' => 'projects',
             'data' => json_encode($data),
-            'description' => "Created project <b>" . $data['name'] . "</b>",
+            'description' => __('logs.project.created', ['project' => $project->name]),
             'environment' => config('app.env') 
         ]);
 

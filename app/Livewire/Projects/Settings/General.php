@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Models\Log;
 use App\Models\Project;
 use Livewire\Component;
 
@@ -32,6 +33,19 @@ class General extends Component
         $this->project->update([
             'name' => $this->name,
             'description' => $this->description,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'update',
+            'table' => 'projects',
+            'data' => json_encode([
+                'name' => $this->name,
+                'description' => $this->description,
+            ]),
+            'description' => __('logs.project.updated', ['project' => $this->project->name]),
+            'environment' => config('app.env'),
         ]);
 
         return redirect()->route('projects.settings.general.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.general_updated'));

@@ -42,7 +42,7 @@ class NewSprint extends Component
             'action' => 'create',
             'table' => 'sprints',
             'data' => json_encode($sprint->toArray()),
-            'description' => "Created sprint <b>'{$sprint->name}'</b>",
+            'description' => __('logs.sprints.created', ['sprint' => $sprint->name]),
             'environment' => config('app.env'),
         ]);
 

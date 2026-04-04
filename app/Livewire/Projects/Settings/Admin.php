@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Models\Log;
 use App\Models\Project;
 use App\Models\ProjectMember;
 use App\Models\ProjectRole;
@@ -52,6 +53,21 @@ class Admin extends Component
         ProjectMember::where('project_uuid', $this->project->uuid)
             ->where('user_uuid', $this->newOwner->uuid)
             ->delete();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'update',
+            'table' => 'projects',
+            'data' => json_encode([
+                'old_owner' => $oldOwner->name,
+                'new_owner' => $this->newOwner->name,
+            ]),
+            'description' => __('logs.project.owner_changed', [
+                'oldOwner' => $oldOwner->name,
+                'newOwner' => $this->newOwner->name,
+            ]),
+        ]);
 
         return redirect()->route('projects.settings.general.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.owner_changed', ['newOwner' => $this->newOwner->name]));
     }
