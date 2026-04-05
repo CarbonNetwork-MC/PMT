@@ -14,17 +14,17 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-x-0" 
         x-transition:leave-end="-translate-x-full"
-        class="fixed lg:sticky top-0 z-50 lg:z-20 lg:top-20 h-dvh shrink-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur border-r border-zinc-200 dark:border-zinc-800 p-3 lg:p-4 will-change-transform transition-all duration-200 flex flex-col overflow-hidden"
+        class="fixed lg:sticky top-0 z-50 lg:z-20 lg:top-20 h-dvh shrink-0 bg-zinc-900/90 backdrop-blur border-r border-zinc-800 p-3 lg:p-4 will-change-transform transition-all duration-200 flex flex-col overflow-hidden"
         aria-label="Sidebar"
     >
 
         <!-- Header / Brand + Collapse Toggle (desktop) -->
-        <div class="flex items-center mb-2 border-b border-zinc-200 dark:border-zinc-800 pb-3" :class="isCollapsed ? 'flex-col justify-center' : 'justify-between'">
+        <div class="flex items-center mb-2 border-b border-zinc-400 pb-3" :class="isCollapsed ? 'flex-col justify-center' : 'justify-between'">
             <a href="{{ route('dashboard.render') }}" x-show="!isCollapsed" class="flex items-center gap-2">
-                <span class="font-semibold text-lg text-zinc-800 dark:text-zinc-100">PMT</span>
+                <span class="font-semibold text-lg text-zinc-100">PMT</span>
             </a>
             <button type="button"
-                class="items-center justify-center rounded-xl p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white cursor-pointer"
+                class="items-center justify-center rounded-xl p-2 text-zinc-300 hover:text-white cursor-pointer"
                 @click="toggleCollapse()" :aria-expanded="(!isCollapsed).toString()"
                 :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
                 <i class="flex items-center fi"
@@ -52,7 +52,7 @@
                 />
 
                 @if ($selectedProject)
-                    <x-containers.divider margin="my-4" />
+                    <x-sidebar.nav-divider />
 
                     {{-- Project Dashboard --}}
                     <x-sidebar.nav-item
@@ -162,7 +162,7 @@
                 <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
                     <!-- Profile button -->
                     <button type="button" @click="open = !open" :title="isCollapsed ? '{{ Auth::user()->name ?? 'Account' }}' : null"
-                        class="w-full rounded-xl px-2 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
+                        class="w-full rounded-xl px-2 py-2 hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
                     >
 
                         <!-- Avatar -->
@@ -172,16 +172,16 @@
 
                         <!-- Name / email (hidden when collapsed) -->
                         <div x-show="!isCollapsed" class="min-w-0 text-left">
-                            <p class="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">
+                            <p class="text-sm font-medium text-zinc-100 truncate">
                                 {{ Auth::user()->name ?? 'Your Name' }}
                             </p>
-                            <p class="text-xs text-zinc-500 truncate">
+                            <p class="text-xs text-zinc-300 truncate">
                                 {{ Auth::user()->email ?? 'you@example.com' }}
                             </p>
                         </div>
 
                         <!-- Chevron (hidden when collapsed) -->
-                        <svg x-show="!isCollapsed" :class="{ 'rotate-0': open, 'rotate-180': !open }" class="ml-auto h-4 w-4 text-zinc-500 transition-transform" viewBox="0 0 20 20"
+                        <svg x-show="!isCollapsed" :class="{ 'rotate-0': open, 'rotate-180': !open }" class="ml-auto h-4 w-4 text-zinc-300 transition-transform" viewBox="0 0 20 20"
                             fill="currentColor" aria-hidden="true"
                         >
                             <path fill-rule="evenodd"
@@ -194,19 +194,17 @@
                     <div x-show="open" x-transition.origin-bottom @click.outside="open = false" class="absolute left-0 right-0 z-50 bottom-12 mb-2"
                         :class="isCollapsed ? 'left-1/2 -translate-x-1/2 w-56' : 'left-0 right-0'">
 
-                        <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden">
+                        <div class="rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
                             <!-- Dark mode switch -->
-                            <label class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            <label class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none hover:bg-zinc-800"
                                 role="switch" :aria-checked="dark.toString()"
                             >
-                                <i class="fi" :class="dark ? 'fi-rr-moon' : 'fi-rr-sun'"></i>
-                                <span class="text-zinc-700 dark:text-zinc-200">Dark mode</span>
+                                <i class="fi text-white" :class="dark ? 'fi-rr-moon' : 'fi-rr-sun'"></i>
+                                <span class="text-zinc-200">Dark mode</span>
 
                                 <input type="checkbox" x-model="dark" class="sr-only peer" />
 
-                                <span class="ml-auto relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200"
-                                    :class="dark ? 'bg-zinc-700' : 'bg-zinc-300'"
-                                >
+                                <span class="ml-auto relative bg-zinc-700 inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200">
                                     <span class="h-4 w-4 bg-white rounded-full shadow transform transition-transform duration-200"
                                         :class="dark ? 'translate-x-5' : 'translate-x-1'"></span>
                                 </span>
@@ -214,14 +212,14 @@
 
                             <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
-                            <a href="{{-- route('profile.render') --}}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <a href="{{-- route('profile.render') --}}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
                                 <i class="fi fi-rr-user"></i>
                                 <span>Profile</span>
                             </a>
 
                             <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
-                            <a href="" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <a href="" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
                                 <i class="fi fi-rr-settings"></i>
                                 <span>Settings</span>
                             </a>
@@ -231,7 +229,7 @@
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer">
+                                    class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:text-red-600 hover:bg-zinc-800 cursor-pointer">
                                     <i class="fi fi-rr-exit"></i>
                                     <span>Log out</span>
                                 </button>
@@ -300,15 +298,15 @@
                 isGroupOpen(key) { return this.openGroups.has(key); },
             navLinkClass(active) {
                 return [
-                    'group items-center gap-3 rounded-xl px-2 py-2 text-sm text-black dark:text-white',
-                    active && !this.isCollapsed ? 'bg-green-500/20' : 'hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800',
+                    'group items-center gap-3 rounded-xl px-2 py-2 text-sm ',
+                    active && !this.isCollapsed ? 'bg-green-500/20' : 'dark:text-zinc-200 hover:bg-zinc-800',
                     this.isCollapsed ? '' : 'flex'
                 ].join(' ');
             },
             navSubLinkClass(active, hasIcon) {
                 return [
-                    'block rounded-lg px-2 py-1.5 text-sm text-zinc-700',
-                    active ? 'bg-green-500/20 dark:text-zinc-300' : 'hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800',
+                    'block rounded-lg px-2 py-1.5 text-sm text-zinc-100',
+                    active ? 'bg-green-500/20' : 'hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800',
                     hasIcon ? 'ml-6' : 'ml-11'
                 ].join(' ');
             },
