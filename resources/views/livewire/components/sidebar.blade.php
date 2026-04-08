@@ -14,7 +14,7 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-x-0" 
         x-transition:leave-end="-translate-x-full"
-        class="fixed lg:sticky top-0 z-50 lg:z-20 lg:top-20 h-dvh shrink-0 bg-zinc-900/90 backdrop-blur border-r border-zinc-800 p-3 lg:p-4 will-change-transform transition-all duration-200 flex flex-col overflow-hidden"
+        class="fixed lg:sticky top-0 z-20 lg:top-20 h-dvh shrink-0 bg-zinc-900/90 backdrop-blur border-r border-zinc-800 p-3 lg:p-4 will-change-transform transition-all duration-200 flex flex-col overflow-hidden"
         aria-label="Sidebar"
     >
 
@@ -64,12 +64,24 @@
 
                     {{-- Project Board --}}
                     @if ($selectedProject->sprints->where('status', 'active')->count() <= 1)
-                        <x-sidebar.nav-item
-                            :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
-                            :active="false"
-                            icon="fi fi-sr-game-board-alt"
-                            :label="__('sidebar.projects.board')"
-                        />
+                        @if ($selectedProject->sprints->where('status', 'active')->count() === 1)
+                            @php
+                                $activeSprint = $selectedProject->sprints->where('status', 'active')->first();
+                            @endphp
+                            <x-sidebar.nav-item
+                                :href="route('projects.board.render', ['uuid' => $selectedProject->uuid, 'sprintUuid' => $activeSprint->uuid])"
+                                :active="request()->routeIs('projects.board.*') && request()->route('sprintUuid') === $activeSprint->uuid"
+                                icon="fi fi-sr-game-board-alt"
+                                :label="__('sidebar.projects.board')"
+                            />
+                        @else
+                            <x-sidebar.nav-item
+                                :href="route('projects.sprints.render', ['uuid' => $selectedProject->uuid])"
+                                :active="request()->routeIs('projects.board.*')"
+                                icon="fi fi-sr-game-board-alt"
+                                :label="__('sidebar.projects.board')"
+                            />
+                        @endif
                     @else
                         <x-sidebar.nav-group :groupKey="'boards'" wire:key="boards" label="{{ __('sidebar.projects.board') }}" icon="sr-game-board-alt">
                             @foreach ($selectedProject->sprints->where('status', 'active') as $sprint)
@@ -243,7 +255,7 @@
 
     <!-- Mobile top bar -->
     <div
-        class="lg:hidden sticky top-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
+        class="lg:hidden sticky top-0 z-20 bg-white/80 dark:bg-zinc-900/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
         <div class="flex items-center gap-2 p-3">
             <button @click="openMobile()"
                 class="inline-flex items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 p-2 text-zinc-700 dark:text-zinc-200">
