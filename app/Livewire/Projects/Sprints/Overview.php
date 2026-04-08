@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Sprints;
 
+use App\Helpers\CheckProjectPermissions;
 use App\Models\Log;
 use App\Models\Project;
 use Livewire\Component;
@@ -23,6 +24,8 @@ class Overview extends Component
     public $end_date;
     public $status;
 
+    public $isProjectAdminOrOwner = false;
+
     public $editingSprint;
     public $deletingSprint;
 
@@ -39,6 +42,8 @@ class Overview extends Component
         $this->activeSprints = $this->sprints->where('status', 'active')->where('is_archived', false)->count();
         $this->completedSprints = $this->sprints->where('status', 'completed')->where('is_archived', false)->count();
         $this->archivedSprints = $this->project->sprints()->where('is_archived', true)->count();
+
+        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(auth()->user(), $this->project);
     }
 
     private function updateCounts() {

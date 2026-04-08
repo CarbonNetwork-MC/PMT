@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Components\Board;
 
-use App\Livewire\Projects\Board\Board;
+use App\Helpers\CheckProjectPermissions;
 use App\Models\Card as CardModel;
 use App\Models\CardAssignee;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Masmerise\Toaster\Toaster;
 
 class Card extends Component
 {
@@ -17,10 +17,14 @@ class Card extends Component
     public $search = '';
     public $filteredUsers = [];
 
+    public $isProjectAdminOrOwner = false;
+
     public function mount($card, $users) {
         $this->cardId = $card->id;
         $this->users = $users;
         $this->filteredUsers = $users;
+
+        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $card->column->project);
 
         $this->loadCard();
     }

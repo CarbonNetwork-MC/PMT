@@ -27,16 +27,19 @@
             <x-containers.divider margin="my-2" color="gray-400" />
 
             {{-- Move to --}}
-            <x-project.card-action icon="rr-move-to-folder-2" label="{{ __('board.buttons.move_to') }}" wireClick="moveCard" alpineClick="open = false" />
+            @if ($isProjectAdminOrOwner)
+                <x-project.card-action icon="rr-move-to-folder-2" label="{{ __('board.buttons.move_to') }}" wireClick="moveCard" alpineClick="open = false" />
+            @endif
 
             {{-- Make a copy --}}
             <x-project.card-action icon="rr-copy" label="{{ __('board.buttons.make_a_copy') }}" wireClick="makeACopy" alpineClick="open = false" />
 
-            <x-containers.divider margin="my-2" color="gray-400" />
+            @if($isProjectAdminOrOwner)
+                <x-containers.divider margin="my-2" color="gray-400" />
 
-            {{-- Delete --}}
-            <x-project.card-action icon="rr-trash" label="{{ __('board.buttons.delete') }}" color="red-500" wireClick="deleteCard" alpineClick="open = false" />
-
+                {{-- Delete --}}
+                <x-project.card-action icon="rr-trash" label="{{ __('board.buttons.delete') }}" color="red-500" wireClick="deleteCard" alpineClick="open = false" />
+            @endif
         </div>
     </div>
 
