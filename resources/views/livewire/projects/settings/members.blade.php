@@ -95,6 +95,8 @@
                                                 {{ __('settings.buttons.remove') }}
                                             </x-tables.danger-action>
                                         </x-tables.table-actions>
+                                    @elseif ($isProjectOwner)
+                                        <x-tables.table-actions></x-tables.table-actions>
                                     @endif
                                 </x-tables.table-row>
                             @empty
