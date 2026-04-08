@@ -3,26 +3,23 @@
 namespace App\Livewire\Components\Board;
 
 use App\Models\Card as CardModel;
-use App\Models\ProjectColumn;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Column extends Component
 {
-    public $columnId;
+    public $column;
     public $sprint;
+    public $cards;
     public $users;
 
     public function mount($column, $sprint, $users) {
-        $this->columnId = $column->id;
+        $this->column = $column->load('cards.assignees.user');
         $this->sprint = $sprint;
+        $this->cards = $this->column->cards->where('sprint_uuid', $sprint->uuid);
         $this->users = $users;
     }
 
-    public function getColumnProperty() {
-        return ProjectColumn::with('cards.assignees.user')->find($this->columnId);
-    }
-
+    // TODO: This should create a new 'card', where the user has to fill in the name, it then creates the card and refreshes.
     public function addCard($columnId) {
         $card = CardModel::create([
             'sprint_uuid' => $this->sprint->uuid,

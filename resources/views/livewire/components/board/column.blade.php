@@ -16,7 +16,7 @@
 
     {{-- Cards --}}
     <div class="mt-2 flex flex-col gap-y-2">
-        @foreach ($this->column->cards as $card)
+        @foreach ($this->cards as $card)
             <livewire:components.board.card 
                 :card="$card"
                 :users="$users"
