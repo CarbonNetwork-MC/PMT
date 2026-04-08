@@ -1,3 +1,3 @@
-@props(['width' => '', 'height' => '', 'margin' => 'my-8'])
+@props(['width' => '', 'height' => '', 'margin' => 'my-8', 'color' => 'gray-300', 'darkColor' => 'gray-700'])
 
-<hr class="{{ $margin }} bg-gray-300 dark:bg-gray-700 border-0 rounded-sm {{ $width ? 'w-' . $width : '' }} {{ $height ? 'h-' . $height : 'h-px' }}" />
+<hr class="{{ $margin }} bg-{{ $color }} dark:bg-{{ $darkColor }} border-0 rounded-sm {{ $width ? 'w-' . $width : '' }} {{ $height ? 'h-' . $height : 'h-px' }}" />
