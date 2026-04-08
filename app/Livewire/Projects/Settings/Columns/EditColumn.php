@@ -19,6 +19,7 @@ class EditColumn extends Component
     public $colorId;
     public $color;
     public $position;
+    public $columnType;
 
     public $minColumns = 1;
     public $maxColumns = 5;
@@ -33,6 +34,7 @@ class EditColumn extends Component
         $this->colorId = $this->column->color_id;
         $this->color = $this->column->color;
         $this->position = $this->column->position;
+        $this->columnType = $this->column->column_type;
     }
 
     public function updated($key, $value) {
@@ -46,6 +48,7 @@ class EditColumn extends Component
             'name' => ['required', 'string', 'max:255'],
             'colorId' => ['required', 'exists:column_colors,id'],
             'position' => ['required', 'integer', 'min:' . $this->minColumns, 'max:' . $this->maxColumns],
+            'columnType' => ['required', 'in:todo,doing,done'],
         ]);
 
         DB::transaction(function () {
@@ -80,6 +83,7 @@ class EditColumn extends Component
                 'name' => $this->name,
                 'color_id' => $this->colorId,
                 'position' => $this->column->position,
+                'column_type' => $this->columnType,
             ]);
         });
 

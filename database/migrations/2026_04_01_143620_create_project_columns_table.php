@@ -16,6 +16,7 @@ return new class extends Migration
             $table->char('project_uuid', 36);
             $table->string('name');
             $table->integer('position');
+            $table->enum('column_type', ['todo', 'doing', 'done'])->default('todo');
             $table->unsignedBigInteger('color_id')->nullable();
             $table->timestamps();
 

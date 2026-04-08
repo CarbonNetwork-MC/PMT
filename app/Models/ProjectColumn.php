@@ -13,6 +13,7 @@ class ProjectColumn extends Model
         'name',
         'type',
         'position',
+        'column_type',
         'color_id',
     ];
 

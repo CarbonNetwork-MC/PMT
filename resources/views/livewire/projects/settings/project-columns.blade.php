@@ -73,6 +73,7 @@
                             <tr>
                                 <x-tables.table-header>{{ __('settings.labels.position') }}</x-tables.table-header>
                                 <x-tables.table-header>{{ __('settings.labels.column_name') }}</x-tables.table-header>
+                                <x-tables.table-header>{{ __('settings.labels.column_type') }}</x-tables.table-header>
                                 <x-tables.table-header>{{ __('settings.labels.color') }}</x-tables.table-header>
                                 <th></th>
                             </tr>
@@ -82,6 +83,7 @@
                                 <x-tables.table-row>
                                     <x-tables.table-data>{{ $column->position }}</x-tables.table-data>
                                     <x-tables.table-data>{{ $column->name }}</x-tables.table-data>
+                                    <x-tables.table-data>{{ __('settings.labels.' . $column->column_type) }}</x-tables.table-data>
                                     <x-tables.table-data>
                                         @if ($column->color)
                                             <div class="grid grid-cols-3">
