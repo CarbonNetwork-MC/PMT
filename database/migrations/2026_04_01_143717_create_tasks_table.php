@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('card_id');
             $table->text('description');
-            $table->enum('status', ['todo', 'in_progress', 'done'])->default('todo');
+            $table->enum('status', ['todo', 'doing', 'done'])->default('todo');
             $table->integer('task_index')->default(0);
             $table->timestamp('deadline')->nullable();
             $table->decimal('estimated_time', 8, 2)->nullable();
