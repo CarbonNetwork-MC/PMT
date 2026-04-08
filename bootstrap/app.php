@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
+use App\Http\Middleware\EnsureSprintIsStarted;
 use App\Http\Middleware\EnsureUserIsProjectOwner;
 use App\Http\Middleware\EnsureUserIsProjectOwnerOrAdmin;
 use Illuminate\Foundation\Application;
@@ -33,6 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'project-owner' => EnsureUserIsProjectOwner::class,
+        ]);
+    })
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'sprint-started' => EnsureSprintIsStarted::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

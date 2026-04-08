@@ -54,7 +54,9 @@ Route::middleware(['auth'])->group(function() {
     
         Route::get('/{uuid}/dashboard', ProjectDashboard::class)->name('projects.dashboard.render');
 
-        Route::get('/{uuid}/board/{sprintUuid}', ProjectBoard::class)->name('projects.board.render');
+        Route::get('/{uuid}/board/{sprintUuid}', ProjectBoard::class)
+            ->middleware('sprint-started')
+            ->name('projects.board.render');
 
         Route::get('/{uuid}/sprints', SprintsOverview::class)->name('projects.sprints.render');
         Route::get('/{uuid}/sprints/new', NewSprint::class)->name('projects.sprints.new.render');
@@ -64,7 +66,9 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/{uuid}/settings/columns', ProjectSettingsColumns::class)->name('projects.settings.columns.render');
         Route::get('/{uuid}/settings/columns/new', ProjectSettingsColumnsNewColumn::class)->name('projects.settings.columns.new.render');
         Route::get('/{uuid}/settings/columns/{columnId}/edit', ProjectSettingsColumnsEditColumn::class)->name('projects.settings.columns.edit.render');
-        Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)->name('projects.settings.admin.render')->middleware('project-owner');
+        Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)
+            ->middleware('project-owner')
+            ->name('projects.settings.admin.render');
     });
 });
 
