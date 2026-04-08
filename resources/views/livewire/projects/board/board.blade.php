@@ -100,15 +100,16 @@
                 @endforeach
             </div>
         @elseif ($sprint->status === 'completed')
-            <p class="text-center">
-                {{-- TODO: Only show columns where 'column_type' is 'done' --}}
-                This sprint has been completed. 
-            </p>
-        @else
-            <p class="text-center">
-                {{-- TODO: Show a message (full width container) that the sprint hasn't started yet --}}
-                You shouldn't be here... This sprint hasn't started yet.
-            </p>
+            <div class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->where('column_type', 'done')->count() <= 3 ? 3 : $this->columns->where('column_type', 'done')->count() }} gap-4">
+                @foreach ($this->columns->where('column_type', 'done') as $column)
+                    <livewire:components.board.column
+                        :column="$column"
+                        :sprint="$sprint"
+                        :users="$users"
+                        wire:key="column-{{ $column->id }}-{{ $column->cards->where('sprint_uuid', $sprint->uuid)->count() }}"
+                    />
+                @endforeach
+            </div>
         @endif
     </x-containers.main>
 
@@ -121,7 +122,7 @@
         </x-slot>
         <x-slot name="content">
             <p class="text-center">
-                {{ __('board.messages.confirm_delete_card') }}
+                {!! __('board.messages.confirm_delete_card') !!}
             </p>
         </x-slot>
         <x-slot name="footer">
