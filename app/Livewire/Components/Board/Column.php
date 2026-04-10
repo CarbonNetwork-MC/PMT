@@ -13,9 +13,15 @@ class Column extends Component
     public $users;
 
     public function mount($column, $sprint, $users) {
-        $this->column = $column->load('cards.assignees.user');
+        $this->column = $column->load([
+            'cards' => function ($query) use ($sprint) {
+                $query->where('sprint_uuid', $sprint->uuid)
+                    ->with('assignees.user');
+            }
+        ]);
+
         $this->sprint = $sprint;
-        $this->cards = $this->column->cards->where('sprint_uuid', $sprint->uuid);
+        $this->cards = $this->column->cards;
         $this->users = $users;
     }
 
