@@ -1,11 +1,12 @@
 <div class="w-full bg-white dark:bg-gray-700 rounded-md p-2 text-sm">
     {{-- Card Header - ID and Actions --}}
-    <div x-data="{ open: false }" class="relative flex justify-between">
+    <div x-data="{ open: @entangle('showActions'), showMoveOptions: @entangle('showMoveOptions') }" class="relative flex justify-between">
         <p class="text-xs text-gray-500 dark:text-gray-400">#{{ $card->id }}</p>
         <i class="fi fi-bs-menu-dots dark:text-white cursor-pointer" data-tooltip-target="card-actions-{{ $card->id }}" @click="open = !open"></i>
 
         <x-tooltip id="card-actions-{{ $card->id }}" content="{{ __('board.labels.card_actions') }}" />
 
+        {{-- Actions Dropdown --}}
         <div 
             x-show="open"
             x-transition
@@ -28,7 +29,7 @@
 
             {{-- Move to --}}
             @if ($isProjectAdminOrOwner)
-                <x-project.card-action icon="rr-move-to-folder-2" label="{{ __('board.buttons.move_to') }}" wireClick="moveCard" alpineClick="open = false" />
+                <x-project.card-action icon="rr-move-to-folder-2" label="{{ __('board.buttons.move_to') }}" alpineClick="open = false; showMoveOptions = true; showActions = false" />
             @endif
 
             {{-- Make a copy --}}
@@ -40,6 +41,82 @@
                 {{-- Delete --}}
                 <x-project.card-action icon="rr-trash" label="{{ __('board.buttons.delete') }}" color="red-500" wireClick="deleteCard" alpineClick="open = false" />
             @endif
+        </div>
+
+        {{-- Move Options Dropdown --}}
+        <div 
+            x-show="showMoveOptions"
+            x-transition
+            @click.outside="showMoveOptions = false"
+            class="absolute right-0 top-full mt-2 z-50 w-48 bg-gray-200 dark:bg-gray-100 border border-zinc-400 rounded px-1 py-2"
+        >
+            <p class="text-gray-900 text-center text-sm font-bold">
+                {{ __('board.buttons.move_to') }}
+            </p>
+
+            <x-containers.divider margin="my-2" color="gray-400" />
+
+            <div class="flex flex-col gap-2">
+                @php
+                    $selectedProjectModel = $projects->firstWhere('uuid', $selectedProjectUuid);
+                @endphp
+                {{-- Header --}}
+                <p class="text-center">
+                    {{ __('board.titles.select_destination') }}
+                </p>
+
+                {{-- Project --}}
+                <x-forms.select 
+                    wire:key="projects-{{ $selectedProjectUuid }}"
+                    :options="$projects->map(fn($project) => ['value' => $project->uuid, 'label' => $project->name])->values()->toArray()"
+                    wire:model="selectedProjectUuid"
+                />
+
+                {{-- Sprint / Backlog --}}
+                <x-forms.select
+                    :options="[
+                        ['value' => 'sprint', 'label' => __('board.labels.sprints')],
+                        ['value' => 'backlog', 'label' => __('board.labels.backlogs')]
+                    ]"
+                    wire:model="sprintOrBacklog"
+                />
+
+                {{-- Sprint (name) / Backlog (name) --}}
+                <x-forms.select
+                    wire:key="entities-{{ $selectedProjectUuid }}"
+                    :options="$entities->map(fn($entity) => ['value' => $entity->uuid, 'label' => $entity->name])->values()->toArray()"
+                    wire:model="selectedEntityUuid"
+                />
+
+                {{-- Column --}}
+                @if ($sprintOrBacklog === 'sprint')
+                    <x-forms.select
+                        wire:key="columns-{{ $selectedProjectUuid }}"
+                        {{-- :options="$selectedProject->columns->map(fn($column) => ['value' => $column->id, 'label' => $column->name])->values()->toArray()" --}}
+                        :options="$selectedProjectModel?->columns
+                            ->map(fn($column) => ['value' => $column->id, 'label' => $column->name])
+                            ->values()
+                            ->toArray()
+                        "
+                        wire:model="column"
+                    />
+                @endif
+
+                {{-- Top / Bottom --}}
+                <x-forms.select
+                    :options="[
+                        ['value' => 'top', 'label' => __('board.labels.top')],
+                        ['value' => 'bottom', 'label' => __('board.labels.bottom')]
+                    ]"
+                    wire:model="position"
+                />
+
+                {{-- Move Button --}}
+                <x-buttons.primary-button wire:click="moveCard"
+                >
+                    {{ __('board.buttons.move') }}
+                </x-buttons.primary-button>
+            </div>
         </div>
     </div>
 

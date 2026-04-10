@@ -68,9 +68,8 @@ class Board extends Component
     }
 
     #[On('cardMoveInitiated')]
-    public function handleCardMove($cardId) {
-        $this->cardToModify = Card::where('id', $cardId)->first();
-        $this->showMoveCardModal = true;
+    public function handleCardMove() {
+        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_moved'));
     }
 
     #[On('cardCopyInitiated')]

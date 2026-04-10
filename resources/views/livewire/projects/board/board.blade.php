@@ -134,4 +134,38 @@
             </x-buttons.danger-button>
         </x-slot>
     </x-modals.modal>
+
+    {{-- Move Card Modal --}}
+    <x-modals.modal wire:model="showMoveCardModal" size="lg">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('board.titles.move_card') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <div class="grid grid-cols-3 gap-4">
+                {{-- Project --}}
+
+
+                {{-- Sprint / Backlog --}}
+
+
+                {{-- Sprint (name) / Backlog (name) --}}
+
+
+                {{-- Column --}}
+
+
+                {{-- Top / Bottom --}}
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showMoveCardModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.primary-button wire:click="confirmMoveCard">
+                {{ __('board.buttons.move') }}
+            </x-buttons.primary-button>
+        </x-slot>
+    </x-modals.modal>
 </div>

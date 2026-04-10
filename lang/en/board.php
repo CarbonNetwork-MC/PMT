@@ -12,6 +12,7 @@ return [
     'titles' => [
         'boards' => 'Boards',
         'delete_card' => 'Delete Card',
+        'select_destination' => 'Select Destination',
     ],
 
     
@@ -23,12 +24,19 @@ return [
         'duration' => 'Duration',
         'total_cards' => 'Total cards',
         'total_tasks' => 'Total tasks',
+
+        'backlogs' => 'Backlogs',
+        'sprints' => 'Sprints',
+
+        'bottom' => 'Bottom',
+        'top' => 'Top',
     ],
 
     'buttons' => [
         'assign_to_me' => 'Assign to me',
         'delete' => 'Delete card',
         'make_a_copy' => 'Make a copy',
+        'move' => 'Move',
         'move_to' => 'Move to',
     ],
 
