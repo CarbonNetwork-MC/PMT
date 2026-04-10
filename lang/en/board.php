@@ -58,6 +58,9 @@ return [
     'toast' => [
         'card_created' => 'Card created successfully',
         'card_deleted' => 'Card deleted successfully',
+        'card_move_failed' => 'Failed to move card',
+        'card_moved' => 'Card moved successfully',
+        'card_not_found' => 'Card not found',
     ],
 
     'modals' => [

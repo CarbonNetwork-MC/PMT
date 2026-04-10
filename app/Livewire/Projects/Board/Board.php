@@ -43,6 +43,21 @@ class Board extends Component
         $this->daysLeft = now()->startOfDay()->diffInDays($this->sprint->end_date->startOfDay(), false);
     }
 
+    public function updateCardOrder($groups) {
+        foreach ($groups as $group) {
+            $columnId = $group['value'];
+
+            foreach ($group['items'] as $item) {
+                Card::where('id', $item['value'])->update([
+                    'column_id' => $columnId,
+                    'card_index' => $item['order'],
+                ]);
+            }
+        }
+
+        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_moved'));
+    }
+
     #[On('cardSelected')]
     public function handleCardSelected($cardId) {
         dd("Card selected: " . $cardId['cardId']);

@@ -1,4 +1,4 @@
-<div wire:key="column-{{ $this->column->id }}" class="bg-gray-200 dark:bg-gray-900 p-2 rounded-md md:h-[75vh] 3xl:h-[85vh]">
+<div wire:key="column-{{ $this->column->id }}" class="bg-gray-200 dark:bg-gray-900 p-2 rounded-md md:h-[75vh] 3xl:h-[85vh] sortable-column">
     {{-- Header --}}
     <div class="flex justify-between bg-white dark:bg-slate-700 rounded-md px-2 py-1">
         {{-- Column name + Number of cards --}}
@@ -15,13 +15,22 @@
     </div>
 
     {{-- Cards --}}
-    <div class="mt-2 flex flex-col gap-y-2">
+    <div 
+        class="mt-2 flex flex-col gap-y-2 min-h-[100px]"
+        wire:sortable-group.item-group="{{ $this->column->id }}"
+        wire:sortable-group.options="{ animation: 100 }"
+    >
         @foreach ($this->cards as $card)
-            <livewire:components.board.card 
-                :card="$card"
-                :users="$users"
-                wire:key="card-{{ $card->id }}-{{ $card->updated_at?->timestamp }}" 
-            />
+            <div 
+                wire:key="card-{{ $card->id }}"
+                wire:sortable-group.item="{{ $card->id }}"
+            >
+                <livewire:components.board.card 
+                    :card="$card"
+                    :users="$users"
+                    wire:key="card-inner-{{ $card->id }}" 
+                />
+            </div>
         @endforeach
     </div>
 </div>

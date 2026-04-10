@@ -21,7 +21,7 @@ class Column extends Component
         ]);
 
         $this->sprint = $sprint;
-        $this->cards = $this->column->cards;
+        $this->cards = $this->column->cards->sortBy('card_index');
         $this->users = $users;
     }
 
