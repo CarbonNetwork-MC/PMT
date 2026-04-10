@@ -32,6 +32,7 @@ class Board extends Component
 
         $this->columns = $this->project->columns()
             ->with('cards.assignees.user')
+            ->orderBy('position')
             ->get();
 
         // Load all users assigned to the project + the owner
