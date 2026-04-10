@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Backlog extends Model
 {
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
         'uuid',
         'project_uuid',
@@ -17,6 +20,10 @@ class Backlog extends Model
         'is_archived',
         'archived_at',
         'archived_by',
+    ];
+    protected $casts = [
+        'is_archived' => 'boolean',
+        'archived_at' => 'datetime',
     ];
 
     public function project(): BelongsTo {
