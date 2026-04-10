@@ -25,7 +25,6 @@ class Board extends Component
     public $cardToModify = null;
 
     public $showDeleteCardModal = false;
-    public $showMoveCardModal = false;
 
     public function mount($uuid, $sprintUuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
