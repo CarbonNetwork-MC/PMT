@@ -12,6 +12,9 @@ class Column extends Component
     public $cards;
     public $users;
 
+    public $createNewCard = false;
+    public $cardName = '';
+
     public function mount($column, $sprint, $users) {
         $this->column = $column->load([
             'cards' => function ($query) use ($sprint) {
@@ -25,15 +28,19 @@ class Column extends Component
         $this->users = $users;
     }
 
-    // TODO: This should create a new 'card', where the user has to fill in the name, it then creates the card and refreshes.
-    public function addCard($columnId) {
-        $card = CardModel::create([
+    public function addCard() {
+        CardModel::create([
             'sprint_uuid' => $this->sprint->uuid,
-            'name' => 'New Card',
-            'column_id' => $columnId,
+            'name' => $this->cardName ?: 'New Card',
+            'column_id' => $this->column->id,
         ]);
 
         return redirect()->route('projects.board.render', ['uuid' => $this->sprint->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_created'));
+    }
+
+    public function cancelCardCreation() {
+        $this->createNewCard = false;
+        $this->cardName = '';
     }
 
     public function render()

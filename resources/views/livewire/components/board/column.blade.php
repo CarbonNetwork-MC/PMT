@@ -10,7 +10,7 @@
         </div>
         {{-- Add card button --}}
         <div class="flex justify-end">
-            <i class="fi fi-rr-plus text-gray-800 dark:text-gray-200 me-1 cursor-pointer" wire:click="addCard('{{ $this->column->id }}')"></i>
+            <i class="fi fi-rr-plus text-gray-800 dark:text-gray-200 me-1 cursor-pointer" wire:click="$set('createNewCard', true)"></i>
         </div>
     </div>
 
@@ -20,6 +20,21 @@
         wire:sortable-group.item-group="{{ $this->column->id }}"
         wire:sortable-group.options="{ animation: 100 }"
     >
+        {{-- New Card Skeleton --}}
+        @if ($createNewCard)
+            <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
+                <input 
+                    type="text" 
+                    wire:model="cardName" 
+                    wire:keydown.enter="addCard" 
+                    wire:blur="cancelCardCreation" 
+                    class="w-full border border-gray-300 rounded-md p-1"
+                    placeholder="{{ __('board.placeholders.new_card') }}"
+                    autofocus
+                />
+            </div>
+        @endif
+
         @foreach ($this->cards as $card)
             <div 
                 wire:key="card-{{ $card->id }}"
@@ -32,5 +47,6 @@
                 />
             </div>
         @endforeach
+            
     </div>
 </div>

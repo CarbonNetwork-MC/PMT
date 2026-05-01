@@ -67,4 +67,8 @@ return [
         
     ],
 
+    'placeholders' => [
+        'new_card' => 'Enter card name...',
+    ]
+
 ];
