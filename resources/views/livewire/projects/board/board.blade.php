@@ -136,4 +136,9 @@
             </x-buttons.danger-button>
         </x-slot>
     </x-modals.modal>
+
+    {{-- Selected Card Modal --}}
+    @if ($selectedCard)
+        <livewire:components.board.modal :card="$selectedCard" :sprint="$sprint" :users="$users" />
+    @endif
 </div>

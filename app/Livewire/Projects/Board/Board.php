@@ -22,8 +22,9 @@ class Board extends Component
 
     public $daysLeft;
 
-    public $cardToModify = null;
+    public $selectedCard = null;
 
+    public $cardToModify = null;
     public $showDeleteCardModal = false;
 
     public function mount($uuid, $sprintUuid) {
@@ -60,7 +61,13 @@ class Board extends Component
 
     #[On('cardSelected')]
     public function handleCardSelected($cardId) {
-        dd("Card selected: " . $cardId['cardId']);
+        // dd("Card selected: " . $cardId['cardId']);
+        $this->selectedCard = Card::where('id', $cardId['cardId'])->first();
+    }
+
+    #[On('closeCardModal')]
+    public function handleCloseCardModal() {
+        $this->selectedCard = null;
     }
 
     #[On('cardDeleteInitiated')]
