@@ -1,4 +1,4 @@
-<div wire:sortable-group.handle class="w-full bg-white dark:bg-gray-700 rounded-md p-2 text-sm">
+<div wire:sortable-group.handle class="w-full bg-white dark:bg-gray-700 rounded-md p-2 text-sm cursor-grabbing">
     {{-- Card Header - ID and Actions --}}
     <div x-data="{ open: @entangle('showActions'), showMoveOptions: @entangle('showMoveOptions') }" class="relative flex justify-between">
         <p class="text-xs text-gray-500 dark:text-gray-400">#{{ $card->id }}</p>
