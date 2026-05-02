@@ -11,6 +11,7 @@ use App\Models\Card as CardModel;
 use App\Models\CardAssignee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
@@ -99,6 +100,13 @@ class Card extends Component
 
     public function selectCard() {
         $this->dispatch('cardSelected', ['cardId' => $this->cardId]);
+    }
+
+    #[On('cardRefreshed')]
+    public function handleCardRefreshed($data) {
+        if ($data['cardId'] == $this->cardId) {
+            $this->loadCard();
+        }
     }
 
     public function toggleAssignee($userUuid, $isChecked) {

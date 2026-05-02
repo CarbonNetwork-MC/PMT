@@ -20,6 +20,7 @@ return [
         'actions' => 'Actions',
         'assignees' => 'Assignees',
         'card_actions' => 'Card actions',
+        'change_approval_status' => 'Change Approval Status',
         'days_left' => 'Days left',
         'duration' => 'Duration',
         'total_cards' => 'Total cards',
@@ -57,6 +58,7 @@ return [
 
     'toast' => [
         'card_created' => 'Card created successfully',
+        'card_copied' => 'Card copied successfully',
         'card_deleted' => 'Card deleted successfully',
         'card_move_failed' => 'Failed to move card',
         'card_moved' => 'Card moved successfully',
@@ -69,6 +71,13 @@ return [
 
     'placeholders' => [
         'new_card' => 'Enter card name...',
-    ]
+    ],
+
+    'status' => [
+        'approved' => 'Approved',
+        'needs_work' => 'Needs Work',
+        'rejected' => 'Rejected',
+        'none' => 'None',
+    ],
 
 ];
