@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cards', function (Blueprint $table) {
             $table->id();
             $table->char('sprint_uuid', 36);
-            $table->string('name');
+            $table->string('title');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('column_id');
             $table->enum('approval_status', ['None', 'Approved', 'Needs Work', 'Rejected'])->default('None');

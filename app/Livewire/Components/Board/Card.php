@@ -164,7 +164,7 @@ class Card extends Component
             try {
                 $backlogCard = BacklogCard::create([
                     'backlog_uuid' => $this->selectedEntityUuid,
-                    'name' => $card->name,
+                    'name' => $card->title,
                     'description' => $card->description,
                     'approval_status' => $card->approval_status,
                     'card_index' => $index,

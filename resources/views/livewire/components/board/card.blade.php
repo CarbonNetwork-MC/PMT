@@ -121,7 +121,7 @@
     </div>
 
     {{-- Card Name --}}
-    <p class="font-bold text-gray-800 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer" wire:click="selectCard">{{ $card->name }}</p>
+    <p class="font-bold text-gray-800 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer" wire:click="selectCard">{{ $card->title }}</p>
 
     {{-- Information - Approval Status, Number of tasks, Has Description --}}
     <div class="flex gap-x-2">

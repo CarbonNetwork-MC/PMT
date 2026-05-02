@@ -108,7 +108,7 @@ class Board extends Component
 
         $newCard = Card::create([
             'sprint_uuid' => $card->sprint_uuid,
-            'name' => $card->name . ' (Copy)',
+            'name' => $card->title . ' (Copy)',
             'description' => $card->description,
             'column_id' => $card->column_id,
             'approval_status' => $card->approval_status,
