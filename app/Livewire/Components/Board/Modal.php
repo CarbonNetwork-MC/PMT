@@ -13,6 +13,8 @@ class Modal extends Component
     public $sprint;
     public $users;
 
+    public $cardDescription = '';
+
     public $search = '';
     public $filteredUsers = [];
 
@@ -21,6 +23,11 @@ class Modal extends Component
     public $showMoveOptions = false;
 
     public $approvalStatuses = ['Approved', 'Needs Work', 'Rejected', 'None'];
+    public $columns = [
+        ['type' => 'todo', 'name' => 'To Do', 'color' => 'purple-600', 'cards' => []],
+        ['type' => 'doing', 'name' => 'In Progress', 'color' => 'sky-500', 'cards' => []],
+        ['type' => 'done', 'name' => 'Done', 'color' => 'green-500', 'cards' => []],
+    ];
     public $isProjectAdminOrOwner = false;
 
     // Card Move Properties
@@ -41,6 +48,12 @@ class Modal extends Component
         $this->sprint = $sprint;
         $this->users = $users;
         $this->filteredUsers = $users;
+        $this->cardDescription = $card->description;
+
+        $tasks = $card->tasks()->with('assignees.user')->get();
+        foreach ($this->columns as &$column) {
+            $column['cards'] = $tasks->where('status', $column['type'])->values();
+        }
 
         $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $card->column->project);
 
@@ -85,6 +98,16 @@ class Modal extends Component
         $this->filteredUsers = $this->users->filter(function ($user) use ($searchTerm) {
             return str_contains(strtolower($user->name), $searchTerm) || str_contains(strtolower($user->email), $searchTerm);
         });
+    }
+
+    public function saveDescription() {
+        $description = $this->cardDescription;
+        if (empty($description)) $description = null;
+
+        $this->card->description = $description;
+        $this->card->save();
+
+        $this->loadCard();
     }
 
     private function loadCard() {

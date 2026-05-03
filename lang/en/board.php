@@ -45,6 +45,7 @@ return [
         'confirm_delete_card' => 'Are you sure you want to delete this card? <br><b>This action cannot be undone.</b>',
         'has_description' => 'This card has a description',
         'no_users_assigned' => 'No users assigned',
+        'no_description' => 'This card has no description',
         'sprint_not_started' => 'This sprint has not started yet. Please start the sprint to access the board.',
 
         'no_tasks_started' => 'No tasks are in progress',

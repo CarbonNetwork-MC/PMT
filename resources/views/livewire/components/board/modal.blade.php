@@ -15,6 +15,7 @@
     {{-- Modal Content --}}
     <div class="relative z-40 flex justify-center w-[85%] h-[90vh] mx-auto">
         <div class="w-full h-full flex flex-col bg-gray-100 dark:bg-gray-800 rounded-sm p-4">
+            {{-- Top Bar --}}
             <div class="flex justify-between">
                 {{-- Title --}}
                 <div class="flex gap-4 mt-2">
@@ -315,6 +316,62 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="w-full h-full flex-1 min-h-0 flex flex-col bg-white dark:bg-gray-900 rounded-sm p-4 mt-2">
+                {{-- Description --}}
+                <div 
+                    x-data="{ isEditing: false }"
+                    class="w-full flex gap-2"
+                >
+                    <div
+                        x-show="isEditing"
+                        class="w-full"
+                    >
+                        <x-forms.text-area
+                            wire:model="cardDescription"
+                            rows="3"
+                            @keydown.enter.prevent="isEditing = false"
+                            x-on:blur="isEditing = false"
+                            wire:blur="saveDescription"
+                        />
+                    </div>
+
+                    <div
+                        x-show="!isEditing"
+                    >
+                        <p class="text-gray-500">{{ $cardDescription ? $cardDescription : __('board.messages.no_description') }}</p>
+                    </div>
+
+                    <i class="fi fi-bs-pencil hover:text-blue-500 cursor-pointer" x-show="!isEditing" @click="isEditing = true"></i>
+                </div>
+
+                <x-containers.divider margin="my-6" color="gray-400" />
+
+                {{-- Task Columns --}}
+                <div class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0">
+                    @foreach ($columns as $column)
+                        <div class="bg-gray-100 dark:bg-gray-900 rounded-sm p-2 h-full flex flex-col min-h-0">
+                            {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
+                            <div class="flex justify-between">
+                                {{-- Count + Title --}}
+                                <div class="flex gap-2">
+                                    <div class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column['color'] }} text-white px-1.5 py-0.5">{{ count($column['cards']) }}</div>
+                                    <p class="text-{{ $column['color'] }} font-bold">{{ $column['name'] }}</p>
+                                </div>
+
+                                {{-- Add task button --}}
+
+                            </div>
+
+                            <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside">
+                                @foreach ($column['cards'] as $task)
+                                    <li>{{ $task->description }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
