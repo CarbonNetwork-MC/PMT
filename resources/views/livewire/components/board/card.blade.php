@@ -187,7 +187,7 @@
         @endif
     </div>
 
-    {{-- Assignees --}}
+    {{-- Bottom Bar --}}
     @php
         $assignees = $card->assignees;
         $maxVisible = 3;
@@ -196,7 +196,17 @@
         $remainingCount = $assignees->count() - $maxVisible;
     @endphp
 
-    <div class="flex justify-end">
+    <div class="flex items-center justify-end gap-2">
+        {{-- Total Estimated Time --}}
+        <span class="text-red-300">TET</span>
+
+        {{-- Total Actual Time --}}
+        <span class="text-red-300">TAT</span>
+
+        {{-- Deadline --}}
+        <span class="text-red-300">Deadline</span>
+
+        {{-- Assignees --}}
         <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-100 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
             <i 
                 @click="open = !open"

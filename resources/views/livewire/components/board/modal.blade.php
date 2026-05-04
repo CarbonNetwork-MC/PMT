@@ -68,6 +68,9 @@
                         @endforeach
                     </x-dropdown.wrapper>
 
+                    <span class="text-red-300">Total Estimated Time</span>
+                    <span class="text-red-300">Total Actual Time</span>
+
                     {{-- Users --}}
                     @php
                         $assignees = $card->assignees;
