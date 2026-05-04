@@ -144,9 +144,11 @@ class Card extends Component
 
         if ($this->sprintOrBacklog === 'sprint') {
             $index = $this->position === 'top' ? 0 : CardModel::where('column_id', $this->column)->max('card_index') + 1;
-            CardModel::where('column_id', $this->column)
-                ->where('card_index', '>=', $index)
-                ->increment('card_index');
+            if ($index != 0) {
+                CardModel::where('column_id', $this->column)
+                    ->where('card_index', '>=', $index)
+                    ->increment('card_index');
+            }
 
             $updated = $card->update([
                 'sprint_uuid' => $this->selectedEntityUuid,
@@ -169,7 +171,7 @@ class Card extends Component
             try {
                 $backlogCard = BacklogCard::create([
                     'backlog_uuid' => $this->selectedEntityUuid,
-                    'name' => $card->title,
+                    'title' => $card->title,
                     'description' => $card->description,
                     'approval_status' => $card->approval_status,
                     'card_index' => $index,

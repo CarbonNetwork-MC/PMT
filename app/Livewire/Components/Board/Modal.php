@@ -3,9 +3,14 @@
 namespace App\Livewire\Components\Board;
 
 use App\Helpers\CheckProjectPermissions;
+use App\Models\BacklogCard;
+use App\Models\Card;
 use App\Models\CardAssignee;
+use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class Modal extends Component
 {
@@ -162,9 +167,80 @@ class Modal extends Component
         $this->dispatch('cardDeleteInitiated', ['cardId' => $this->card->id]);
     }
 
-    // TODO: Move Card Method
     public function moveCard() {
+        if ($this->sprintOrBacklog === 'sprint') {
+            $index = $this->position  === 'top' ? 0 : Card::where('column_id', $this->column)->max('card_index') + 1;
+            if ($index != 0) {
+                Card::where('column_id', $this->column)
+                    ->where('card_index', '>=', $index)
+                    ->increment('card_index');
+            }
 
+            $updated = $this->card->update([
+                'sprint_uuid' => $this->selectedEntityUuid,
+                'column_id' => $this->column,
+                'card_index' => $index,
+            ]);
+
+            if (!$updated) {
+                Toaster::error(__('board.toast.card_move_failed'));
+                return;
+            }
+        } else {
+            $index = $this->position === 'top' ? 0 : BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)->max('card_index') + 1;
+            if ($index != 0) {
+                BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)
+                    ->where('card_index', '>=', $index)
+                    ->increment('card_index');
+            }
+
+            DB::beginTransaction();
+
+            try {
+                $backlogCard = BacklogCard::create([
+                    'backlog_uuid' => $this->selectedEntityUuid,
+                    'title' => $this->card->title,
+                    'description' => $this->card->description,
+                    'approval_status' => $this->card->approval_status,
+                    'card_index' => $index,
+                ]);
+
+                foreach ($this->card->tasks as $task) {
+                    $backlogTask = $backlogCard->tasks()->create([
+                        'backlog_card_id' => $backlogCard->id,
+                        'description' => $task->description,
+                        'status' => $task->status,
+                        'task_index' => $task->task_index,
+                    ]);
+
+                    foreach ($task->assignees as $assignee) {
+                        $backlogTask->assignees()->create([
+                            'backlog_task_id' => $backlogTask->id,
+                            'user_uuid' => $assignee->user_uuid,
+                        ]);
+                    }
+                }
+
+                foreach ($this->card->assignees as $assignee) {
+                    $backlogCard->assignees()->create([
+                        'backlog_card_id' => $backlogCard->id,
+                        'user_uuid' => $assignee->user_uuid,
+                    ]);
+                }
+
+                $this->card->delete();
+
+                DB::commit();
+            } catch (Exception $ex) {
+                DB::rollBack();
+                Toaster::error(__('board.toast.card_move_failed'));
+                logger()->error('Failed to move card to backlog: ' . $ex->getMessage());
+                return;
+            }
+        }
+
+        $this->dispatch('closeCardModal');
+        $this->dispatch('refreshBoard');
     }
 
     public function render()
