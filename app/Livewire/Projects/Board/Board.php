@@ -154,6 +154,37 @@ class Board extends Component
         return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_copied'));
     }
 
+    #[On('taskConvertToCardInitiated')]
+    public function handleTaskConvertToCard($taskId) {
+        $task = Task::where('id', $taskId)->firstOrFail();
+        if (!$task) {
+            Toaster::error(__('board.toast.card_not_found'));
+            return;
+        }
+
+        $card = Card::create([
+            'sprint_uuid' => $task->card->sprint_uuid,
+            'title' => $task->description,
+            'column_id' => $task->card->column_id,
+            'approval_status' => 'None',
+            'deadline' => $task->deadline,
+            'card_index' => Card::where('column_id', $task->card->column_id)
+                ->where('sprint_uuid', $task->card->sprint_uuid)
+                ->max('card_index') + 1,
+        ]);
+
+        foreach ($task->assignees as $assignee) {
+            CardAssignee::create([
+                'card_id' => $card->id,
+                'user_uuid' => $assignee->user_uuid,
+            ]);
+        }
+
+        $task->delete();
+
+        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_created'));
+    }
+
     public function render()
     {
         return view('livewire.projects.board.board');

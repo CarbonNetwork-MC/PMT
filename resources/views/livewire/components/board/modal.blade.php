@@ -367,6 +367,7 @@
                             @foreach ($column['cards'] as $task)
                                 <livewire:components.board.task-card 
                                     :task="$task"
+                                    :users="$users"
                                     wire:key="task-{{ $task->id }}"
                                 />
                             @endforeach

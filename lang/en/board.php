@@ -24,6 +24,7 @@ return [
         'clear_assignees' => 'Clear assignees',
         'days_left' => 'Days left',
         'duration' => 'Duration',
+        'task_actions' => 'Task actions',
         'total_cards' => 'Total cards',
         'total_tasks' => 'Total tasks',
 
@@ -36,6 +37,7 @@ return [
 
     'buttons' => [
         'assign_to_me' => 'Assign to me',
+        'convert_to_card' => 'Convert to card',
         'delete' => 'Delete card',
         'make_a_copy' => 'Make a copy',
         'move' => 'Move',
