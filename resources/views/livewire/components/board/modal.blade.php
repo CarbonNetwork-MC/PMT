@@ -333,10 +333,10 @@
                     <div
                         x-show="!isEditing"
                     >
-                        <p class="text-gray-500">{{ $cardDescription ? $cardDescription : __('board.messages.no_description') }}</p>
+                        <p class="text-gray-500 dark:text-gray-400">{{ $cardDescription ? $cardDescription : __('board.messages.no_description') }}</p>
                     </div>
 
-                    <i class="fi fi-bs-pencil hover:text-blue-500 cursor-pointer" x-show="!isEditing" @click="isEditing = true"></i>
+                    <i class="fi fi-bs-pencil dark:text-gray-400 hover:text-blue-500 cursor-pointer" x-show="!isEditing" @click="isEditing = true"></i>
                 </div>
 
                 <x-containers.divider margin="my-6" color="gray-400" />
@@ -345,7 +345,7 @@
                 <div class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0">
                     @foreach ($columns as $column)
                         <div 
-                            class="bg-gray-100 dark:bg-gray-900 rounded-sm p-2 h-full flex flex-col min-h-0"
+                            class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0"
                             wire:key="column-{{ $column['type'] }}"
                         >
                             {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
