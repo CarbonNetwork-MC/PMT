@@ -141,10 +141,10 @@
                                 <div class="p-2 border-t border-gray-300">
                                     <button 
                                         type="button"
-                                        class="w-full text-xs bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
+                                        class="w-full text-xs bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 cursor-pointer"
                                         wire:click="clearAssignees"
                                     >
-                                        Clear all
+                                        {{ __('board.labels.clear_assignees') }}
                                     </button>
                                 </div>
                             </div>

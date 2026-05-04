@@ -21,6 +21,7 @@ return [
         'assignees' => 'Assignees',
         'card_actions' => 'Card actions',
         'change_approval_status' => 'Change Approval Status',
+        'clear_assignees' => 'Clear assignees',
         'days_left' => 'Days left',
         'duration' => 'Duration',
         'total_cards' => 'Total cards',
