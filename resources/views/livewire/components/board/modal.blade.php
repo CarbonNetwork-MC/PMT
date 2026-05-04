@@ -190,7 +190,7 @@
                             :useOwnState="false"
                             icon="bs-menu-dots-vertical"
                             tooltipId="scard-actions-{{ $card->id }}"
-                            :tooltip="__('board.labels.show_actions')"
+                            tooltip="{{ __('board.labels.card_actions') }}"
                             width="w-52"
                             align="right"
                             margin="mt-4"
