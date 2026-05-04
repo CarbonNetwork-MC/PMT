@@ -211,7 +211,7 @@ class Card extends Component
             }
         }
 
-        $this->dispatch('cardMoveInitiated');
+        $this->dispatch('refreshBoard');
     }
 
     public function makeACopy() {

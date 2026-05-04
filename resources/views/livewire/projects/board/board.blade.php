@@ -91,14 +91,12 @@
         @if ($sprint->status === 'active')
             <div wire:sortable-group="updateCardOrder" class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->count() <= 3 ? 3 : $this->columns->count() }} gap-4">
                 @foreach ($this->columns as $column)
-                    <div class="">
-                        <livewire:components.board.column
-                            :column="$column"
-                            :sprint="$sprint"
-                            :users="$users"
-                            wire:key="column-{{ $column->id }}"
-                        />
-                    </div>
+                    <livewire:components.board.column
+                        :column="$column"
+                        :sprint="$sprint"
+                        :users="$users"
+                        wire:key="column-{{ $column->id }}"
+                    />
                 @endforeach
             </div>
         @elseif ($sprint->status === 'completed')

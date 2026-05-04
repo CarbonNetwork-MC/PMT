@@ -47,6 +47,18 @@ class Board extends Component
         $this->selectedCard = $this->columns->flatMap(fn($column) => $column->cards)->firstWhere('id', 36);
     }
 
+    public function reloadBoard() {
+        $this->columns = $this->project->columns()
+            ->with('cards.assignees.user')
+            ->orderBy('position')
+            ->get();
+    }
+
+    #[On('refreshBoard')]
+    public function handleRefreshBoard() {
+        $this->reloadBoard();
+    }
+
     public function updateCardOrder($groups) {
         foreach ($groups as $group) {
             $columnId = $group['value'];
