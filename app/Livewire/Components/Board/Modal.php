@@ -18,10 +18,6 @@ class Modal extends Component
     public $search = '';
     public $filteredUsers = [];
 
-    public $showApprovalStatusDropdown = false;
-    public $showActions = false;
-    public $showMoveOptions = false;
-
     public $approvalStatuses = ['Approved', 'Needs Work', 'Rejected', 'None'];
     public $columns = [
         ['type' => 'todo', 'name' => 'To Do', 'color' => 'purple-600', 'cards' => []],

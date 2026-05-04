@@ -29,54 +29,44 @@
                         $approvalStatus = strtolower($card->approval_status);
                         $approvalStatusKey = str_replace(' ', '_', $approvalStatus);
                         $statusColors = [
-                            'approved' => 'text-green-800 hover:bg-green-500 hover:text-white border-green-800 px-4',
-                            'needs work' => 'text-yellow-800 hover:bg-yellow-500 hover:text-white border-yellow-800 px-2',
-                            'rejected' => 'text-red-800 hover:bg-red-500 hover:text-white border-red-800 px-4',
+                            'approved' => 'text-green-500 hover:bg-green-500 hover:text-white border-green-500 px-4',
+                            'needs work' => 'text-yellow-500 hover:bg-yellow-500 hover:text-white border-yellow-500 px-2',
+                            'rejected' => 'text-red-500 hover:bg-red-500 hover:text-white border-red-500 px-4',
                         ];
                         $statusColor = $statusColors[$approvalStatus] ?? 'text-gray-800 border-gray-800 px-4';
                     @endphp
 
-                    <div 
-                        x-data="{ open: @entangle('showApprovalStatusDropdown') }" 
-                        class="relative"
+                    <x-dropdown.wrapper
+                        state="open"
+                        :useOwnState="true"
+                        tooltipId="approval-status-{{ $card->id }}"
+                        :tooltip="__('board.labels.change_approval_status')"
+                        width="w-52"
+                        align="right"
+                        margin="mt-4"
                     >
-
-                        <div 
-                            class="flex items-center py-1.5 rounded text-sm font-semibold border {{ $statusColor }} cursor-pointer"
-                            @click="open = !open"
-                            data-tooltip-target="scard-actions-{{ $card->id }}"
-                        >
-
-                        <p>{{ __('board.status.' . $approvalStatusKey) }}</p>
-                        </div>
-
-                        <x-tooltip id="scard-actions-{{ $card->id }}" content="{{ __('board.labels.change_approval_status') }}" />
-
-                        <div
-                            x-show="open"
-                            x-transition
-                            @click.outside="open = false"
-                            class="absolute right-0 top-full mt-2 z-50 w-52 bg-gray-200 dark:bg-gray-100 border border-zinc-400 rounded px-1 py-2"
-                        >
-
-                            {{-- Dropdown Header --}}
-                            <div class="text-sm text-gray-900">
-                                <p class="text-center font-bold">
-                                    {{ __('board.labels.change_approval_status') }}
-                                </p>
+                        <x-slot name="handle">
+                            <div 
+                                class="flex items-center py-1.5 rounded text-sm font-semibold border {{ $statusColor }} cursor-pointer"
+                                data-tooltip-target="approval-status-{{ $card->id }}"
+                            >
+                                <p>{{ __('board.status.' . $approvalStatusKey) }}</p>
                             </div>
+                        </x-slot>
+                    
+                        <p class="text-gray-900 text-center text-sm font-bold">
+                            {{ __('board.labels.change_approval_status') }}
+                        </p>
 
-                            <x-containers.divider margin="my-2" color="gray-400" />
+                        <x-containers.divider margin="my-2" color="gray-400" />
 
-                            {{-- Options --}}
-                            @foreach ($approvalStatuses as $status)
-                                @php
-                                    $optionStatusKey = str_replace(' ', '_', strtolower($status));
-                                @endphp
-                                <x-project.card-action icon="" margin="mb-1" label="{{ __('board.status.' . $optionStatusKey) }}" wireClick="updateApprovalStatus('{{ $status }}')" alpineClick="open = false" />
-                            @endforeach
-                        </div>
-                    </div>
+                        @foreach ($approvalStatuses as $status)
+                            @php
+                                $optionStatusKey = str_replace(' ', '_', strtolower($status));
+                            @endphp
+                            <x-dropdown.dropdown-button icon="" margin="mb-1" label="{{ __('board.status.' . $optionStatusKey) }}" wireClick="updateApprovalStatus('{{ $status }}')" alpineClick="open = false" />
+                        @endforeach
+                    </x-dropdown.wrapper>
 
                     {{-- Users --}}
                     @php
@@ -192,25 +182,19 @@
 
                     {{-- Actions --}}
                     <div 
-                        x-data="{ open: @entangle('showActions'), showMoveOptions: @entangle('showMoveOptions') }"
+                        x-data="{ open: false, showMoveOptions: false }"
                         class="relative"
                     >
-                        <i 
-                            class="fi fi-bs-menu-dots-vertical dark:text-white cursor-pointer"
-                            @click="open = !open"
-                            data-tooltip-target="scard-actions-{{ $card->id }}"
-                        ></i>
-                        <x-tooltip id="scard-actions-{{ $card->id }}" content="{{ __('board.labels.show_actions') }}" />
-
-                        {{-- Actions Dropdown --}}
-                        <div
-                            x-show="open"
-                            x-transition
-                            @click.outside="open = false"
-                            class="absolute right-0 top-full mt-4 z-50 w-52 bg-gray-200 dark:bg-gray-100 border border-zinc-400 rounded px-1 py-2"
+                        <x-dropdown.wrapper
+                            state="open"
+                            :useOwnState="false"
+                            icon="bs-menu-dots-vertical"
+                            tooltipId="scard-actions-{{ $card->id }}"
+                            :tooltip="__('board.labels.show_actions')"
+                            width="w-52"
+                            align="right"
+                            margin="mt-4"
                         >
-
-                            {{-- Dropdown Header --}}
                             <div class="text-sm text-gray-900">
                                 <p class="text-center font-bold">
                                     {{ __('board.labels.actions') }} - Card #{{ $card->id }}
@@ -219,33 +203,49 @@
 
                             <x-containers.divider margin="my-2" color="gray-400" />
 
-                            {{-- Assign To Me --}}
-                            <x-project.card-action icon="rr-assign" label="{{ __('board.buttons.assign_to_me') }}" wireClick="assignToMe" alpineClick="open = false" />
+                            <x-dropdown.dropdown-button
+                                icon="rr-assign"
+                                :label="__('board.buttons.assign_to_me')"
+                                wireClick="assignToMe"
+                                alpineClick="open = false"
+                            />
 
                             <x-containers.divider margin="my-2" color="gray-400" />
 
-                            {{-- Move to --}}
                             @if ($isProjectAdminOrOwner)
-                                <x-project.card-action icon="rr-move-to-folder-2" label="{{ __('board.buttons.move_to') }}" alpineClick="open = false; showMoveOptions = true; showActions = false" />
+                                <x-dropdown.dropdown-button
+                                    icon="rr-move-to-folder-2"
+                                    :label="__('board.buttons.move_to')"
+                                    alpineClick="open = false; showMoveOptions = true"
+                                />
                             @endif
 
-                            {{-- Make a copy --}}
-                            <x-project.card-action icon="rr-copy" label="{{ __('board.buttons.make_a_copy') }}" wireClick="makeACopy" alpineClick="open = false" />
+                            <x-dropdown.dropdown-button
+                                icon="rr-copy"
+                                :label="__('board.buttons.make_a_copy')"
+                                wireClick="makeACopy"
+                                alpineClick="open = false"
+                            />
 
                             @if($isProjectAdminOrOwner)
                                 <x-containers.divider margin="my-2" color="gray-400" />
 
-                                {{-- Delete --}}
-                                <x-project.card-action icon="rr-trash" label="{{ __('board.buttons.delete') }}" color="red-500" wireClick="deleteCard" alpineClick="open = false" />
+                                <x-dropdown.dropdown-button
+                                    icon="rr-trash"
+                                    :label="__('board.buttons.delete')"
+                                    color="red-500"
+                                    wireClick="deleteCard"
+                                    alpineClick="open = false"
+                                />
                             @endif
-                        </div>
+                        </x-dropdown.wrapper>
 
-                        {{-- Move Options Dropdown --}}
-                        <div 
-                            x-show="showMoveOptions"
-                            x-transition
-                            @click.outside="showMoveOptions = false"
-                            class="absolute right-0 top-full mt-4 z-50 w-48 bg-gray-200 dark:bg-gray-100 border border-zinc-400 rounded px-1 py-2"
+                        <x-dropdown.wrapper
+                            state="showMoveOptions"
+                            :useOwnState="false"
+                            width="w-48"
+                            align="right"
+                            margin="mt-4"
                         >
                             <p class="text-gray-900 text-center text-sm font-bold">
                                 {{ __('board.buttons.move_to') }}
@@ -257,19 +257,17 @@
                                 @php
                                     $selectedProjectModel = $projects->firstWhere('uuid', $selectedProjectUuid);
                                 @endphp
-                                {{-- Header --}}
+
                                 <p class="text-center">
                                     {{ __('board.titles.select_destination') }}
                                 </p>
 
-                                {{-- Project --}}
                                 <x-forms.select 
                                     wire:key="projects-{{ $selectedProjectUuid }}"
                                     :options="$projects->map(fn($project) => ['value' => $project->uuid, 'label' => $project->name])->values()->toArray()"
                                     wire:model="selectedProjectUuid"
                                 />
 
-                                {{-- Sprint / Backlog --}}
                                 <x-forms.select
                                     :options="[
                                         ['value' => 'sprint', 'label' => __('board.labels.sprints')],
@@ -278,18 +276,15 @@
                                     wire:model="sprintOrBacklog"
                                 />
 
-                                {{-- Sprint (name) / Backlog (name) --}}
                                 <x-forms.select
                                     wire:key="entities-{{ $selectedProjectUuid }}"
                                     :options="$entities->map(fn($entity) => ['value' => $entity->uuid, 'label' => $entity->name])->values()->toArray()"
                                     wire:model="selectedEntityUuid"
                                 />
 
-                                {{-- Column --}}
                                 @if ($sprintOrBacklog === 'sprint')
                                     <x-forms.select
                                         wire:key="columns-{{ $selectedProjectUuid }}"
-                                        {{-- :options="$selectedProject->columns->map(fn($column) => ['value' => $column->id, 'label' => $column->name])->values()->toArray()" --}}
                                         :options="$selectedProjectModel?->columns
                                             ->map(fn($column) => ['value' => $column->id, 'label' => $column->name])
                                             ->values()
@@ -299,7 +294,6 @@
                                     />
                                 @endif
 
-                                {{-- Top / Bottom --}}
                                 <x-forms.select
                                     :options="[
                                         ['value' => 'top', 'label' => __('board.labels.top')],
@@ -308,13 +302,11 @@
                                     wire:model="position"
                                 />
 
-                                {{-- Move Button --}}
-                                <x-buttons.primary-button wire:click="moveCard"
-                                >
+                                <x-buttons.primary-button wire:click="moveCard">
                                     {{ __('board.buttons.move') }}
                                 </x-buttons.primary-button>
                             </div>
-                        </div>
+                        </x-dropdown.wrapper>
                     </div>
                 </div>
             </div>
@@ -352,9 +344,12 @@
                 {{-- Task Columns --}}
                 <div class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0">
                     @foreach ($columns as $column)
-                        <div class="bg-gray-100 dark:bg-gray-900 rounded-sm p-2 h-full flex flex-col min-h-0">
+                        <div 
+                            class="bg-gray-100 dark:bg-gray-900 rounded-sm p-2 h-full flex flex-col min-h-0"
+                            wire:key="column-{{ $column['type'] }}"
+                        >
                             {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
-                            <div class="flex justify-between">
+                            <div class="flex justify-between mb-2">
                                 {{-- Count + Title --}}
                                 <div class="flex gap-2">
                                     <div class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column['color'] }} text-white px-1.5 py-0.5">{{ count($column['cards']) }}</div>
@@ -365,11 +360,13 @@
 
                             </div>
 
-                            <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside">
-                                @foreach ($column['cards'] as $task)
-                                    <li>{{ $task->description }}</li>
-                                @endforeach
-                            </ul>
+                            {{-- Tasks --}}
+                            @foreach ($column['cards'] as $task)
+                                <livewire:components.board.task-card 
+                                    :task="$task"
+                                    wire:key="task-{{ $task->id }}"
+                                />
+                            @endforeach
                         </div>
                     @endforeach
                 </div>

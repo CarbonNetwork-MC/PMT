@@ -26,9 +26,6 @@ class Card extends Component
 
     public $isProjectAdminOrOwner = false;
 
-    public $showActions = false;
-    public $showMoveOptions = false;
-
     // Card Move Properties
     public $projects;
     public $entities;

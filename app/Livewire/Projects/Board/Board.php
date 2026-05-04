@@ -59,6 +59,7 @@ class Board extends Component
             }
         }
 
+        // TODO: Optimize by only reloading the affected columns instead of the entire page
         return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_moved'));
     }
 
