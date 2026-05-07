@@ -18,12 +18,26 @@
             {{-- Top Bar --}}
             <div class="flex justify-between">
                 {{-- Title --}}
-                <div class="flex gap-4 mt-2">
-                    <p class="text-gray-600">#{{ $card->id }}</p>
-                    <p class="text-gray-900 dark:text-gray-400 font-bold">{{ $card->title }}</p>
+                <div x-data="{ isEditing: false }">
+                    <div x-show="!isEditing" class="flex gap-4 mt-2">
+                        <p class="text-gray-600">#{{ $card->id }}</p>
+                        <p class="text-gray-900 dark:text-gray-400 font-bold">{{ $card->title }}</p>
+                        <i class="fi fi-bs-pencil dark:text-gray-400 hover:text-blue-500 cursor-pointer" @click="isEditing = true"></i>
+                    </div>
+
+                    <div x-show="isEditing" class="flex gap-4 mt-2">
+                        <p class="text-gray-600">#{{ $card->id }}</p>
+                        <x-forms.text-input 
+                            wire:model="cardTitle" 
+                            @keydown.enter.prevent="isEditing = false"
+                            x-on:blur="isEditing = false"
+                            wire:blur="saveTitle"
+                            autofocus
+                        />
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     {{-- Approval Status --}}
                     @php
                         $approvalStatus = strtolower($card->approval_status);
@@ -68,8 +82,14 @@
                         @endforeach
                     </x-dropdown.wrapper>
 
-                    <span class="text-red-300">Total Estimated Time</span>
-                    <span class="text-red-300">Total Actual Time</span>
+                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
+                        <i class="fi fi-sr-clock"></i>
+                        <p>{{ $card->tasks->sum('estimated_time') }}h</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
+                        <i class="fi fi-sr-hourglass"></i>
+                        <p>{{ $card->tasks->sum('actual_time') }}h</p>
+                    </div>
 
                     {{-- Users --}}
                     @php
@@ -345,10 +365,10 @@
                 <x-containers.divider margin="my-6" color="gray-400" />
 
                 {{-- Task Columns --}}
-                <div class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0">
+                <div wire:sortable-group="updateCardOrder" class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0">
                     @foreach ($columns as $column)
                         <div 
-                            class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0"
+                            class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0 sortable-column"
                             wire:key="column-{{ $column['type'] }}"
                         >
                             {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
@@ -364,13 +384,17 @@
                             </div>
 
                             {{-- Tasks --}}
-                            @foreach ($column['cards'] as $task)
-                                <livewire:components.board.task-card 
-                                    :task="$task"
-                                    :users="$users"
-                                    wire:key="task-{{ $task->id }}"
-                                />
-                            @endforeach
+                            <div wire:sortable-group.item-group="{{ $column['type'] }}" wire:sortable-group.options="{ animation: 100 }">
+                                @foreach ($column['cards'] as $task)
+                                    <div wire:key="task-{{ $task->id }}" wire:sortable-group.item="{{ $task->id }}">
+                                        <livewire:components.board.task-card 
+                                            :task="$task"
+                                            :users="$users"
+                                            wire:key="task-{{ $task->id }}"
+                                        />
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endforeach
                 </div>

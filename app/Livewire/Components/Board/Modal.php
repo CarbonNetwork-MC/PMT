@@ -6,6 +6,7 @@ use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\Card;
 use App\Models\CardAssignee;
+use App\Models\Task;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ class Modal extends Component
     public $sprint;
     public $users;
 
+    public $cardTitle = '';
     public $cardDescription = '';
 
     public $search = '';
@@ -49,6 +51,8 @@ class Modal extends Component
         $this->sprint = $sprint;
         $this->users = $users;
         $this->filteredUsers = $users;
+
+        $this->cardTitle = $card->title;
         $this->cardDescription = $card->description;
 
         $tasks = $card->tasks()->with('assignees.user')->get();
@@ -101,6 +105,19 @@ class Modal extends Component
         });
     }
 
+    public function saveTitle() {
+        $title = $this->cardTitle;
+        if (empty($title)) {
+            Toaster::error(__('board.toast.title_required'));
+            return;
+        }
+
+        $this->card->title = $title;
+        $this->card->save();
+
+        $this->loadCard();
+    }
+
     public function saveDescription() {
         $description = $this->cardDescription;
         if (empty($description)) $description = null;
@@ -118,6 +135,21 @@ class Modal extends Component
 
     public function closeModal() {
         $this->dispatch('closeCardModal');
+    }
+
+    public function updateCardOrder($groups) {
+        foreach ($groups as $group) {
+            $status = $group['value'];
+
+            foreach ($group['items'] as $item) {
+                Task::where('id', $item['value'])->update([
+                    'status' => $status,
+                    'task_index' => $item['order'],
+                ]);
+            }
+        }
+
+        // $this->loadCard();
     }
 
     public function updateApprovalStatus($status) {

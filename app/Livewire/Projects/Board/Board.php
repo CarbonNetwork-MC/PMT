@@ -77,7 +77,6 @@ class Board extends Component
 
     #[On('cardSelected')]
     public function handleCardSelected($cardId) {
-        // dd("Card selected: " . $cardId['cardId']);
         $this->selectedCard = Card::where('id', $cardId['cardId'])->first();
     }
 

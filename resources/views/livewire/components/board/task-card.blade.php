@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-move">
+<div wire:sortable-group.handle wire:key="column" class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-grabbing">
     {{-- Top Bar - ID & Actions Menu --}}
     <div class="flex items-center justify-between mb-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">#{{ $task->id }}</p>
