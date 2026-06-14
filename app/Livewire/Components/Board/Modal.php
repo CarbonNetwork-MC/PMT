@@ -133,6 +133,17 @@ class Modal extends Component
         $this->dispatch('cardRefreshed', ['cardId' => $this->card->id]);
     }
 
+    private function loadTasks() {
+        $tasks = $this->card->tasks()->with('assignees.user')->orderBy('task_index')->get();
+
+        foreach ($this->columns as &$column) {
+            $column['cards'] = $tasks
+                ->where('status', $column['type'])
+                ->sortBy('task_index')
+                ->values();
+        }
+    }
+
     public function closeModal() {
         $this->dispatch('closeCardModal');
     }
@@ -149,7 +160,8 @@ class Modal extends Component
             }
         }
 
-        // $this->loadCard();
+        $this->loadTasks();
+        $this->dispatch('$refresh');
     }
 
     public function updateApprovalStatus($status) {

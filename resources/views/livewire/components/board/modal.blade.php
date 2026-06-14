@@ -384,7 +384,7 @@
                             </div>
 
                             {{-- Tasks --}}
-                            <div wire:sortable-group.item-group="{{ $column['type'] }}" wire:sortable-group.options="{ animation: 100 }">
+                            <div class="flex-1 min-h-32 space-y-2" wire:sortable-group.item-group="{{ $column['type'] }}" wire:sortable-group.options="{ animation: 100 }">
                                 @foreach ($column['cards'] as $task)
                                     <div wire:key="task-{{ $task->id }}" wire:sortable-group.item="{{ $task->id }}">
                                         <livewire:components.board.task-card 
