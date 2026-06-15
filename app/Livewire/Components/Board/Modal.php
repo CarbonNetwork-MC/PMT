@@ -24,6 +24,7 @@ class Modal extends Component
 
     public $search = '';
     public $filteredUsers = [];
+    public $deadlineInput;
 
     public $approvalStatuses = ['Approved', 'Needs Work', 'Rejected', 'None'];
     public $columns = [
@@ -285,6 +286,20 @@ class Modal extends Component
 
         $this->dispatch('closeCardModal');
         $this->dispatch('refreshBoard');
+    }
+
+    public function updateCardDeadline() {
+        $this->validate([
+            'deadlineInput' => ['nullable', 'date'],
+        ]);
+
+        $this->card->update([
+            'deadline' => $this->deadlineInput
+                ? \Carbon\Carbon::parse($this->deadlineInput)
+                : null,
+        ]);
+
+        $this->loadCard();
     }
 
     public function render()

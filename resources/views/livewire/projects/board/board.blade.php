@@ -89,7 +89,7 @@
     {{-- Board --}}
     <x-containers.main padding="4" class="mt-4">
         @if ($sprint->status === 'active')
-            <div wire:sortable-group="updateCardOrder" class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->count() <= 3 ? 3 : $this->columns->count() }} gap-4">
+            <div wire:sortable-group="updateCardOrder" class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->count() <= 3 ? 3 : $this->columns->count() }} gap-2">
                 @foreach ($this->columns as $column)
                     <livewire:components.board.column
                         :column="$column"
@@ -100,7 +100,7 @@
                 @endforeach
             </div>
         @elseif ($sprint->status === 'completed')
-            <div class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->where('column_type', 'done')->count() <= 3 ? 3 : $this->columns->where('column_type', 'done')->count() }} gap-4">
+            <div class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->where('column_type', 'done')->count() <= 3 ? 3 : $this->columns->where('column_type', 'done')->count() }} gap-2">
                 @foreach ($this->columns->where('column_type', 'done') as $column)
                     <livewire:components.board.column
                         :column="$column"

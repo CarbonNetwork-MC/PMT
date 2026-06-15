@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
                     {{-- Approval Status --}}
                     @php
                         $approvalStatus = strtolower($card->approval_status);
@@ -82,13 +82,51 @@
                         @endforeach
                     </x-dropdown.wrapper>
 
-                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
-                        <i class="fi fi-sr-clock"></i>
-                        <p>{{ $card->tasks->sum('estimated_time') }}h</p>
+                    {{-- Total Estimated Time --}}
+                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="estimated-time-{{ $card->id }}">
+                        <i class="fi fi-sr-clock text-sm"></i>
+                        <p class="text-sm">{{ $card->tasks->sum('estimated_time') }}h</p>
+
+                        <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
                     </div>
-                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
-                        <i class="fi fi-sr-hourglass"></i>
-                        <p>{{ $card->tasks->sum('actual_time') }}h</p>
+
+                    {{-- Total Actual Time --}}
+                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="actual-time-{{ $card->id }}">
+                        <i class="fi fi-sr-hourglass text-sm"></i>
+                        <p class="text-sm">{{ $card->tasks->sum('actual_time') }}h</p>
+
+                        <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
+                    </div>
+
+                    {{-- Deadline --}}
+                    <div x-data="{ editing: false }" wire:key="deadline-{{ $card->id }}" data-tooltip-target="deadline-{{ $card->id }}">
+                        <div 
+                            @click="editing = true" 
+                            class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
+                        >
+                            <i class="fi fi-sr-calendar text-gray-700 dark:text-white text-sm"></i>
+                            <span class="text-gray-700 dark:text-white text-sm">
+                                {{ $card->deadline ? \Carbon\Carbon::parse($card->deadline)->format('M d, H:i') : '-' }}
+                            </span>
+
+                            <x-tooltip id="deadline-{{ $card->id }}" content="{{ __('board.labels.deadline') }}" />
+                        </div>
+
+                        {{-- Edit Deadline --}}
+                        <div 
+                            x-show="editing" 
+                            @click.outside="editing = false" 
+                            class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
+                        >
+                            <input 
+                                type="datetime-local"
+                                class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
+                                wire:model.live="deadlineInput"
+                                wire:keydown.enter.prevent="updateCardDeadline"
+                                wire:blur="updateCardDeadline"
+                                @keydown.enter="editing = false"
+                            />
+                        </div>
                     </div>
 
                     {{-- Users --}}
@@ -101,7 +139,7 @@
                     @endphp
 
                     <div class="flex justify-end">
-                        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
+                        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5">
                             <i 
                                 @click="open = !open"
                                 class="fi fi-sr-users text-sm text-gray-700 dark:text-white cursor-pointer"
