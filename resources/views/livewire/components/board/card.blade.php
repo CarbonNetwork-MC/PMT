@@ -114,7 +114,7 @@
     <p class="font-bold text-gray-800 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer" wire:click="selectCard">{{ $card->title }}</p>
 
     {{-- Information - Approval Status, Number of tasks, Has Description --}}
-    <div class="flex gap-x-2">
+    <div class="flex gap-1 mt-1">
         @if ($card->approval_status !== 'None')
             @php
                 $statusColors = [
@@ -171,9 +171,9 @@
                         : 'no_tasks_started');
             @endphp
 
-            <div class="flex gap-x-2 {{ $bgColor }} rounded-md text-sm cursor-help px-2 py-0.5" data-tooltip-target="tasks-tooltip-{{ $card->id }}">
-                <i class="fi fi-{{ $icon }} text-white"></i>
-                <p class="text-white text-sm">{{ $completedTasksCount }} / {{ $tasksCount }}</p>
+            <div class="flex items-center gap-x-2 {{ $bgColor }} rounded-md text-sm cursor-help px-2 py-0.5" data-tooltip-target="tasks-tooltip-{{ $card->id }}">
+                <i class="fi fi-{{ $icon }} text-sm text-white"></i>
+                <p class="text-white text-xs">{{ $completedTasksCount }} / {{ $tasksCount }}</p>
             </div>
 
             <x-tooltip id="tasks-tooltip-{{ $card->id }}" content="{{ __('board.messages.' . $translationKey) }}" />
@@ -185,32 +185,71 @@
 
             <x-tooltip id="description-tooltip-{{ $card->id }}" content="{{ __('board.messages.has_description') }}" />
         @endif
-    </div>
-
-    {{-- Bottom Bar --}}
-    @php
-        $assignees = $card->assignees;
-        $maxVisible = 3;
-
-        $visibleAssignees = $assignees->take($maxVisible);
-        $remainingCount = $assignees->count() - $maxVisible;
-    @endphp
-
-    <div class="flex items-center justify-end gap-2">
-        {{-- Total Estimated Time --}}
-        <span class="text-red-300">TET</span>
 
         {{-- Total Actual Time --}}
-        <span class="text-red-300">TAT</span>
+        <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="actual-time-{{ $card->id }}">
+            <i class="text-xs fi fi-sr-clock"></i>
+            <p class="text-xs">{{ $card->tasks->sum('actual_time') }}h</p>
 
+            <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
+        </div>
+
+        {{-- Total Estimated Time --}}
+        <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="estimated-time-{{ $card->id }}">
+            <i class="text-xs fi fi-sr-clock"></i>
+            <p class="text-xs">{{ $card->tasks->sum('estimated_time') }}h</p>
+
+            <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
+        </div>
+    </div>
+
+    {{-- Estimated Time, Actual Time, Deadline --}}
+    <div class="flex items-center justify-end gap-1 mt-1.5">
         {{-- Deadline --}}
-        <span class="text-red-300">Deadline</span>
+        <div x-data="{ editing: false }" wire:key="deadline-{{ $card->id }}">
+            <div 
+                @click="editing = true" 
+                class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
+                data-tooltip-target="deadline-{{ $card->id }}"
+            >
+                <i class="text-xs fi fi-sr-calendar text-gray-700 dark:text-white"></i>
+                <span class="text-xs text-gray-700 dark:text-white">
+                    {{ $card->deadline ? \Carbon\Carbon::parse($card->deadline)->format('M d, H:i') : '-' }}
+                </span>
+
+                <x-tooltip id="deadline-{{ $card->id }}" content="{{ __('board.labels.deadline') }}" />
+            </div>
+
+            {{-- Edit Deadline --}}
+            <div 
+                x-show="editing" 
+                @click.outside="editing = false" 
+                class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-md p-2 shadow-lg"
+            >
+                <input 
+                    type="datetime-local"
+                    class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
+                    wire:model.live="deadlineInput"
+                    wire:keydown.enter.prevent="updateCardDeadline"
+                    wire:blur="updateCardDeadline"
+                    @keydown.enter="editing = false"
+                />
+            </div>
+        </div>
 
         {{-- Assignees --}}
-        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-100 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
+        @php
+            $assignees = $card->assignees;
+            $maxVisible = 3;
+
+            $visibleAssignees = $assignees->take($maxVisible);
+            $remainingCount = $assignees->count() - $maxVisible;
+        @endphp
+        
+        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-100 dark:bg-gray-900 rounded-md px-2.5 py-1">
             <i 
                 @click="open = !open"
-                class="fi fi-sr-users text-sm text-gray-700 dark:text-white cursor-pointer"
+                class="fi fi-sr-users text-xs text-gray-700 dark:text-white cursor-pointer"
             ></i>
 
             <div 
@@ -307,5 +346,10 @@
                 </div>
             @endif
         </div>
+    </div>
+
+    {{-- TODO: Might remove this, might be the container for the users on smaller screens. --}}
+    <div class="flex items-center justify-end gap-2 mt-1">
+        
     </div>
 </div>

@@ -23,9 +23,12 @@ return [
         'change_approval_status' => 'Change Approval Status',
         'clear_assignees' => 'Clear assignees',
         'days_left' => 'Days left',
+        'deadline' => 'Deadline',
         'duration' => 'Duration',
         'task_actions' => 'Task actions',
+        'total_actual_time' => 'Total actual time',
         'total_cards' => 'Total cards',
+        'total_estimated_time' => 'Total estimated time',
         'total_tasks' => 'Total tasks',
 
         'backlogs' => 'Backlogs',
