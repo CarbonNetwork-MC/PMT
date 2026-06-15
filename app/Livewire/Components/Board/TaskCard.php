@@ -172,6 +172,10 @@ class TaskCard extends Component
                 ? \Carbon\Carbon::parse($this->deadlineInput)
                 : null,
         ]);
+
+        $this->loadTask();
+        $this->dispatch('refreshBoard');
+        $this->dispatch('cardRefreshed', ['cardId' => $this->task->card_id]);
     }
 
     public function render()

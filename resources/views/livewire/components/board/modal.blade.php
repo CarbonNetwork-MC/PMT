@@ -82,24 +82,24 @@
                         @endforeach
                     </x-dropdown.wrapper>
 
-                    {{-- Total Estimated Time --}}
-                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="estimated-time-{{ $card->id }}">
-                        <i class="fi fi-sr-clock text-sm"></i>
-                        <p class="text-sm">{{ $card->tasks->sum('estimated_time') }}h</p>
-
-                        <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
-                    </div>
-
                     {{-- Total Actual Time --}}
-                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="actual-time-{{ $card->id }}">
+                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-actual-time-{{ $card->id }}">
                         <i class="fi fi-sr-hourglass text-sm"></i>
                         <p class="text-sm">{{ $card->tasks->sum('actual_time') }}h</p>
 
-                        <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
+                        <x-tooltip id="modal-actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
+                    </div>
+
+                    {{-- Total Estimated Time --}}
+                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-estimated-time-{{ $card->id }}">
+                        <i class="fi fi-sr-clock text-sm"></i>
+                        <p class="text-sm">{{ $card->tasks->sum('estimated_time') }}h</p>
+
+                        <x-tooltip id="modal-estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
                     </div>
 
                     {{-- Deadline --}}
-                    <div x-data="{ editing: false }" wire:key="deadline-{{ $card->id }}" data-tooltip-target="deadline-{{ $card->id }}">
+                    <div x-data="{ editing: false }" wire:key="deadline-{{ $card->id }}" data-tooltip-target="modal-deadline-{{ $card->id }}">
                         <div 
                             @click="editing = true" 
                             class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
@@ -109,7 +109,7 @@
                                 {{ $card->deadline ? \Carbon\Carbon::parse($card->deadline)->format('M d, H:i') : '-' }}
                             </span>
 
-                            <x-tooltip id="deadline-{{ $card->id }}" content="{{ __('board.labels.deadline') }}" />
+                            <x-tooltip id="modal-deadline-{{ $card->id }}" content="{{ __('board.labels.deadline') }}" />
                         </div>
 
                         {{-- Edit Deadline --}}

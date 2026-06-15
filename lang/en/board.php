@@ -18,6 +18,7 @@ return [
     
     'labels' => [
         'actions' => 'Actions',
+        'actual_time' => 'Actual Time',
         'assignees' => 'Assignees',
         'card_actions' => 'Card actions',
         'change_approval_status' => 'Change Approval Status',
@@ -25,6 +26,7 @@ return [
         'days_left' => 'Days left',
         'deadline' => 'Deadline',
         'duration' => 'Duration',
+        'estimated_time' => 'Estimated Time',
         'task_actions' => 'Task actions',
         'total_actual_time' => 'Total actual time',
         'total_cards' => 'Total cards',

@@ -23,6 +23,7 @@ class Card extends Component
 
     public $search = '';
     public $filteredUsers = [];
+    public $deadlineInput;
 
     public $isProjectAdminOrOwner = false;
 
@@ -43,6 +44,7 @@ class Card extends Component
         $this->cardId = $card->id;
         $this->users = $users;
         $this->filteredUsers = $users;
+        $this->deadlineInput = $card->deadline ? \Carbon\Carbon::parse($card->deadline)->format('Y-m-d\TH:i') : null;
 
         $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $card->column->project);
 
@@ -93,6 +95,7 @@ class Card extends Component
 
     public function loadCard() {
         $this->card = CardModel::with('assignees.user')->find($this->cardId);
+        $this->deadlineInput = $this->card->deadline ? \Carbon\Carbon::parse($this->card->deadline)->format('Y-m-d\TH:i') : null;
     }
 
     public function selectCard() {
@@ -216,6 +219,22 @@ class Card extends Component
 
     public function makeACopy() {
         $this->dispatch('cardCopyInitiated', ['cardId' => $this->cardId]);
+    }
+
+    public function updateCardDeadline() {
+        $this->validate([
+            'deadlineInput' => ['nullable', 'date'],
+        ]);
+
+        $card = CardModel::find($this->cardId);
+        $card->update([
+            'deadline' => $this->deadlineInput
+                ? \Carbon\Carbon::parse($this->deadlineInput)
+                : null,
+        ]);
+
+        $this->loadCard();
+        $this->dispatch('refreshBoard');
     }
 
     public function render()

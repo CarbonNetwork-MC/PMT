@@ -43,8 +43,8 @@ class Board extends Component
 
         $this->daysLeft = now()->startOfDay()->diffInDays($this->sprint->end_date->startOfDay(), false);
 
-        // ! For testing: Select a card by default
-        $this->selectedCard = $this->columns->flatMap(fn($column) => $column->cards)->firstWhere('id', 2);
+        // TODO: For testing: Select a card by default
+        // $this->selectedCard = $this->columns->flatMap(fn($column) => $column->cards)->firstWhere('id', 2);
     }
 
     public function reloadBoard() {

@@ -64,48 +64,20 @@
 
     {{-- Bottom Bar - Time Management & Users --}}
     <div class="flex items-center justify-end">
-        <div class="flex items-center gap-2">
-            {{-- Estimated Time --}}
-            <div x-data="{ editing: false }" wire:key="estimated-time-{{ $task->id }}">
-                <div 
-                    @click="editing = true" 
-                    class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5 cursor-pointer"
-                >
-                    <i class="fi fi-sr-clock text-sm text-gray-700 dark:text-white"></i>
-                    <span class="text-xs text-gray-700 dark:text-white">
-                        {{ $task->estimated_time ? $task->estimated_time . 'h' : '-' }}
-                    </span>
-                </div>
-
-                {{-- Edit Estimated Time --}}
-                <div 
-                    x-show="editing" 
-                    @click.outside="editing = false" 
-                    class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
-                >
-                    <input 
-                        type="number" 
-                        min="0" 
-                        step="0.5" 
-                        class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
-                        wire:model.live="estimatedTimeInput"
-                        wire:keydown.enter.prevent="updateEstimatedTime"
-                        wire:blur="updateEstimatedTime"
-                        @keydown.enter="editing = false"
-                    />
-                </div>
-            </div>
-
+        <div class="flex items-center gap-1">
             {{-- Actual Time --}}
             <div x-data="{ editing: false }" wire:key="actual-time-{{ $task->id }}">
                 <div 
                     @click="editing = true" 
-                    class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5 cursor-pointer"
+                    class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
+                    data-tooltip-target="actual-time-{{ $task->id }}"
                 >
                     <i class="fi fi-sr-hourglass text-sm text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
                         {{ $task->actual_time ? $task->actual_time . 'h' : '-' }}
                     </span>
+
+                    <x-tooltip id="actual-time-{{ $task->id }}" content="{{ __('board.labels.actual_time') }}" />
                 </div>
 
                 {{-- Edit Actual Time --}}
@@ -127,16 +99,53 @@
                 </div>
             </div>
 
+            {{-- Estimated Time --}}
+            <div x-data="{ editing: false }" wire:key="estimated-time-{{ $task->id }}">
+                <div 
+                    @click="editing = true" 
+                    class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
+                    data-tooltip-target="estimated-time-{{ $task->id }}"
+                >
+                    <i class="fi fi-sr-clock text-sm text-gray-700 dark:text-white"></i>
+                    <span class="text-xs text-gray-700 dark:text-white">
+                        {{ $task->estimated_time ? $task->estimated_time . 'h' : '-' }}
+                    </span>
+
+                    <x-tooltip id="estimated-time-{{ $task->id }}" content="{{ __('board.labels.estimated_time') }}" />
+                </div>
+
+                {{-- Edit Estimated Time --}}
+                <div 
+                    x-show="editing" 
+                    @click.outside="editing = false" 
+                    class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
+                >
+                    <input 
+                        type="number" 
+                        min="0" 
+                        step="0.5" 
+                        class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
+                        wire:model.live="estimatedTimeInput"
+                        wire:keydown.enter.prevent="updateEstimatedTime"
+                        wire:blur="updateEstimatedTime"
+                        @keydown.enter="editing = false"
+                    />
+                </div>
+            </div>
+
             {{-- Deadline --}}
             <div x-data="{ editing: false }" wire:key="deadline-{{ $task->id }}">
                 <div 
                     @click="editing = true" 
-                    class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5 cursor-pointer"
+                    class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
+                    data-tooltip-target="deadline-{{ $task->id }}"
                 >
                     <i class="fi fi-sr-calendar text-sm text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
                         {{ $task->deadline ? \Carbon\Carbon::parse($task->deadline)->format('M d, H:i') : '-' }}
                     </span>
+
+                    <x-tooltip id="deadline-{{ $task->id }}" content="{{ __('board.labels.deadline') }}" />
                 </div>
 
                 {{-- Edit Deadline --}}
@@ -166,7 +175,7 @@
             @endphp
 
             <div class="flex justify-end">
-                <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-lg px-2.5 py-1.5">
+                <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5">
                     <i 
                         @click="open = !open"
                         class="fi fi-sr-users text-sm text-gray-700 dark:text-white cursor-pointer"

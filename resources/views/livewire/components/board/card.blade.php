@@ -188,7 +188,7 @@
 
         {{-- Total Actual Time --}}
         <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="actual-time-{{ $card->id }}">
-            <i class="text-xs fi fi-sr-clock"></i>
+            <i class="text-xs fi fi-sr-hourglass"></i>
             <p class="text-xs">{{ $card->tasks->sum('actual_time') }}h</p>
 
             <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
@@ -203,7 +203,6 @@
         </div>
     </div>
 
-    {{-- Estimated Time, Actual Time, Deadline --}}
     <div class="flex items-center justify-end gap-1 mt-1.5">
         {{-- Deadline --}}
         <div x-data="{ editing: false }" wire:key="deadline-{{ $card->id }}">
