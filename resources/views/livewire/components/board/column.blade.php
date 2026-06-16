@@ -9,16 +9,20 @@
             <h2 class="font-bold text-sm text-{{ $this->column->color->name }}-{{ $this->column->color->text_color }}">{{ $this->column->name }}</h2>
         </div>
         {{-- Add card button --}}
-        <div class="flex justify-end">
-            <i class="fi fi-rr-plus text-gray-800 dark:text-gray-200 me-1 cursor-pointer" wire:click="$set('createNewCard', true)"></i>
-        </div>
+        @if ($sprint->status === 'active')
+            <div class="flex justify-end">
+                <i class="fi fi-rr-plus text-gray-800 dark:text-gray-200 me-1 cursor-pointer" wire:click="$set('createNewCard', true)"></i>
+            </div>
+        @endif
     </div>
 
     {{-- Cards --}}
     <div 
         class="mt-2 flex flex-col gap-y-2 min-h-[100px]"
-        wire:sortable-group.item-group="{{ $this->column->id }}"
-        wire:sortable-group.options="{ animation: 100 }"
+        @if ($sprint->status === 'active')
+            wire:sortable-group.item-group="{{ $this->column->id }}"
+            wire:sortable-group.options="{ animation: 100 }"
+        @endif
     >
         {{-- New Card Skeleton --}}
         @if ($createNewCard)
@@ -38,7 +42,9 @@
         @foreach ($this->cards as $card)
             <div 
                 wire:key="card-{{ $card->id }}"
-                wire:sortable-group.item="{{ $card->id }}"
+                @if ($sprint->status === 'active')
+                    wire:sortable-group.item="{{ $card->id }}"
+                @endif
             >
                 <livewire:components.board.card 
                     :card="$card"
