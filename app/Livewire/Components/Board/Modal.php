@@ -113,7 +113,6 @@ class Modal extends Component
 
     #[On('refreshModal')]
     public function handleRefreshModal() {
-        dump('Refreshing modal...');
         $this->loadCard();
     }
 
