@@ -16,9 +16,12 @@ return [
 
     
     'labels' => [
+        'action_for_incomplete_tasks' => 'Action for Incomplete Tasks',
         'active-sprints' => 'Active Sprints',
         'archived-sprints' => 'Archived Sprints',
         'completed-sprints' => 'Completed Sprints',
+        'select_action' => 'Select Action',
+        'select_entity' => 'Select Backlog / Sprint',
         'sprints' => 'Sprints',
 
         'name' => 'Name',
@@ -53,11 +56,15 @@ return [
         'start_sprint' => 'Sprint <b>:name</b> started',
 
         'sprint-created' => 'Sprint created successfully!',
+        'sprint-completed-error' => 'Cannot move tasks to sprint <b>:name</b> because it is already completed.',
         'sprint-deleted' => 'Sprint deleted successfully!',
         'sprint-updated' => 'Sprint updated successfully!',
     ],
 
     'modals' => [
+        'complete_sprint_title' => 'Complete Sprint - :name',
+        'complete_sprint_message' => 'Are you sure you want to complete the sprint <b>:name</b>?',
+        'incomplete_tasks_warning' => 'The following tasks are not completed:',
         'edit_sprint_title' => 'Edit Sprint - :name',
         'delete_sprint_title' => 'Delete Sprint - :name',
         'delete_sprint_message' => 'Are you sure you want to delete the sprint <b>:name</b>? This action cannot be undone.',
@@ -67,6 +74,11 @@ return [
         'planned' => 'Planned',
         'active' => 'Active',
         'completed' => 'Completed',
+    ],
+
+    'actions' => [
+        'move_to_backlog' => 'Move to Backlog',
+        'move_to_sprint' => 'Move to another Sprint',
     ],
 
 ];

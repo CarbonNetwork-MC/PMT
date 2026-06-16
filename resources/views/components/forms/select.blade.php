@@ -2,11 +2,12 @@
     'id' => 'select', 
     'label' => '', 
     'size' => '', 
+    'width' => 'max-w-sm',
     'options' => [],
     'placeholder' => 'Select an option',
     'required' => false, 
     'disabled' => false
-    ])
+])
 @php
     $sizeClasses = match($size) {
         'large' => 'px-3.5 py-3',
@@ -15,9 +16,9 @@
     };
 @endphp
 
-<div class="max-w-sm">
+<div class="{{ $width }}">
     @if ($label)
-        <label class="block mb-2.5 text-sm font-medium text-heading">
+        <label for="{{ $id }}" class="block mb-2.5 text-sm font-medium text-heading">
             {{ $label }}
             @if ($required) <span class="text-red-400">*</span> @endif
         </label>
@@ -29,13 +30,16 @@
         @if($required) required @endif
         @if($disabled) disabled @endif
         {{ $attributes->class([
-            'block w-full bg-gray-100 border border-default-medium text-black text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body ' . $sizeClasses
+            'block w-full bg-gray-100 dark:bg-gray-900 border border-default-medium text-black dark:text-white text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body ' . $sizeClasses
         ]) }}
     >
         <option value="" disabled>{{ $placeholder }}</option>
 
         @foreach ($options as $option)
-            <option value="{{ $option['value'] }}">
+            <option
+                value="{{ $option['value'] }}"
+                @disabled($option['disabled'] ?? false)
+            >
                 {{ $option['label'] }}
             </option>
         @endforeach

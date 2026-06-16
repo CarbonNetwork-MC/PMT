@@ -10,7 +10,7 @@ class BacklogCard extends Model
 {
     protected $fillable = [
         'backlog_uuid',
-        'name',
+        'title',
         'description',
         'approval_status',
         'card_index',
