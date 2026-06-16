@@ -80,7 +80,6 @@ class Board extends Component
             }
         }
 
-        // TODO: Optimize by only reloading the affected columns instead of the entire page
         $this->reloadBoard();
     }
 

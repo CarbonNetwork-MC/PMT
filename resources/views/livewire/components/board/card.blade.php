@@ -355,9 +355,4 @@
             @endif
         </div>
     </div>
-
-    {{-- TODO: Might remove this, might be the container for the users on smaller screens. --}}
-    <div class="flex items-center justify-end gap-2 mt-1">
-        
-    </div>
 </div>
