@@ -50,7 +50,7 @@
 
                 <x-dropdown.dropdown-button
                     icon="rr-trash"
-                    :label="__('board.buttons.delete')"
+                    :label="__('board.buttons.delete_task')"
                     color="red-500"
                     wireClick="deleteTask"
                     alpineClick="open = false"

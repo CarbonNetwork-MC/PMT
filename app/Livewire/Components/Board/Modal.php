@@ -43,6 +43,10 @@ class Modal extends Component
 
     public $selectedEntityUuid;
 
+    public $createNewTask = false;
+    public $creatingTaskInColumn = null;
+    public $taskName = '';
+
     public $sprintOrBacklog = 'sprint';
     public $column;
     public $position = 'top';
@@ -106,6 +110,42 @@ class Modal extends Component
         });
     }
 
+    public function addTask($columnType) {
+        $this->createNewTask = true;
+        $this->taskName = '';
+        $this->creatingTaskInColumn = $columnType;
+    }
+
+    public function addTaskToColumn() {
+        if (empty($this->taskName)) {
+            Toaster::error(__('board.toast.task_name_required'));
+            return;
+        }
+
+        $maxIndex = Task::where('card_id', $this->card->id)
+            ->where('status', $this->creatingTaskInColumn)
+            ->max('task_index');
+
+        Task::create([
+            'card_id' => $this->card->id,
+            'description' => $this->taskName,
+            'status' => $this->creatingTaskInColumn,
+            'task_index' => $maxIndex !== null ? $maxIndex + 1 : 0,
+        ]);
+
+        $this->createNewTask = false;
+        $this->taskName = '';
+
+        $this->loadTasks();
+        $this->dispatch('$refresh');
+        $this->dispatch('refreshBoard');
+    }
+
+    public function cancelTaskCreation() {
+        $this->createNewTask = false;
+        $this->taskName = '';
+    }
+
     public function saveTitle() {
         $title = $this->cardTitle;
         if (empty($title)) {
@@ -163,6 +203,7 @@ class Modal extends Component
 
         $this->loadTasks();
         $this->dispatch('$refresh');
+        $this->dispatch('refreshBoard');
     }
 
     public function updateApprovalStatus($status) {

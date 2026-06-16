@@ -62,7 +62,6 @@ class Board extends Component
 
     #[On('refreshBoard')]
     public function handleRefreshBoard() {
-        dump('Refreshing board...');
         $this->reloadBoard();
     }
 

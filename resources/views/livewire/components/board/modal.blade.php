@@ -28,6 +28,7 @@
                     <div x-show="isEditing" class="flex gap-4 mt-2">
                         <p class="text-gray-600">#{{ $card->id }}</p>
                         <x-forms.text-input 
+                            width="w-160"
                             wire:model="cardTitle" 
                             @keydown.enter.prevent="isEditing = false"
                             x-on:blur="isEditing = false"
@@ -418,11 +419,30 @@
                                 </div>
 
                                 {{-- Add task button --}}
-
+                                <button 
+                                    class="text-gray-700 dark:text-gray-300 hover:text-gray-400 rounded-full p-1 cursor-pointer"
+                                    wire:click="addTask('{{ $column['type'] }}')"
+                                >
+                                    <i class="fi fi-sr-plus text-sm"></i>
+                                </button>
                             </div>
 
                             {{-- Tasks --}}
                             <div class="flex-1 min-h-32 space-y-2" wire:sortable-group.item-group="{{ $column['type'] }}" wire:sortable-group.options="{ animation: 100 }">
+                                @if ($createNewTask && $column['type'] === $creatingTaskInColumn) 
+                                    <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
+                                        <input 
+                                            type="text" 
+                                            wire:model="taskName" 
+                                            wire:keydown.enter="addTaskToColumn" 
+                                            wire:blur="cancelTaskCreation" 
+                                            class="w-full border border-gray-300 rounded-md p-1"
+                                            placeholder="{{ __('board.placeholders.new_task') }}"
+                                            autofocus
+                                        />
+                                    </div>
+                                @endif
+                                
                                 @foreach ($column['cards'] as $task)
                                     <div wire:key="task-{{ $task->id }}" wire:sortable-group.item="{{ $task->id }}">
                                         <livewire:components.board.task-card 

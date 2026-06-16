@@ -1,4 +1,4 @@
-@props(['id' => 'text-input', 'label' => '', 'size' => 'md', 'placeholder' => '', 'required' => false, 'disabled' => false, 'inline' => false])
+@props(['id' => 'text-input', 'label' => '', 'size' => 'md', 'placeholder' => '', 'required' => false, 'disabled' => false, 'inline' => false, 'width' => 'w-full'])
 @php
     $sizeClasses = match($size) {
         'sm' => 'px-2.5 py-2',
@@ -23,7 +23,7 @@
         @if($required) required @endif 
         @if($disabled) disabled @endif
         {{ $attributes->class([
-            'block w-full flex-1 rounded-base text-sm shadow-xs ' . $sizeClasses,
+            'block ' . $width . ' flex-1 rounded-base text-sm shadow-xs ' . $sizeClasses,
             'placeholder:text-gray-500 dark:placeholder:text-gray-600',
             $disabled
                 ? 'bg-gray-300 cursor-not-allowed'
@@ -54,7 +54,7 @@
             @if($required) required @endif 
             @if($disabled) disabled @endif
             {{ $attributes->class([
-                'block w-full rounded-base text-sm shadow-xs ' . $sizeClasses,
+                'block ' . $width . ' rounded-base text-sm shadow-xs ' . $sizeClasses,
                 'placeholder:text-gray-500 dark:placeholder:text-gray-600',
                 'text-black bg-white dark:text-white dark:bg-gray-900',
                 $disabled

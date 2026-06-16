@@ -44,6 +44,7 @@ return [
         'assign_to_me' => 'Assign to me',
         'convert_to_card' => 'Convert to card',
         'delete' => 'Delete card',
+        'delete_task' => 'Delete task',
         'make_a_copy' => 'Make a copy',
         'move' => 'Move',
         'move_to' => 'Move to',
@@ -80,6 +81,7 @@ return [
 
     'placeholders' => [
         'new_card' => 'Enter card name...',
+        'new_task' => 'Enter task description...',
     ],
 
     'status' => [
