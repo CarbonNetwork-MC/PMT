@@ -137,6 +137,28 @@
         </x-slot>
     </x-modals.modal>
 
+    {{-- Delete Task Modal --}}
+    <x-modals.modal wire:model="showDeleteTaskModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('board.titles.delete_task') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-center">
+                {!! __('board.messages.confirm_delete_task') !!}
+            </p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showDeleteTaskModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.danger-button wire:click="confirmDeleteTask">
+                {{ __('general.buttons.delete') }}
+            </x-buttons.danger-button>
+        </x-slot>
+    </x-modals.modal>
+
     {{-- Selected Card Modal --}}
     @if ($selectedCard)
         <livewire:components.board.modal :card="$selectedCard" :sprint="$sprint" :users="$users" />

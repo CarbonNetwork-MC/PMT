@@ -17,7 +17,7 @@
     x-trap.inert.noscroll="show"
     x-show="show"
     x-on:show.window="$nextTick(() => $el.querySelector('[data-autofocus]')?.focus())"
-    class="fixed inset-0 z-50 overflow-y-auto"
+    class="fixed inset-0 z-80 overflow-y-auto"
 >
     <!-- Background overlay -->
     <div class="fixed inset-0 bg-gray-900/60"></div>

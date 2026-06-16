@@ -12,6 +12,7 @@ return [
     'titles' => [
         'boards' => 'Boards',
         'delete_card' => 'Delete Card',
+        'delete_task' => 'Delete Task',
         'select_destination' => 'Select Destination',
     ],
 
@@ -52,6 +53,7 @@ return [
 
     'messages' => [
         'confirm_delete_card' => 'Are you sure you want to delete this card? <br><b>This action cannot be undone.</b>',
+        'confirm_delete_task' => 'Are you sure you want to delete this task? <br><b>This action cannot be undone.</b>',
         'has_description' => 'This card has a description',
         'no_users_assigned' => 'No users assigned',
         'no_description' => 'This card has no description',

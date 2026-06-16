@@ -27,6 +27,9 @@ class Board extends Component
     public $cardToModify = null;
     public $showDeleteCardModal = false;
 
+    public $taskToModify = null;
+    public $showDeleteTaskModal = false;
+
     public $refreshKey = 0;
 
     public function mount($uuid, $sprintUuid) {
@@ -200,6 +203,26 @@ class Board extends Component
         $task->delete();
 
         return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_created'));
+    }
+
+    #[On('taskDeleteInitiated')]
+    public function handleTaskDelete($taskId) {
+        $this->taskToModify = Task::where('id', $taskId)->firstOrFail();
+        $this->showDeleteTaskModal = true;
+    }
+
+    public function confirmDeleteTask() {
+        if (!$this->taskToModify) {
+            Toaster::error(__('board.toast.card_not_found'));
+            $this->showDeleteTaskModal = false;
+            return;
+        }
+
+        $this->taskToModify->delete();
+        $this->reset(['taskToModify', 'showDeleteTaskModal']);
+
+        $this->reloadBoard();
+        $this->dispatch('refreshModal');
     }
 
     public function render()
