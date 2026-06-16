@@ -31,7 +31,7 @@ class Column extends Component
     public function addCard() {
         CardModel::create([
             'sprint_uuid' => $this->sprint->uuid,
-            'name' => $this->cardName ?: 'New Card',
+            'title' => $this->cardName ?: 'New Card',
             'column_id' => $this->column->id,
         ]);
 
