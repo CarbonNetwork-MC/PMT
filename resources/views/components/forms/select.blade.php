@@ -2,11 +2,12 @@
     'id' => 'select', 
     'label' => '', 
     'size' => '', 
+    'width' => 'max-w-sm',
     'options' => [],
     'placeholder' => 'Select an option',
     'required' => false, 
     'disabled' => false
-    ])
+])
 @php
     $sizeClasses = match($size) {
         'large' => 'px-3.5 py-3',
@@ -15,9 +16,9 @@
     };
 @endphp
 
-<div class="max-w-sm">
+<div class="{{ $width }}">
     @if ($label)
-        <label class="block mb-2.5 text-sm font-medium text-heading">
+        <label for="{{ $id }}" class="block mb-2.5 text-sm font-medium text-heading">
             {{ $label }}
             @if ($required) <span class="text-red-400">*</span> @endif
         </label>

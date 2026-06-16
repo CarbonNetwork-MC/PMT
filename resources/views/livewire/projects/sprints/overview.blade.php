@@ -154,4 +154,81 @@
             </x-buttons.danger-button>
         </x-slot>
     </x-modals.modal>
+
+    {{-- Complete Sprint Modal --}}
+    <x-modals.modal wire:model="showCompleteSprintModal">
+        <x-slot name="title">
+            <p class="text-center text-green-500">
+                {{ __('sprints.modals.complete_sprint_title', ['name' => $sprintToComplete->name ?? '']) }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-center">
+                {!! __('sprints.modals.complete_sprint_message', ['name' => $sprintToComplete->name ?? '']) !!}
+            </p>
+
+            @if (!empty($incompleteTasks))
+                <div class="mt-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                    <p class="font-bold text-yellow-800 dark:text-yellow-200 mb-2">{{ __('sprints.modals.incomplete_tasks_warning') }}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300">
+                            @foreach ($incompleteTasks->take(4) as $task)
+                                <li>{{ $task->title }}</li>
+                            @endforeach
+                        </ul>
+
+                        <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300">
+                            @foreach ($incompleteTasks->slice(4, 4) as $task)
+                                <li>{{ $task->title }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    @if ($incompleteTasks->count() > 8)
+                        <p class="mt-2 text-sm italic text-yellow-700 dark:text-yellow-300">
+                            ... {{ $incompleteTasks->count() - 8 }} more tasks
+                        </p>
+                    @endif
+
+                    <div class="flex gap-2 mt-4">
+                        <x-forms.select
+                            id="action-select"
+                            placeholder="{{ __('sprints.labels.select_action') }}"
+                            width="w-full"
+                            wire:model.live="completeSprintAction"
+                            label="{{ __('sprints.labels.action_for_incomplete_tasks') }}"
+                            :options="[
+                                ['value' => 'backlog', 'label' => __('sprints.actions.move_to_backlog')],
+                                ['value' => 'sprint', 'label' => __('sprints.actions.move_to_sprint')],
+                            ]"
+                            required
+                        />
+
+                        <x-forms.select
+                            id="entity-select"
+                            placeholder="{{ __('sprints.labels.select_entity') }}"
+                            width="w-full"
+                            wire:model="entityUuid"
+                            label="{{ __('sprints.labels.select_entity') }}"
+                            :options="$entities->map(function ($entity) {
+                                return [
+                                    'value' => $entity->uuid,
+                                    'label' => $entity->name,
+                                ];
+                            })"
+                            required
+                         />
+                    </div>
+                </div>
+            @endif
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showCompleteSprintModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.primary-button wire:click="confirmCompleteSprint" :disabled="!$completeSprintAction">
+                {{ __('general.buttons.confirm') }}
+            </x-buttons.primary-button>
+        </x-slot>
+    </x-modals.modal>
 </div>
