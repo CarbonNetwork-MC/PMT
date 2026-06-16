@@ -15,7 +15,9 @@ class Column extends Component
     public $createNewCard = false;
     public $cardName = '';
 
-    public function mount($column, $sprint, $users) {
+    public $refreshKey = 0;
+
+    public function mount($column, $sprint, $users, $refreshKey) {
         $this->column = $column->load([
             'cards' => function ($query) use ($sprint) {
                 $query->where('sprint_uuid', $sprint->uuid)
@@ -26,6 +28,7 @@ class Column extends Component
         $this->sprint = $sprint;
         $this->cards = $this->column->cards->sortBy('card_index');
         $this->users = $users;
+        $this->refreshKey = $refreshKey;
     }
 
     public function addCard() {

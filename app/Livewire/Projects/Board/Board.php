@@ -27,6 +27,8 @@ class Board extends Component
     public $cardToModify = null;
     public $showDeleteCardModal = false;
 
+    public $refreshKey = 0;
+
     public function mount($uuid, $sprintUuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
         $this->sprint = Sprint::where('uuid', $sprintUuid)->firstOrFail();
@@ -48,14 +50,19 @@ class Board extends Component
     }
 
     public function reloadBoard() {
+        $this->project = $this->project->refresh();
+
         $this->columns = $this->project->columns()
             ->with('cards.assignees.user')
             ->orderBy('position')
             ->get();
+
+        $this->refreshKey = now()->timestamp;
     }
 
     #[On('refreshBoard')]
     public function handleRefreshBoard() {
+        dump('Refreshing board...');
         $this->reloadBoard();
     }
 

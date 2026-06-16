@@ -95,7 +95,8 @@
                         :column="$column"
                         :sprint="$sprint"
                         :users="$users"
-                        wire:key="column-{{ $column->id }}"
+                        :refreshKey="$refreshKey"
+                        wire:key="column-{{ $column->id }}-{{ $refreshKey }}"
                     />
                 @endforeach
             </div>
@@ -106,6 +107,7 @@
                         :column="$column"
                         :sprint="$sprint"
                         :users="$users"
+                        :refreshKey="$refreshKey"
                         wire:key="column-{{ $column->id }}-{{ $column->cards->where('sprint_uuid', $sprint->uuid)->count() }}"
                     />
                 @endforeach
