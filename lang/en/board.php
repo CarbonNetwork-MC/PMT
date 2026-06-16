@@ -75,6 +75,7 @@ return [
         'card_move_failed' => 'Failed to move card',
         'card_moved' => 'Card moved successfully',
         'card_not_found' => 'Card not found',
+        'task_not_found' => 'Task not found',
     ],
 
     'modals' => [

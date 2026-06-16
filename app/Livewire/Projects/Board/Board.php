@@ -213,7 +213,7 @@ class Board extends Component
 
     public function confirmDeleteTask() {
         if (!$this->taskToModify) {
-            Toaster::error(__('board.toast.card_not_found'));
+            Toaster::error(__('board.toast.task_not_found'));
             $this->showDeleteTaskModal = false;
             return;
         }
