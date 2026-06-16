@@ -1,4 +1,9 @@
-<div wire:sortable-group.handle class="w-full bg-white dark:bg-gray-700 rounded-md p-2 text-sm cursor-grabbing">
+<div 
+    class="w-full bg-white dark:bg-gray-700 rounded-md p-2 text-sm {{ $card->sprint->status === 'active' ? 'cursor-grabbing' : '' }}"
+    @if ($card->sprint->status === 'active')
+        wire:sortable-group.handle
+    @endif
+>
     {{-- Card Header - ID and Actions --}}
     <div class="flex justify-between">
         <p class="text-xs text-gray-500 dark:text-gray-400">#{{ $card->id }}</p>

@@ -404,7 +404,12 @@
                 <x-containers.divider margin="my-6" color="gray-400" />
 
                 {{-- Task Columns --}}
-                <div wire:sortable-group="updateCardOrder" class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0">
+                <div 
+                    class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0"
+                    @if ($card->sprint->status === 'active')
+                        wire:sortable-group="updateCardOrder"
+                    @endif
+                >
                     @foreach ($columns as $column)
                         <div 
                             class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0 sortable-column"
@@ -428,7 +433,13 @@
                             </div>
 
                             {{-- Tasks --}}
-                            <div class="flex-1 min-h-32 space-y-2" wire:sortable-group.item-group="{{ $column['type'] }}" wire:sortable-group.options="{ animation: 100 }">
+                            <div 
+                                class="flex-1 min-h-32 space-y-2"
+                                @if ($card->sprint->status === 'active')
+                                    wire:sortable-group.item-group="{{ $column['type'] }}"
+                                    wire:sortable-group.options="{ animation: 100 }"
+                                @endif
+                            >
                                 @if ($createNewTask && $column['type'] === $creatingTaskInColumn) 
                                     <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
                                         <input 
@@ -444,7 +455,12 @@
                                 @endif
                                 
                                 @foreach ($column['cards'] as $task)
-                                    <div wire:key="task-{{ $task->id }}" wire:sortable-group.item="{{ $task->id }}">
+                                    <div 
+                                        wire:key="task-{{ $task->id }}"
+                                        @if ($card->sprint->status === 'active')
+                                            wire:sortable-group.item="{{ $task->id }}"
+                                        @endif
+                                    >
                                         <livewire:components.board.task-card 
                                             :task="$task"
                                             :users="$users"

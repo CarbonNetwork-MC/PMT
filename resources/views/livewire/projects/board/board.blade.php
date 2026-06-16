@@ -100,6 +100,7 @@
                     />
                 @endforeach
             </div>
+
         @elseif ($sprint->status === 'completed')
             <div class="grid grid-cols-3 lg:grid-cols-{{ $this->columns->where('column_type', 'done')->count() <= 3 ? 3 : $this->columns->where('column_type', 'done')->count() }} gap-2">
                 @foreach ($this->columns->where('column_type', 'done') as $column)

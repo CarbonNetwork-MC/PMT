@@ -1,4 +1,10 @@
-<div wire:sortable-group.handle wire:key="column" class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md cursor-grabbing">
+<div 
+    wire:key="column" 
+    class="bg-white dark:bg-gray-700 p-2 mb-2 rounded-md {{ $task->card->sprint->status === 'active' ? 'cursor-grabbing' : '' }}"
+    @if ($task->card->sprint->status === 'active')
+        wire:sortable-group.handle
+    @endif
+>
     {{-- Top Bar - ID & Actions Menu --}}
     <div class="flex items-center justify-between mb-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">#{{ $task->id }}</p>
