@@ -48,7 +48,7 @@
                             'needs work' => 'text-yellow-500 hover:bg-yellow-500 hover:text-white border-yellow-500 px-2',
                             'rejected' => 'text-red-500 hover:bg-red-500 hover:text-white border-red-500 px-4',
                         ];
-                        $statusColor = $statusColors[$approvalStatus] ?? 'text-gray-800 border-gray-800 px-4';
+                        $statusColor = $statusColors[$approvalStatus] ?? 'text-gray-800 dark:text-gray-400 border-gray-800 dark:border-gray-400 px-4';
                     @endphp
 
                     <x-dropdown.wrapper
@@ -84,17 +84,17 @@
                     </x-dropdown.wrapper>
 
                     {{-- Total Actual Time --}}
-                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-actual-time-{{ $card->id }}">
-                        <i class="fi fi-sr-hourglass text-sm"></i>
-                        <p class="text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
+                    <div class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-actual-time-{{ $card->id }}">
+                        <i class="fi fi-sr-hourglass text-gray-700 dark:text-white text-sm"></i>
+                        <p class="text-gray-700 dark:text-white text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
 
                         <x-tooltip id="modal-actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
                     </div>
 
                     {{-- Total Estimated Time --}}
-                    <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-estimated-time-{{ $card->id }}">
-                        <i class="fi fi-sr-clock text-sm"></i>
-                        <p class="text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
+                    <div class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-estimated-time-{{ $card->id }}">
+                        <i class="fi fi-sr-clock text-gray-700 dark:text-white text-sm"></i>
+                        <p class="text-gray-700 dark:text-white text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
 
                         <x-tooltip id="modal-estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
                     </div>

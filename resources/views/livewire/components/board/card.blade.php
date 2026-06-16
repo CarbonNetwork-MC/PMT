@@ -194,8 +194,8 @@
         {{-- Total Actual Time --}}
         @if ($card->tasks->sum('actual_time') > 0)
             <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="actual-time-{{ $card->id }}">
-                <i class="text-xs fi fi-sr-hourglass"></i>
-                <p class="text-xs">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
+                <i class="text-gray-700 dark:text-white text-xs fi fi-sr-hourglass"></i>
+                <p class="text-gray-700 dark:text-white text-xs">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
 
                 <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
             </div>
@@ -204,8 +204,8 @@
         {{-- Total Estimated Time --}}
         @if ($card->tasks->sum('estimated_time') > 0)
             <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="estimated-time-{{ $card->id }}">
-                <i class="text-xs fi fi-sr-clock"></i>
-                <p class="text-xs">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
+                <i class="text-gray-700 dark:text-white text-xs fi fi-sr-clock"></i>
+                <p class="text-gray-700 dark:text-white text-xs">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
 
                 <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
             </div>
@@ -232,7 +232,7 @@
             <div 
                 x-show="editing" 
                 @click.outside="editing = false" 
-                class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-md p-2 shadow-lg"
+                class="absolute mt-1 z-10 bg-gray-300 dark:bg-gray-900 rounded-md p-1 shadow-lg"
             >
                 <input 
                     type="datetime-local"
@@ -254,7 +254,7 @@
             $remainingCount = $assignees->count() - $maxVisible;
         @endphp
         
-        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-100 dark:bg-gray-900 rounded-md px-2.5">
+        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5">
             <i 
                 @click="open = !open"
                 class="fi fi-sr-users text-xs text-gray-700 dark:text-white cursor-pointer"
