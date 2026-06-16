@@ -100,11 +100,11 @@
                             placeholder="{{ __('sprints.labels.select_status') }}"
                             wire:model="status"
                             label="{{ __('sprints.labels.status') }}"
-                            {{-- :options="collect($statuses)->mapWithKeys(fn($s) => [$s => __('sprints.statuses.' . $s)])->toArray()" --}}
                             :options="collect($statuses)->map(function ($status) {
                                 return [
-                                    'value' => $status,
-                                    'label' => __('sprints.statuses.' . $status),
+                                    'value' => $status['value'],
+                                    'label' => __('sprints.statuses.' . $status['value']),
+                                    'disabled' => $status['disabled'],
                                 ];
                             })"
                             required

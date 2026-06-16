@@ -35,7 +35,10 @@
         <option value="" disabled>{{ $placeholder }}</option>
 
         @foreach ($options as $option)
-            <option value="{{ $option['value'] }}">
+            <option
+                value="{{ $option['value'] }}"
+                @disabled($option['disabled'] ?? false)
+            >
                 {{ $option['label'] }}
             </option>
         @endforeach

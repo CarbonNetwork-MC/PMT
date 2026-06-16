@@ -17,7 +17,11 @@ class Overview extends Component
     public $activeSprints;
     public $completedSprints;
     public $archivedSprints;
-    public $statuses = ['planned', 'active', 'completed'];
+    public $statuses = [
+        ['value' => 'planned', 'disabled' => false],
+        ['value' => 'active', 'disabled' => false],
+        ['value' => 'completed', 'disabled' => true],
+    ];
 
     public $name;
     public $start_date;
