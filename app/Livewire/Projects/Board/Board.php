@@ -81,7 +81,7 @@ class Board extends Component
         }
 
         // TODO: Optimize by only reloading the affected columns instead of the entire page
-        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_moved'));
+        $this->reloadBoard();
     }
 
     #[On('cardSelected')]
@@ -110,12 +110,12 @@ class Board extends Component
         $this->cardToModify->delete();
         $this->reset(['cardToModify', 'showDeleteCardModal']);
 
-        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_deleted'));
+        $this->reloadBoard();
     }
 
     #[On('cardMoveInitiated')]
     public function handleCardMove() {
-        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_moved'));
+        $this->reloadBoard();
     }
 
     #[On('cardCopyInitiated')]
@@ -171,7 +171,7 @@ class Board extends Component
             }
         }
 
-        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_copied'));
+        $this->reloadBoard();
     }
 
     #[On('taskConvertToCardInitiated')]
@@ -202,7 +202,7 @@ class Board extends Component
 
         $task->delete();
 
-        return redirect()->route('projects.board.render', ['uuid' => $this->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_created'));
+        $this->reloadBoard();
     }
 
     #[On('taskDeleteInitiated')]
