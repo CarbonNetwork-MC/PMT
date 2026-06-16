@@ -72,7 +72,7 @@
                     class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
                     data-tooltip-target="actual-time-{{ $task->id }}"
                 >
-                    <i class="fi fi-sr-hourglass text-sm text-gray-700 dark:text-white"></i>
+                    <i class="fi fi-sr-hourglass text-xs text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
                         {{ $task->actual_time ? $task->actual_time . 'h' : '-' }}
                     </span>
@@ -106,7 +106,7 @@
                     class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
                     data-tooltip-target="estimated-time-{{ $task->id }}"
                 >
-                    <i class="fi fi-sr-clock text-sm text-gray-700 dark:text-white"></i>
+                    <i class="fi fi-sr-clock text-xs text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
                         {{ $task->estimated_time ? $task->estimated_time . 'h' : '-' }}
                     </span>
@@ -140,7 +140,7 @@
                     class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 cursor-pointer"
                     data-tooltip-target="deadline-{{ $task->id }}"
                 >
-                    <i class="fi fi-sr-calendar text-sm text-gray-700 dark:text-white"></i>
+                    <i class="fi fi-sr-calendar text-xs text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
                         {{ $task->deadline ? \Carbon\Carbon::parse($task->deadline)->format('M d, H:i') : '-' }}
                     </span>
@@ -175,7 +175,7 @@
             @endphp
 
             <div class="flex justify-end">
-                <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1">
+                <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5">
                     <i 
                         @click="open = !open"
                         class="fi fi-sr-users text-xs text-gray-700 dark:text-white cursor-pointer"
@@ -247,11 +247,11 @@
                     </div>
 
                     @if ($assignees->count() === 0)
-                        <p class="text-xs text-gray-700 dark:text-white">
+                        <p class="text-xs text-gray-700 dark:text-white py-1.5">
                             {{ __('board.messages.no_users_assigned') }}
                         </p>
                     @else
-                        <div class="flex -space-x-2">
+                        <div class="flex -space-x-2 py-1">
                             @foreach ($visibleAssignees as $assignee)
                                 @php
                                     $profilePicture = $assignee->user->profile_picture
