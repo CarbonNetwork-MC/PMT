@@ -115,6 +115,7 @@
 
     {{-- Information - Approval Status, Number of tasks, Has Description --}}
     <div class="flex gap-1 mt-1">
+        {{-- Approval Status --}}
         @if ($card->approval_status !== 'None')
             @php
                 $statusColors = [
@@ -146,6 +147,8 @@
 
             <x-tooltip id="approval-tooltip-{{ $card->id }}" content="{{ __('board.messages.' . $translationKey) }}" />
         @endif
+
+        {{-- Task Count --}}
         @if ($card->tasks()->count() > 0)
             @php
                 $tasksCount = $card->tasks()->count();
@@ -178,6 +181,8 @@
 
             <x-tooltip id="tasks-tooltip-{{ $card->id }}" content="{{ __('board.messages.' . $translationKey) }}" />
         @endif
+
+        {{-- Description --}}
         @if ($card->description)
             <div class="flex items-center bg-gray-200 dark:bg-gray-900 rounded-md text-sm cursor-help px-2 py-0.5" data-tooltip-target="description-tooltip-{{ $card->id }}">
                 <i class="fi fi-rr-poll-h text-black dark:text-white"></i>
@@ -187,20 +192,24 @@
         @endif
 
         {{-- Total Actual Time --}}
-        <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="actual-time-{{ $card->id }}">
-            <i class="text-xs fi fi-sr-hourglass"></i>
-            <p class="text-xs">{{ $card->tasks->sum('actual_time') }}h</p>
+        @if ($card->tasks->sum('actual_time') > 0)
+            <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="actual-time-{{ $card->id }}">
+                <i class="text-xs fi fi-sr-hourglass"></i>
+                <p class="text-xs">{{ $card->tasks->sum('actual_time') }}h</p>
 
-            <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
-        </div>
+                <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
+            </div>
+        @endif
 
         {{-- Total Estimated Time --}}
-        <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="estimated-time-{{ $card->id }}">
-            <i class="text-xs fi fi-sr-clock"></i>
-            <p class="text-xs">{{ $card->tasks->sum('estimated_time') }}h</p>
+        @if ($card->tasks->sum('estimated_time') > 0)
+            <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="estimated-time-{{ $card->id }}">
+                <i class="text-xs fi fi-sr-clock"></i>
+                <p class="text-xs">{{ $card->tasks->sum('estimated_time') }}h</p>
 
-            <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
-        </div>
+                <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
+            </div>
+        @endif
     </div>
 
     <div class="flex items-center justify-end gap-1 mt-1.5">
