@@ -1,6 +1,6 @@
-@props(['items' => []])
+@props(['items' => [], 'margin' => 'mb-4'])
 
-<div class="bg-white dark:bg-gray-800 rounded-md shadow-sm p-4 mb-4">
+<div class="bg-white dark:bg-gray-800 rounded-md shadow-sm p-4 {{ $margin }}">
     <nav class="flex" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-2">
             @foreach ($items as $index => $item)

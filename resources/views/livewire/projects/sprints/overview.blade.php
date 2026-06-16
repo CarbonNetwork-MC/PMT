@@ -1,7 +1,7 @@
 <div>
     {{-- Breadcrumbs --}}
     <x-slot name="breadcrumbs">
-        <x-breadcrumbs :items="[
+        <x-breadcrumbs margin="mb-2" :items="[
             [
                 'icon' => 'fi fi-rs-house-chimney',
                 'url' => route('dashboard.render'),
@@ -66,7 +66,7 @@
         </div>
     </x-containers.main>
 
-    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
+    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-2">
         @forelse ($sprints as $sprint)
             {{-- TODO: burndown chart for $sprint --}}
             <x-project.sprint-card projectUuid="{{ $project->uuid }}" :sprint="$sprint" :isProjectAdminOrOwner="$isProjectAdminOrOwner" />
@@ -168,16 +168,16 @@
             </p>
 
             @if (!empty($incompleteTasks))
-                <div class="mt-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-                    <p class="font-bold text-yellow-800 dark:text-yellow-200 mb-2">{{ __('sprints.modals.incomplete_tasks_warning') }}</p>
+                <div class="mt-4 p-4 bg-yellow-100 rounded-lg">
+                    <p class="font-bold text-yellow-800 mb-2">{{ __('sprints.modals.incomplete_tasks_warning') }}</p>
                     <div class="grid grid-cols-2 gap-4">
-                        <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300">
+                        <ul class="list-disc list-inside text-yellow-700">
                             @foreach ($incompleteTasks->take(4) as $task)
                                 <li>{{ $task->title }}</li>
                             @endforeach
                         </ul>
 
-                        <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300">
+                        <ul class="list-disc list-inside text-yellow-700">
                             @foreach ($incompleteTasks->slice(4, 4) as $task)
                                 <li>{{ $task->title }}</li>
                             @endforeach
@@ -185,7 +185,7 @@
                     </div>
 
                     @if ($incompleteTasks->count() > 8)
-                        <p class="mt-2 text-sm italic text-yellow-700 dark:text-yellow-300">
+                        <p class="mt-2 text-sm italic text-yellow-700">
                             ... {{ $incompleteTasks->count() - 8 }} more tasks
                         </p>
                     @endif
@@ -194,6 +194,7 @@
                         <x-forms.select
                             id="action-select"
                             placeholder="{{ __('sprints.labels.select_action') }}"
+                            labelColor="text-black"
                             width="w-full"
                             wire:model.live="completeSprintAction"
                             label="{{ __('sprints.labels.action_for_incomplete_tasks') }}"
@@ -207,6 +208,7 @@
                         <x-forms.select
                             id="entity-select"
                             placeholder="{{ __('sprints.labels.select_entity') }}"
+                            labelColor="text-black"
                             width="w-full"
                             wire:model="entityUuid"
                             label="{{ __('sprints.labels.select_entity') }}"

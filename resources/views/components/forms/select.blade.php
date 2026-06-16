@@ -5,6 +5,7 @@
     'width' => 'max-w-sm',
     'options' => [],
     'placeholder' => 'Select an option',
+    'labelColor' => 'text-black dark:text-white',
     'required' => false, 
     'disabled' => false
 ])
@@ -18,7 +19,7 @@
 
 <div class="{{ $width }}">
     @if ($label)
-        <label for="{{ $id }}" class="block mb-2.5 text-sm font-medium text-heading">
+        <label for="{{ $id }}" class="block mb-2.5 text-sm font-medium {{ $labelColor }}">
             {{ $label }}
             @if ($required) <span class="text-red-400">*</span> @endif
         </label>
