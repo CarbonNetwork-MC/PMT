@@ -113,7 +113,7 @@
 
                     {{-- Start Date --}}
                     <div class="col-span-1">
-                        <x-forms.date-input wire:model="start_date" label="{{ __('sprints.labels.start_date') }}" required />
+                        <x-forms.date-input id="date-sprint" wire:model="start_date" label="{{ __('sprints.labels.start_date') }}" required />
                     </div>
 
                     {{-- End Date --}}
