@@ -9,9 +9,11 @@
             <h2 class="font-bold text-sm text-{{ $this->column->color->name }}-{{ $this->column->color->text_color }}">{{ $this->column->name }}</h2>
         </div>
         {{-- Add card button --}}
-        <div class="flex justify-end">
-            <i class="fi fi-rr-plus text-gray-800 dark:text-gray-200 me-1 cursor-pointer" wire:click="$set('createNewCard', true)"></i>
-        </div>
+        @if ($sprint->status === 'active')
+            <div class="flex justify-end">
+                <i class="fi fi-rr-plus text-gray-800 dark:text-gray-200 me-1 cursor-pointer" wire:click="$set('createNewCard', true)"></i>
+            </div>
+        @endif
     </div>
 
     {{-- Cards --}}
