@@ -175,10 +175,10 @@
             @endphp
 
             <div class="flex justify-end">
-                <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5">
+                <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1">
                     <i 
                         @click="open = !open"
-                        class="fi fi-sr-users text-sm text-gray-700 dark:text-white cursor-pointer"
+                        class="fi fi-sr-users text-xs text-gray-700 dark:text-white cursor-pointer"
                     ></i>
 
                     <div 

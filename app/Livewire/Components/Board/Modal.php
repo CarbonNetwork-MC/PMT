@@ -10,6 +10,7 @@ use App\Models\Task;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
@@ -108,6 +109,12 @@ class Modal extends Component
         $this->filteredUsers = $this->users->filter(function ($user) use ($searchTerm) {
             return str_contains(strtolower($user->name), $searchTerm) || str_contains(strtolower($user->email), $searchTerm);
         });
+    }
+
+    #[On('refreshModal')]
+    public function handleRefreshModal() {
+        dump('Refreshing modal...');
+        $this->loadCard();
     }
 
     public function addTask($columnType) {

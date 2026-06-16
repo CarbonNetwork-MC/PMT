@@ -93,8 +93,11 @@ class TaskCard extends Component
         });
     }
 
-    private function loadTask() {
+    private function refreshBoardAndModal() {
         $this->task->refresh();
+        $this->dispatch('refreshBoard');
+        $this->dispatch('cardRefreshed', ['cardId' => $this->task->card_id]);
+        $this->dispatch('refreshModal');
     }
 
     public function toggleAssignee($userUuid, $isChecked) {
@@ -109,13 +112,13 @@ class TaskCard extends Component
                 ->delete();
         }
 
-        $this->loadTask();
+        $this->refreshBoardAndModal();
     }
 
     public function clearAssignees() {
         TaskAssignee::where('task_id', $this->task->id)->delete();
 
-        $this->loadTask();
+        $this->refreshBoardAndModal();
     }
 
     public function assignToMe() {
@@ -124,7 +127,7 @@ class TaskCard extends Component
             'user_uuid' => auth()->user()->uuid,
         ]);
 
-        $this->loadTask();
+        $this->refreshBoardAndModal();
     }
 
     public function makeACopy() {
@@ -150,6 +153,8 @@ class TaskCard extends Component
         $this->task->update([
             'estimated_time' => $this->estimatedTimeInput,
         ]);
+
+        $this->refreshBoardAndModal();
     }
 
     public function updateActualTime() {
@@ -160,6 +165,8 @@ class TaskCard extends Component
         $this->task->update([
             'actual_time' => $this->actualTimeInput,
         ]);
+
+        $this->refreshBoardAndModal();
     }
 
     public function updateDeadline() {
@@ -173,9 +180,7 @@ class TaskCard extends Component
                 : null,
         ]);
 
-        $this->loadTask();
-        $this->dispatch('refreshBoard');
-        $this->dispatch('cardRefreshed', ['cardId' => $this->task->card_id]);
+        $this->refreshBoardAndModal();
     }
 
     public function render()
