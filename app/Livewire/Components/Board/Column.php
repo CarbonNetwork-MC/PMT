@@ -38,7 +38,7 @@ class Column extends Component
             'column_id' => $this->column->id,
         ]);
 
-        return redirect()->route('projects.board.render', ['uuid' => $this->sprint->project->uuid, 'sprintUuid' => $this->sprint->uuid])->success(__('board.toast.card_created'));
+        $this->dispatch('refreshBoard');
     }
 
     public function cancelCardCreation() {

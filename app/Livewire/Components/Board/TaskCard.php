@@ -129,17 +129,17 @@ class TaskCard extends Component
     }
 
     public function makeACopy() {
-        $this->dispatch('closeTaskModal');
+        $this->dispatch('closeCardModal');
         $this->dispatch('taskCopyInitiated', ['taskId' => $this->task->id]);
     }
 
     public function deleteTask() {
-        $this->dispatch('closeTaskModal');
+        $this->dispatch('closeCardModal');
         $this->dispatch('taskDeleteInitiated', ['taskId' => $this->task->id]);
     }
 
     public function convertToCard() {
-        $this->dispatch('closeTaskModal');
+        $this->dispatch('closeCardModal');
         $this->dispatch('taskConvertToCardInitiated', ['taskId' => $this->task->id]);
     }
 
