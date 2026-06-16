@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('backlog_card_id');
             $table->text('description');
-            $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
+            $table->enum('status', ['todo', 'doing', 'done'])->default('todo');
             $table->integer('task_index')->default(0);
             $table->timestamps();
 

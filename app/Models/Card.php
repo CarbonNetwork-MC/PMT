@@ -10,7 +10,7 @@ class Card extends Model
 {
     protected $fillable = [
         'sprint_uuid',
-        'name',
+        'title',
         'description',
         'column_id',
         'approval_status',

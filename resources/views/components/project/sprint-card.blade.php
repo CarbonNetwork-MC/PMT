@@ -1,53 +1,56 @@
-@props(['sprint'])
+@props(['projectUuid', 'sprint', 'isProjectAdminOrOwner' => false])
 
 <div class="col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4" wire:key="sprint-{{ $sprint->uuid }}">
     <div class="flex justify-between items-center">
-        <a href="" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
-        <i class="fi fi-bs-menu-dots dark:text-white cursor-pointer" data-dropdown-toggle="sprint-dropdown-{{ $sprint->uuid }}"></i>
+        <a href="{{ route('projects.board.render', ['uuid' => $projectUuid, 'sprintUuid' => $sprint->uuid]) }}" class="text-lg font-bold dark:text-white hover:text-blue-500">{{ $sprint->name }}</a>
 
-        <div id="sprint-dropdown-{{ $sprint->uuid }}" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                @switch($sprint->status)
-                    @case('planned')
-                        <li>
-                            <p wire:click="startSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
-                                <i class="fi fi-br-play-circle"></i>
-                                {{ __('sprints.buttons.start_sprint') }}
-                            </p>
-                        </li>
-                        @break
-                    @case('active')
-                        <li>
-                            <p wire:click="completeSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
-                                <i class="fi fi-br-stop-circle"></i>
-                                {{ __('sprints.buttons.complete_sprint') }}
-                            </p>
-                        </li>
-                        @break
-                    @case('completed')
-                        <li>
-                            <p wire:click="archiveSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
-                                <i class="fi fi-sr-box"></i>
-                                {{ __('sprints.buttons.archive_sprint') }}
-                            </p>
-                        </li>
-                        @break
-                @endswitch
+        @if($isProjectAdminOrOwner)
+            <i class="fi fi-bs-menu-dots dark:text-white cursor-pointer" data-dropdown-toggle="sprint-dropdown-{{ $sprint->uuid }}"></i>
 
-                <li>
-                    <p wire:click="editSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
-                        <i class="fi fi-rs-pencil"></i>
-                        {{ __('sprints.buttons.edit_sprint') }}
-                    </p>
-                </li>
-                <li>
-                    <p wire:click="deleteSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-red-400 dark:hover:bg-gray-600 cursor-pointer">
-                        <i class="fi fi-rs-trash"></i>
-                        {{ __('sprints.buttons.delete_sprint') }}
-                    </p>
-                </li>
-            </ul>
-        </div>
+            <div id="sprint-dropdown-{{ $sprint->uuid }}" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                    @switch($sprint->status)
+                        @case('planned')
+                            <li>
+                                <p wire:click="startSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
+                                    <i class="fi fi-br-play-circle"></i>
+                                    {{ __('sprints.buttons.start_sprint') }}
+                                </p>
+                            </li>
+                            @break
+                        @case('active')
+                            <li>
+                                <p wire:click="completeSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
+                                    <i class="fi fi-br-stop-circle"></i>
+                                    {{ __('sprints.buttons.complete_sprint') }}
+                                </p>
+                            </li>
+                            @break
+                        @case('completed')
+                            <li>
+                                <p wire:click="archiveSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
+                                    <i class="fi fi-sr-box"></i>
+                                    {{ __('sprints.buttons.archive_sprint') }}
+                                </p>
+                            </li>
+                            @break
+                    @endswitch
+
+                    <li>
+                        <p wire:click="editSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-blue-400 dark:hover:bg-gray-600 cursor-pointer">
+                            <i class="fi fi-rs-pencil"></i>
+                            {{ __('sprints.buttons.edit_sprint') }}
+                        </p>
+                    </li>
+                    <li>
+                        <p wire:click="deleteSprint('{{ $sprint->uuid }}')" class="w-full h-full flex gap-2 py-2 px-4 hover:bg-gray-100 hover:text-red-400 dark:hover:bg-gray-600 cursor-pointer">
+                            <i class="fi fi-rs-trash"></i>
+                            {{ __('sprints.buttons.delete_sprint') }}
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        @endif
     </div>
     
     <div class="mt-1 flex justify-between items-center">

@@ -68,9 +68,25 @@
                     <div class="col-span-1">
                         <x-forms.number-input label="{{ __('settings.labels.position') }}" wire:model="position" min="{{ $minColumns }}" max="{{ $maxColumns }}" required />
                     </div>
+
+                    <div class="col-span-1"></div>
+
+                    {{-- Column Type --}}
+                    <div class="col-span-1">
+                        <x-forms.select
+                            label="{{ __('settings.labels.column_type') }}"
+                            wire:model="columnType"
+                            :options="[
+                                ['value' => 'todo', 'label' => __('settings.labels.todo')],
+                                ['value' => 'doing', 'label' => __('settings.labels.doing')],
+                                ['value' => 'done', 'label' => __('settings.labels.done')],
+                            ]"
+                            required
+                        />
+                    </div>
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-8">
                     <div class="flex gap-x-4">
                         <div class="flex flex-col">
                             <p class="text-black dark:text-white mb-2">

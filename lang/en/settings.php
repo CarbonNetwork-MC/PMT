@@ -38,6 +38,7 @@ return [
     'labels' => [
         'color' => 'Color',
         'column_name' => 'Column Name',
+        'column_type' => 'Column Type',
         'new_owner' => 'New Owner',
         'member_name' => 'Member Name',
         'member_role' => 'Member Role',
@@ -46,6 +47,10 @@ return [
 
         'background_color' => 'Background',
         'text_color' => 'Text',
+
+        'todo' => 'To Do',
+        'doing' => 'Doing',
+        'done' => 'Done',
     ],
 
     'buttons' => [

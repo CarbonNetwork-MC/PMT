@@ -16,6 +16,7 @@ class NewColumn extends Component
     public $colorId;
     public $color;
     public $position;
+    public $columnType;
 
     public $minColumns = 1;
     public $maxColumns = 5;
@@ -39,6 +40,7 @@ class NewColumn extends Component
             'name' => ['required', 'string', 'max:255'],
             'colorId' => ['required', 'exists:column_colors,id'],
             'position' => ['required', 'integer', 'min:' . $this->minColumns, 'max:' . $this->maxColumns],
+            'columnType' => ['required', 'in:todo,doing,done'],
         ]);
 
         DB::transaction(function () {
@@ -53,9 +55,10 @@ class NewColumn extends Component
             $count = $columns->count();
 
             if ($count >= $this->maxColumns) {
-                return redirect()
+                redirect()
                     ->route('projects.settings.columns.render', ['uuid' => $this->project->uuid])
                     ->error(__('settings.toast.max_columns_reached'));
+                return;
             }
 
             // Clamp position
@@ -71,6 +74,7 @@ class NewColumn extends Component
                 'name' => $this->name,
                 'color_id' => $this->colorId,
                 'position' => $newPosition,
+                'column_type' => $this->columnType,
             ]);
         });
 

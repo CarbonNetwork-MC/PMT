@@ -33,9 +33,9 @@ class NewProject extends Component
         $colorGreen = ColumnColor::where('name', 'green')->first();
 
         $project->columns()->createMany([
-            ['project_uuid' => $project->uuid, 'name' => 'To Do', 'position' => 1, 'color_id' => $colorRose->id],
-            ['project_uuid' => $project->uuid, 'name' => 'In Progress', 'position' => 2, 'color_id' => $colorSky->id],
-            ['project_uuid' => $project->uuid, 'name' => 'Done', 'position' => 3, 'color_id' => $colorGreen->id],
+            ['project_uuid' => $project->uuid, 'name' => 'To Do', 'position' => 1, 'column_type' => 'todo', 'color_id' => $colorRose->id],
+            ['project_uuid' => $project->uuid, 'name' => 'In Progress', 'position' => 2, 'column_type' => 'doing', 'color_id' => $colorSky->id],
+            ['project_uuid' => $project->uuid, 'name' => 'Done', 'position' => 3, 'column_type' => 'done', 'color_id' => $colorGreen->id],
         ]);
 
         Log::create([

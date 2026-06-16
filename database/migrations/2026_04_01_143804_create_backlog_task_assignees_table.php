@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('backlog_tasks_assignees', function (Blueprint $table) {
+        Schema::create('backlog_task_assignees', function (Blueprint $table) {
             $table->unsignedBigInteger('backlog_task_id');
             $table->char('user_uuid', 36);
             $table->timestamps();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('backlog_tasks_assignees');
+        Schema::dropIfExists('backlog_task_assignees');
     }
 };

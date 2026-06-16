@@ -58,17 +58,18 @@
                 </div>
             </div>
             
-            <x-buttons.primary-button href="{{ route('projects.sprints.new.render', ['uuid' => $project->uuid]) }}">
-                {{ __('sprints.buttons.new_sprint') }}
-            </x-buttons.primary-button>
+            @if ($isProjectAdminOrOwner)
+                <x-buttons.primary-button href="{{ route('projects.sprints.new.render', ['uuid' => $project->uuid]) }}">
+                    {{ __('sprints.buttons.new_sprint') }}
+                </x-buttons.primary-button>
+            @endif
         </div>
     </x-containers.main>
 
     <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
         @forelse ($sprints as $sprint)
-            {{-- TODO: link to board for $sprint --}}
             {{-- TODO: burndown chart for $sprint --}}
-            <x-project.sprint-card :sprint="$sprint" />
+            <x-project.sprint-card projectUuid="{{ $project->uuid }}" :sprint="$sprint" :isProjectAdminOrOwner="$isProjectAdminOrOwner" />
         @empty
             <div class="col-span-3 lg:col-span-4 3xl:col-span-5 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
                 <p class="text-center text-gray-600 dark:text-gray-300">
@@ -153,11 +154,4 @@
             </x-buttons.danger-button>
         </x-slot>
     </x-modals.modal>
-
-    <x-modals.simple-modal wire:model="showModal">
-        <div class="flex flex-col items-center gap-4 py-4">
-            <i class="fi fi-sr-check text-green-500 text-4xl"></i>
-            <p class="text-center text-lg dark:text-white">{{ __('sprints.messages.sprint_updated') }}</p>
-        </div>
-    </x-modals.simple-modal>
 </div>

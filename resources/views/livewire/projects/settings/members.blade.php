@@ -95,6 +95,8 @@
                                                 {{ __('settings.buttons.remove') }}
                                             </x-tables.danger-action>
                                         </x-tables.table-actions>
+                                    @elseif ($isProjectOwner)
+                                        <x-tables.table-actions></x-tables.table-actions>
                                     @endif
                                 </x-tables.table-row>
                             @empty
@@ -180,7 +182,7 @@
                 {{ __('settings.buttons.add_member') }}
             </x-buttons.primary-button>
         </x-slot>
-    <x-modals.modal>
+    </x-modals.modal>
 
     {{-- Remove Member Modal --}}
     <x-modals.modal wire:model="showRemoveMemberModal">
