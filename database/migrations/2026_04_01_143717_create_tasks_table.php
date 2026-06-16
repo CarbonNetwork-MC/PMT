@@ -18,8 +18,8 @@ return new class extends Migration
             $table->enum('status', ['todo', 'doing', 'done'])->default('todo');
             $table->integer('task_index')->default(0);
             $table->timestamp('deadline')->nullable();
-            $table->decimal('estimated_time', 8, 2)->nullable();
-            $table->decimal('actual_time', 8, 2)->nullable();
+            $table->integer('estimated_time')->nullable();
+            $table->integer('actual_time')->nullable();
             $table->timestamps();
 
             $table->foreign('card_id')->references('id')->on('cards')->onUpdate('cascade')->onDelete('cascade');

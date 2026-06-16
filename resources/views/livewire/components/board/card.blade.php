@@ -195,7 +195,7 @@
         @if ($card->tasks->sum('actual_time') > 0)
             <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="actual-time-{{ $card->id }}">
                 <i class="text-xs fi fi-sr-hourglass"></i>
-                <p class="text-xs">{{ $card->tasks->sum('actual_time') }}h</p>
+                <p class="text-xs">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
 
                 <x-tooltip id="actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
             </div>
@@ -205,7 +205,7 @@
         @if ($card->tasks->sum('estimated_time') > 0)
             <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-1.5 py-1.5 cursor-help" data-tooltip-target="estimated-time-{{ $card->id }}">
                 <i class="text-xs fi fi-sr-clock"></i>
-                <p class="text-xs">{{ $card->tasks->sum('estimated_time') }}h</p>
+                <p class="text-xs">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
 
                 <x-tooltip id="estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
             </div>
@@ -254,7 +254,7 @@
             $remainingCount = $assignees->count() - $maxVisible;
         @endphp
         
-        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-100 dark:bg-gray-900 rounded-md px-2.5 py-1">
+        <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-100 dark:bg-gray-900 rounded-md px-2.5">
             <i 
                 @click="open = !open"
                 class="fi fi-sr-users text-xs text-gray-700 dark:text-white cursor-pointer"
@@ -326,11 +326,11 @@
             </div>
 
             @if ($assignees->count() === 0)
-                <p class="text-xs text-gray-700 dark:text-white">
+                <p class="text-xs text-gray-700 dark:text-white py-1.5">
                     {{ __('board.messages.no_users_assigned') }}
                 </p>
             @else
-                <div class="flex -space-x-2">
+                <div class="flex -space-x-2 py-1">
                     @foreach ($visibleAssignees as $assignee)
                         @php
                             $profilePicture = $assignee->user->profile_picture

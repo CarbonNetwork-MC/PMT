@@ -86,7 +86,7 @@
                     {{-- Total Actual Time --}}
                     <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-actual-time-{{ $card->id }}">
                         <i class="fi fi-sr-hourglass text-sm"></i>
-                        <p class="text-sm">{{ $card->tasks->sum('actual_time') }}h</p>
+                        <p class="text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
 
                         <x-tooltip id="modal-actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
                     </div>
@@ -94,7 +94,7 @@
                     {{-- Total Estimated Time --}}
                     <div class="flex items-center gap-2 text-white bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-estimated-time-{{ $card->id }}">
                         <i class="fi fi-sr-clock text-sm"></i>
-                        <p class="text-sm">{{ $card->tasks->sum('estimated_time') }}h</p>
+                        <p class="text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
 
                         <x-tooltip id="modal-estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
                     </div>

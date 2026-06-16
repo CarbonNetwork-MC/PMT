@@ -74,7 +74,7 @@
                 >
                     <i class="fi fi-sr-hourglass text-xs text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
-                        {{ $task->actual_time ? $task->actual_time . 'h' : '-' }}
+                        {{ $task->actual_time ? \App\Helpers\TimeFormatter::minutesToHuman($task->actual_time) : '-' }}
                     </span>
 
                     <x-tooltip id="actual-time-{{ $task->id }}" content="{{ __('board.labels.actual_time') }}" />
@@ -87,14 +87,11 @@
                     class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
                 >
                     <input 
-                        type="number" 
-                        min="0" 
-                        step="0.5" 
+                        type="text"
                         class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
                         wire:model.live="actualTimeInput"
-                        wire:keydown.enter.prevent="updateActualTime"
                         wire:blur="updateActualTime"
-                        @keydown.enter="editing = false"
+                        @keydown.enter.prevent="$el.blur(); editing = false"
                     />
                 </div>
             </div>
@@ -108,7 +105,7 @@
                 >
                     <i class="fi fi-sr-clock text-xs text-gray-700 dark:text-white"></i>
                     <span class="text-xs text-gray-700 dark:text-white">
-                        {{ $task->estimated_time ? $task->estimated_time . 'h' : '-' }}
+                        {{ $task->estimated_time ? \App\Helpers\TimeFormatter::minutesToHuman($task->estimated_time) : '-' }}
                     </span>
 
                     <x-tooltip id="estimated-time-{{ $task->id }}" content="{{ __('board.labels.estimated_time') }}" />
@@ -121,14 +118,11 @@
                     class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
                 >
                     <input 
-                        type="number" 
-                        min="0" 
-                        step="0.5" 
+                        type="text" 
                         class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
                         wire:model.live="estimatedTimeInput"
-                        wire:keydown.enter.prevent="updateEstimatedTime"
                         wire:blur="updateEstimatedTime"
-                        @keydown.enter="editing = false"
+                        @keydown.enter.prevent="$el.blur(); editing = false"
                     />
                 </div>
             </div>

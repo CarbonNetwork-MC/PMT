@@ -3,7 +3,7 @@
 namespace App\Livewire\Components\Board;
 
 use App\Helpers\CheckProjectPermissions;
-use App\Models\Task;
+use App\Helpers\TimeFormatter;
 use App\Models\TaskAssignee;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -42,8 +42,6 @@ class TaskCard extends Component
 
         $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $task->card->column->project);
 
-        $this->estimatedTimeInput = $task->estimated_time;
-        $this->actualTimeInput = $task->actual_time;
         $this->deadlineInput = $task->deadline ? \Carbon\Carbon::parse($task->deadline)->format('Y-m-d\TH:i') : null;
 
         // Load projects for move options
@@ -145,26 +143,36 @@ class TaskCard extends Component
         $this->dispatch('taskConvertToCardInitiated', ['taskId' => $this->task->id]);
     }
 
-    public function updateEstimatedTime() {
-        $this->validate([
-            'estimatedTimeInput' => ['nullable', 'numeric', 'min:0'],
+    public function updateEstimatedTime(){
+        $data = $this->validate([
+            'estimatedTimeInput' => [
+                'nullable',
+                'regex:/^\d+$|^\d+\s*h(\s*\d+\s*m)?$|^\d+\s*m$/i'
+            ],
         ]);
 
         $this->task->update([
-            'estimated_time' => $this->estimatedTimeInput,
+            'estimated_time' => TimeFormatter::humanToMinutes($data['estimatedTimeInput']),
         ]);
+
+        $this->estimatedTimeInput = null;
 
         $this->refreshBoardAndModal();
     }
 
     public function updateActualTime() {
         $this->validate([
-            'actualTimeInput' => ['nullable', 'numeric', 'min:0'],
+            'actualTimeInput' => [
+                'nullable',
+                'regex:/^\d+$|^\d+\s*h(\s*\d+\s*m)?$|^\d+\s*m$/i'
+            ],
         ]);
 
         $this->task->update([
-            'actual_time' => $this->actualTimeInput,
+            'actual_time' => TimeFormatter::humanToMinutes($this->actualTimeInput),
         ]);
+
+        $this->actualTimeInput = null;
 
         $this->refreshBoardAndModal();
     }
