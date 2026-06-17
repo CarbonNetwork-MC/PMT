@@ -107,8 +107,8 @@
                     
                     {{-- Project Backlog --}}
                     <x-sidebar.nav-item
-                        :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
-                        :active="false"
+                        :href="route('projects.backlog.render', ['uuid' => $selectedProject->uuid])"
+                        :active="request()->routeIs('projects.backlog.*')"
                         icon="fi fi-br-cubes-stacked"
                         :label="__('sidebar.projects.backlog')"
                     />
