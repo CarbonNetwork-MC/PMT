@@ -55,9 +55,43 @@
                         $statusColor = $statusColors[$approvalStatus] ?? 'text-gray-800 dark:text-gray-400 border-gray-800 dark:border-gray-400 px-4';
                     @endphp
 
-                    <div class="flex items-center py-1.5 rounded text-sm font-semibold border {{ $statusColor }} cursor-pointer">
-                        <p>{{ __('board.status.' . $approvalStatusKey) }}</p>
-                    </div>
+                    @if ($card->sprint->status === 'active')
+                        <x-dropdown.wrapper
+                            state="open"
+                            :useOwnState="true"
+                            tooltipId="approval-status-{{ $card->id }}"
+                            :tooltip="__('board.labels.change_approval_status')"
+                            width="w-52"
+                            align="right"
+                            margin="mt-4"
+                        >
+                            <x-slot name="handle">
+                                <div 
+                                    class="flex items-center py-1.5 rounded text-sm font-semibold border {{ $statusColor }} cursor-pointer"
+                                    data-tooltip-target="approval-status-{{ $card->id }}"
+                                >
+                                    <p>{{ __('board.status.' . $approvalStatusKey) }}</p>
+                                </div>
+                            </x-slot>
+                        
+                            <p class="text-gray-900 text-center text-sm font-bold">
+                                {{ __('board.labels.change_approval_status') }}
+                            </p>
+
+                            <x-containers.divider margin="my-2" color="gray-400" />
+
+                            @foreach ($approvalStatuses as $status)
+                                @php
+                                    $optionStatusKey = str_replace(' ', '_', strtolower($status));
+                                @endphp
+                                <x-dropdown.dropdown-button icon="" margin="mb-1" label="{{ __('board.status.' . $optionStatusKey) }}" wireClick="updateApprovalStatus('{{ $status }}')" alpineClick="open = false" />
+                            @endforeach
+                        </x-dropdown.wrapper>
+                    @else
+                        <div class="flex items-center py-1.5 rounded text-sm font-semibold border {{ $statusColor }} cursor-pointer">
+                            <p>{{ __('board.status.' . $approvalStatusKey) }}</p>
+                        </div>
+                    @endif
 
                     {{-- Total Actual Time --}}
                     <div class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-actual-time-{{ $card->id }}">

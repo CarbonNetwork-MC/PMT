@@ -16,8 +16,8 @@ use Masmerise\Toaster\Toaster;
 
 class Modal extends Component
 {
+    public $project;
     public $card;
-    public $sprint;
     public $users;
 
     public $cardTitle = '';
@@ -52,9 +52,9 @@ class Modal extends Component
     public $column;
     public $position = 'top';
 
-    public function mount($card, $sprint, $users) {
+    public function mount($project, $card, $users) {
+        $this->project = $project;
         $this->card = $card->load('assignees.user');
-        $this->sprint = $sprint;
         $this->users = $users;
         $this->filteredUsers = $users;
 
@@ -66,7 +66,7 @@ class Modal extends Component
             $column['cards'] = $tasks->where('status', $column['type'])->values();
         }
 
-        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $card->column->project);
+        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $this->project);
 
         // Load projects for move options
         $user = Auth::user();
