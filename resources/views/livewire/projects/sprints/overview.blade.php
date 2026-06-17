@@ -25,7 +25,7 @@
         ]" />
     </x-slot>
 
-    <x-containers.main>
+    <x-containers.main padding="4">
         <div class="flex justify-between">
             <div class="flex gap-6">
                 <div>

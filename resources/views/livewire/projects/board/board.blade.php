@@ -162,6 +162,6 @@
 
     {{-- Selected Card Modal --}}
     @if ($selectedCard)
-        <livewire:components.board.modal :card="$selectedCard" :sprint="$sprint" :users="$users" />
+        <livewire:components.board.modal :project="$project" :card="$selectedCard" :users="$users" />
     @endif
 </div>
