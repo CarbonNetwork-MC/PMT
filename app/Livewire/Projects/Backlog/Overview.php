@@ -4,9 +4,18 @@ namespace App\Livewire\Projects\Backlog;
 
 use App\Helpers\CheckProjectPermissions;
 use App\Models\Backlog as BacklogModel;
+use App\Models\BacklogCard;
+use App\Models\BacklogCardAssignee;
+use App\Models\BacklogTask;
+use App\Models\BacklogTaskAssignee;
+use App\Models\Card;
 use App\Models\Project;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
+use Throwable;
 
 class Overview extends Component
 {
@@ -17,19 +26,28 @@ class Overview extends Component
     public $projects;
     public $users;
 
+    public $approvalStatuses = ['Approved', 'Needs Work', 'Rejected', 'None'];
+
     public $selectedBacklog;
     public $selectedCard = null;
-
-    public $approvalStatuses = ['Approved', 'Needs Work', 'Rejected', 'None'];
-    public $isProjectAdminOrOwner;
 
     public $selectedProject;
     public $selectedProjectUuid;
     public $selectedEntityUuid;
 
+    public $cardToModify = null;
+    public $showDeleteCardModal = false;
+
+    public $taskToModify = null;
+    public $showDeleteTaskModal = false;
+
     public $sprintOrBacklog = 'sprint';
     public $column;
     public $position = 'top';
+
+    public $refreshKey = 0;
+
+    public $isProjectAdminOrOwner = false;
 
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
@@ -45,11 +63,32 @@ class Overview extends Component
         $this->selectedProject = $this->projects->first();
         $this->selectedProjectUuid = $this->selectedProject ? $this->selectedProject->uuid : null;
 
-        $this->entities = $this->selectedProject ? $this->selectedProject->sprints->where('is_archived', false) : collect();
+        $this->entities = $this->selectedProject ? $this->selectedProject->sprints->where('is_archived', false)->whereIn('status', ['planned', 'active']) : collect();
         $this->selectedEntityUuid = $this->entities->first() ? $this->entities->first()->uuid : null;
         $this->column = $this->selectedProject ? $this->selectedProject->columns()->first()->id : null;
 
-        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $this->project);
+        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner($user, $this->project);
+    }
+
+    public function updated($key, $value) {
+        if ($key === 'selectedProjectUuid') {
+            $this->selectedProject = $this->projects->firstWhere('uuid', $value);
+
+            if ($this->selectedProject) {
+                $this->entities = $this->sprintOrBacklog === 'sprint'
+                    ? $this->selectedProject->sprints->where('is_archived', false)
+                    : $this->selectedProject->backlogs;
+                $this->selectedEntityUuid = optional($this->entities->first())->uuid;
+                $this->column = optional($this->selectedProject->columns()->first())->id;
+            }
+        } elseif ($key === 'sprintOrBacklog') {
+            if ($this->selectedProject) {
+                $this->entities = $value === 'sprint'
+                    ? $this->selectedProject->sprints->where('is_archived', false)
+                    : $this->selectedProject->backlogs;
+                $this->selectedEntityUuid = optional($this->entities->first())->uuid;
+            }
+        }
     }
 
     public function openBacklog($backlogUuid) {
@@ -61,11 +100,289 @@ class Overview extends Component
         $this->selectedCard = $this->selectedBacklog->cards()->where('id', $cardId)->with(['assignees', 'tasks.assignees'])->first();
     }
 
+    public function reloadBacklog(): void {
+        $this->selectedBacklog->refresh();
+        $this->selectedBacklog->load('cards');
+    }
+
+    #[On('refreshBacklog')]
+    public function handleRefreshBacklog() {
+        $this->selectedBacklog = BacklogModel::query()
+            ->with([
+                'cards.tasks.assignees',
+                'cards.assignees',
+            ])
+            ->findOrFail($this->selectedBacklog->getKey());
+    }
+
+    private function reloadBacklogState(): void {
+        $selectedBacklogKey = $this->selectedBacklog?->getKey();
+
+        $this->backlogs = $this->project
+            ->backlogs()
+            ->with([
+                'cards.assignees',
+                'cards.tasks.assignees',
+            ])
+            ->orderByDesc('created_at')
+            ->get();
+
+        $this->selectedBacklog = $this->backlogs
+            ->firstWhere(fn ($backlog) => $backlog->getKey() === $selectedBacklogKey);
+
+        if (!$this->selectedBacklog) {
+            $this->selectedBacklog = $this->backlogs->first();
+        }
+    }
+
     public function updateApprovalStatus($id, $status) {
         $card = $this->selectedBacklog->cards()->where('id', $id)->first();
 
         $card->approval_status = $status;
         $card->save();
+    }
+
+    #[On('closeBacklogCardModal')]
+    public function handleCloseBacklogCardModal() {
+        $this->selectedCard = null;
+    }
+
+    #[On('backlogCardDeleteInitiated')]
+    public function handleBacklogCardDeleteInitiated($cardId) {
+        $this->cardToModify = BacklogCard::where('id', $cardId)->first();
+        $this->showDeleteCardModal = true;
+    }
+
+    public function deleteCard($cardId) {
+        $this->cardToModify = BacklogCard::where('id', $cardId)->first();
+        $this->showDeleteCardModal = true;
+    }
+
+    public function confirmDeleteCard() {
+        if (!$this->cardToModify) {
+            Toaster::error(__('backlog.toasts.card_not_found'));
+            $this->showDeleteCardModal = false;
+            return;
+        }
+
+        $this->cardToModify->delete();
+        $this->reset(['cardToModify', 'showDeleteCardModal']);
+
+        $this->reloadBacklog();
+    }
+
+    public function moveCard($cardId) {
+        $this->moveBacklogCardRequested(
+            $cardId,
+            $this->sprintOrBacklog,
+            $this->selectedEntityUuid,
+            $this->column,
+            $this->position
+        );
+    }
+
+    #[On('moveBacklogCardRequested')]
+    public function moveBacklogCardRequested(
+        int $cardId,
+        string $sprintOrBacklog,
+        string $selectedEntityUuid,
+        ?int $column,
+        string $position
+    ): void {
+        /*
+        * Remove the modal and its model from the parent state before deleting
+        * the database row.
+        */
+        $this->selectedCard = null;
+
+        try {
+            DB::transaction(function () use (
+                $cardId,
+                $sprintOrBacklog,
+                $selectedEntityUuid,
+                $column,
+                $position
+            ) {
+                $backlogCard = BacklogCard::query()
+                    ->with([
+                        'tasks.assignees',
+                        'assignees',
+                    ])
+                    ->findOrFail($cardId);
+
+                if ($sprintOrBacklog === 'backlog') {
+                    $index = $position === 'top'
+                        ? 0
+                        : (BacklogCard::where('backlog_uuid', $selectedEntityUuid)
+                            ->max('card_index') ?? -1) + 1;
+
+                    BacklogCard::where('backlog_uuid', $selectedEntityUuid)
+                        ->where('card_index', '>=', $index)
+                        ->increment('card_index');
+
+                    $backlogCard->update([
+                        'backlog_uuid' => $selectedEntityUuid,
+                        'card_index' => $index,
+                    ]);
+
+                    return;
+                }
+
+                $index = $position === 'top'
+                    ? 0
+                    : (Card::where('sprint_uuid', $selectedEntityUuid)
+                        ->max('card_index') ?? -1) + 1;
+
+                Card::where('sprint_uuid', $selectedEntityUuid)
+                    ->where('card_index', '>=', $index)
+                    ->increment('card_index');
+
+                $sprintCard = Card::create([
+                    'sprint_uuid' => $selectedEntityUuid,
+                    'title' => $backlogCard->title,
+                    'description' => $backlogCard->description,
+                    'column_id' => $column,
+                    'approval_status' => $backlogCard->approval_status,
+                    'card_index' => $index,
+                ]);
+
+                foreach ($backlogCard->tasks as $task) {
+                    $sprintTask = $sprintCard->tasks()->create([
+                        'description' => $task->description,
+                        'status' => $task->status,
+                        'task_index' => $task->task_index,
+                    ]);
+
+                    foreach ($task->assignees as $assignee) {
+                        $sprintTask->assignees()->create([
+                            'user_uuid' => $assignee->user_uuid,
+                        ]);
+                    }
+                }
+
+                foreach ($backlogCard->assignees as $assignee) {
+                    $sprintCard->assignees()->create([
+                        'user_uuid' => $assignee->user_uuid,
+                    ]);
+                }
+
+                $backlogCard->delete();
+            });
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Toaster::error(__('board.toast.card_move_failed'));
+            return;
+        }
+
+        $this->reloadBacklogState();
+    }
+
+    public function makeACopy($cardId) {
+        $this->handleBacklogCardCopy($cardId);
+    }
+
+    #[On('backlogCardCopyInitiated')]
+    public function handleBacklogCardCopy($cardId) {
+        $card = BacklogCard::where('id', $cardId)->firstOrFail();
+        if (!$card) {
+            Toaster::error(__('backlog.toasts.card_not_found'));
+            return;
+        }
+        
+        $newCardIndex = BacklogCard::where('backlog_uuid', $card->backlog_uuid)
+            ->max('card_index') + 1;
+
+        $newCard = BacklogCard::create([
+            'backlog_uuid' => $card->backlog_uuid,
+            'title' => $card->title . ' (Copy)',
+            'description' => $card->description,
+            'approval_status' => $card->approval_status,
+            'deadline' => $card->deadline,
+            'card_index' => $newCardIndex,
+        ]);
+
+        // Copy assignees
+        foreach ($card->assignees as $assignee) {
+            BacklogCardAssignee::create([
+                'backlog_card_id' => $newCard->id,
+                'user_uuid' => $assignee->user_uuid,
+            ]);
+        }
+
+        // Copy tasks
+        $newTaskIndex = $card->tasks()->max('task_index') + 1;
+
+        foreach ($card->tasks as $task) {
+            $newTask = BacklogTask::create([
+                'backlog_card_id' => $newCard->id,
+                'description' => $task->description,
+                'task_index' => $newTaskIndex,
+            ]);
+
+            // Copy task assignees
+            foreach ($task->assignees as $assignee) {
+                BacklogTaskAssignee::create([
+                    'backlog_task_id' => $newTask->id,
+                    'user_uuid' => $assignee->user_uuid,
+                ]);
+            }
+        }
+
+        $this->reloadBacklog();
+    }
+
+    #[On('taskConvertToBacklogCardInitiated')]
+    public function handleTaskConvertToBacklogCard($taskId) {
+        $task = BacklogTask::where('id', $taskId)->firstOrFail();
+        if (!$task) {
+            Toaster::error(__('backlog.toasts.task_not_found'));
+            return;
+        }
+
+        // Create a new BacklogCard from the task
+        $newCardIndex = BacklogCard::where('backlog_uuid', $task->card->backlog_uuid)
+            ->max('card_index') + 1;
+
+        $newCard = BacklogCard::create([
+            'backlog_uuid' => $task->card->backlog_uuid,
+            'title' => $task->description,
+            'description' => '',
+            'approval_status' => 'None',
+            'card_index' => $newCardIndex,
+        ]);
+
+        // Copy assignees from the task to the new card
+        foreach ($task->assignees as $assignee) {
+            BacklogCardAssignee::create([
+                'backlog_card_id' => $newCard->id,
+                'user_uuid' => $assignee->user_uuid,
+            ]);
+        }
+
+        // Delete the original task
+        $task->delete();
+
+        $this->reloadBacklog();
+    }
+
+    #[On('backlogTaskDeleteInitiated')]
+    public function handleBacklogTaskDelete($taskId) {
+        $this->taskToModify = BacklogTask::where('id', $taskId)->first();
+        $this->showDeleteTaskModal = true;
+    }
+
+    public function confirmDeleteTask() {
+        if (!$this->taskToModify) {
+            Toaster::error(__('backlog.toasts.task_not_found'));
+            $this->showDeleteTaskModal = false;
+            return;
+        }
+
+        $this->taskToModify->delete();
+        $this->reset(['taskToModify', 'showDeleteTaskModal']);
+
+        $this->reloadBacklog();
     }
 
     public function render()
