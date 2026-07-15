@@ -1,4 +1,4 @@
-<div wire:key="column-{{ $this->column->id }}-{{ $this->refreshKey }}" class="bg-gray-200 dark:bg-gray-900 p-2 rounded-md md:h-[75vh] 3xl:h-[85vh] overflow-y-auto sortable-column">
+<div wire:key="column-{{ $this->column->id }}-{{ $this->refreshKey }}" class="bg-gray-200 dark:bg-gray-900 p-2 rounded-md md:h-[75vh] 3xl:h-[85vh] overflow-y-auto overflow-x-hidden sortable-column">
     {{-- Header --}}
     <div class="flex justify-between bg-white dark:bg-slate-700 rounded-md px-2 py-1">
         {{-- Column name + Number of cards --}}
