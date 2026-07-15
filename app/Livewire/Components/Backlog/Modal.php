@@ -6,14 +6,10 @@ use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\BacklogCardAssignee;
 use App\Models\BacklogTask;
-use App\Models\Card;
-use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
-use Throwable;
 
 class Modal extends Component
 {

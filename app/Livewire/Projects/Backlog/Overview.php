@@ -53,7 +53,11 @@ class Overview extends Component
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
         $this->backlogs = $this->project->backlogs()->with(['cards.assignees', 'cards.tasks.assignees'])->orderBy('created_at', 'desc')->get();
         $this->selectedBacklog = $this->backlogs->first();
+
+        // Load all users assigned to the project + the owner
         $this->users = $this->project->members()->with('user')->get()->pluck('user');
+        $this->users->push($this->project->owner);
+        $this->users = $this->users->unique('uuid');
 
         $user = Auth::user();
         $ownedProjects = $user->ownedProjects()->get();

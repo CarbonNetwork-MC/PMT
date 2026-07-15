@@ -290,10 +290,6 @@
     </div>
 
     {{-- Selected Card Modal --}}
-    {{-- 
-        TODO: Rebuild a modal for the backlog, 
-        TODO: because the current modal is designed for sprints and trying to support both is going to be hell 
-    --}}
     @if ($selectedCard)
         <livewire:components.backlog.modal 
             :project="$project" 
