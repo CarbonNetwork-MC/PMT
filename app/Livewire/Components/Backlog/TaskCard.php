@@ -93,7 +93,6 @@ class TaskCard extends Component
     private function refreshBacklogAndModal() {
         $this->task->refresh();
         $this->dispatch('refreshBacklog');
-        // $this->dispatch('cardRefreshed', ['cardId' => $this->task->card_id]);
         $this->dispatch('refreshBacklogModal');
     }
 

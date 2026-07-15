@@ -172,7 +172,6 @@ class Modal extends Component
 
     private function loadCard() {
         $this->card->refresh();
-        // $this->dispatch('cardRefreshed', ['cardId' => $this->card->id]);
     }
 
     private function loadTasks() {
