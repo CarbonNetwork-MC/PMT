@@ -198,64 +198,66 @@ class Overview extends Component
     public function confirmCompleteSprint() {
         $sprint = $this->sprintToComplete;
 
-        if ($this->completeSprintAction === 'backlog') {
-            // Move cards to backlog
-            $this->incompleteTasks->each(function ($card) {
-                $index = BacklogCard::where('backlog_uuid', $this->entityUuid)->max('card_index') + 1;
+        if ($this->incompleteTasks) {
+            if ($this->completeSprintAction === 'backlog') {
+                // Move cards to backlog
+                $this->incompleteTasks->each(function ($card) {
+                    $index = BacklogCard::where('backlog_uuid', $this->entityUuid)->max('card_index') + 1;
 
-                // 1. Create a new BacklogCard with the same data as the sprint card
-                $backlogCard = BacklogCard::create([
-                    'backlog_uuid' => $this->entityUuid,
-                    'title' => $card->title,
-                    'description' => $card->description,
-                    'approval_status' => $card->approval_status,
-                    'card_index' => $index,
-                ]);
-
-                // 2. Create BacklogCardAssignees for the new BacklogCard
-                $card->assignees->each(function ($assignee) use ($backlogCard) {
-                    $backlogCard->assignees()->create([
-                        'user_uuid' => $assignee->user_uuid,
-                    ]);
-                });
-
-                // 3. Create BacklogTasks for the new BacklogCard
-                $card->tasks->each(function ($task) use ($backlogCard) {
-                    $newTask = $backlogCard->tasks()->create([
-                        'description' => $task->description,
-                        'status' => $task->status,
-                        'task_index' => $task->task_index,
+                    // 1. Create a new BacklogCard with the same data as the sprint card
+                    $backlogCard = BacklogCard::create([
+                        'backlog_uuid' => $this->entityUuid,
+                        'title' => $card->title,
+                        'description' => $card->description,
+                        'approval_status' => $card->approval_status,
+                        'card_index' => $index,
                     ]);
 
-                    // 4. Create BacklogTaskAssignees for the new BacklogTask
-                    $task->assignees->each(function ($assignee) use ($newTask) {
-                        $newTask->assignees()->create([
+                    // 2. Create BacklogCardAssignees for the new BacklogCard
+                    $card->assignees->each(function ($assignee) use ($backlogCard) {
+                        $backlogCard->assignees()->create([
                             'user_uuid' => $assignee->user_uuid,
                         ]);
                     });
+
+                    // 3. Create BacklogTasks for the new BacklogCard
+                    $card->tasks->each(function ($task) use ($backlogCard) {
+                        $newTask = $backlogCard->tasks()->create([
+                            'description' => $task->description,
+                            'status' => $task->status,
+                            'task_index' => $task->task_index,
+                        ]);
+
+                        // 4. Create BacklogTaskAssignees for the new BacklogTask
+                        $task->assignees->each(function ($assignee) use ($newTask) {
+                            $newTask->assignees()->create([
+                                'user_uuid' => $assignee->user_uuid,
+                            ]);
+                        });
+                    });
+
+                    // 5. Delete the original sprint card
+                    $card->delete();
                 });
-
-                // 5. Delete the original sprint card
-                $card->delete();
-            });
-        }
-
-        if ($this->completeSprintAction === 'sprint') {
-            $targetSprint = $this->project->sprints()->where('uuid', $this->entityUuid)->firstOrFail();
-
-            if ($targetSprint->status === 'completed') {
-                Toaster::error(__('sprints.toast.sprint-completed-error', ['name' => $targetSprint->name]));
-                return;
             }
 
-            $this->incompleteTasks->each(function ($card) use ($targetSprint) {
-                $index = $targetSprint->cards()->where('column_id', $card->column_id)->max('card_index') + 1 ?? 0;
+            if ($this->completeSprintAction === 'sprint') {
+                $targetSprint = $this->project->sprints()->where('uuid', $this->entityUuid)->firstOrFail();
 
-                $card->update([
-                    'sprint_uuid' => $targetSprint->uuid,
-                    'card_index' => $index,
-                ]);
-            });
+                if ($targetSprint->status === 'completed') {
+                    Toaster::error(__('sprints.toast.sprint-completed-error', ['name' => $targetSprint->name]));
+                    return;
+                }
+
+                $this->incompleteTasks->each(function ($card) use ($targetSprint) {
+                    $index = $targetSprint->cards()->where('column_id', $card->column_id)->max('card_index') + 1 ?? 0;
+
+                    $card->update([
+                        'sprint_uuid' => $targetSprint->uuid,
+                        'card_index' => $index,
+                    ]);
+                });
+            }
         }
 
         $this->finishSprintCompletion($sprint);
