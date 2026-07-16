@@ -6,6 +6,7 @@ use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\BacklogCardAssignee;
 use App\Models\BacklogTask;
+use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -128,10 +129,30 @@ class Modal extends Component
         $maxIndex = BacklogTask::where('backlog_card_id', $this->card->id)
             ->max('task_index');
 
-        BacklogTask::create([
+        $newTask = BacklogTask::create([
             'backlog_card_id' => $this->card->id,
             'description' => $this->taskName,
             'task_index' => $maxIndex !== null ? $maxIndex + 1 : 0,
+        ]);
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'backlog_task_id' => $newTask->id,
+            'action' => 'create',
+            'table' => 'backlog_tasks',
+            'data' => json_encode([
+                'task_name' => $this->taskName,
+                'card_title' => $this->card->title,
+            ]),
+            'description' => __('logs.backlog.task_created', [
+                'task' => $this->taskName,
+                'card' => $this->card->title,
+                'backlog' => $this->card->backlog->name,
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->createNewTask = false;
@@ -154,8 +175,29 @@ class Modal extends Component
             return;
         }
 
+        $originalTitle = $this->card->title;
+
         $this->card->title = $title;
         $this->card->save();
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'backlog_cards',
+            'data' => json_encode([
+                'old_title' => $originalTitle,
+                'new_title' => $title,
+            ]),
+            'description' => __('logs.backlog.card_updated_title', [
+                'oldTitle' => $originalTitle,
+                'newTitle' => $title,
+                'backlog' => $this->card->backlog->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -166,6 +208,23 @@ class Modal extends Component
 
         $this->card->description = $description;
         $this->card->save();
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'backlog_cards',
+            'data' => json_encode([
+                'description' => $description,
+            ]),
+            'description' => __('logs.backlog.card_updated_description', [
+                'card' => $this->card->title,
+                'backlog' => $this->card->backlog->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -190,6 +249,69 @@ class Modal extends Component
     }
 
     public function updateCardOrder($groups) {
+        $oldOrder = $this->card->tasks()
+            ->get(['id', 'status', 'task_index'])
+            ->mapWithKeys(fn ($task) => [
+                $task->id => [
+                    'status' => $task->status,
+                    'index' => (int) $task->task_index,
+                ],
+            ])
+            ->toArray();
+
+        $newOrder = collect($groups)
+            ->mapWithKeys(function ($group) {
+                return [
+                    $group['value'] => collect($group['items'])
+                        ->pluck('value')
+                        ->map(fn ($id) => (int) $id)
+                        ->values()
+                        ->toArray(),
+                ];
+            })
+            ->toArray();
+
+        $newTaskPositions = collect($newOrder)
+            ->mapWithKeys(function ($taskIds, $status) {
+                return collect($taskIds)
+                    ->mapWithKeys(fn ($taskId, $index) => [
+                        $taskId => [
+                            'status' => $status,
+                            'index' => $index + 1,
+                        ],
+                    ])
+                    ->all();
+            });
+
+        $movedTask = null;
+
+        foreach ($newTaskPositions as $taskId => $newPosition) {
+            $oldPosition = $oldOrder[$taskId] ?? null;
+
+            if ($oldPosition === null) {
+                continue;
+            }
+
+            $statusChanged =
+                $oldPosition['status'] !== $newPosition['status'];
+
+            $indexChanged =
+                $oldPosition['index'] !== $newPosition['index'];
+
+            if ($statusChanged || $indexChanged) {
+                $movedTask = [
+                    'id' => (int) $taskId,
+                    'from_status' => $oldPosition['status'],
+                    'to_status' => $newPosition['status'],
+                    'from_index' => $oldPosition['index'],
+                    'to_index' => $newPosition['index'],
+                    'status_changed' => $statusChanged,
+                ];
+
+                break;
+            }
+        }
+
         foreach ($groups as $group) {
             $status = $group['value'];
 
@@ -201,14 +323,56 @@ class Modal extends Component
             }
         }
 
+        if ($movedTask !== null) {
+            Log::create([
+                'user_uuid' => Auth::user()->uuid,
+                'project_uuid' => $this->project->uuid,
+                'backlog_uuid' => $this->card->backlog->uuid,
+                'backlog_card_id' => $this->card->id,
+                'backlog_task_id' => $movedTask['id'],
+                'action' => 'update',
+                'table' => 'backlog_tasks',
+                'data' => json_encode([
+                    'moved_task' => $movedTask,
+                    'new_order' => $newOrder,
+                ]),
+                'description' => __('logs.backlog.task_order_updated', [
+                    'task' => optional($this->card->tasks()->find($movedTask['id']))->id,
+                    'from' => $movedTask['from_status'],
+                    'to' => $movedTask['to_status'],
+                    'card' => $this->card->title,
+                    'backlog' => $this->card->backlog->name,
+                ]),
+                'environment' => app()->environment(),
+            ]);
+        }
+
         $this->loadTasks();
         $this->dispatch('$refresh');
         $this->dispatch('refreshBacklog');
     }
 
     public function updateApprovalStatus($status) {
+        $originalStatus = $this->card->approval_status;
+
         $this->card->approval_status = $status;
         $this->card->save();
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'backlog_cards',
+            'data' => json_encode(['approval_status' => $status]),
+            'description' => __('logs.backlog.card_approval_status_updated', [
+                'card' => $this->card->title,
+                'originalStatus' => $originalStatus,
+                'status' => $status,
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -225,11 +389,48 @@ class Modal extends Component
                 ->delete();
         }
 
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'action' => $isChecked ? 'create' : 'delete',
+            'table' => 'backlog_card_assignees',
+            'data' => json_encode(['assignee_user_uuid' => $userUuid]),
+            'description' => $isChecked
+                ? __('logs.backlog.card_assignee_added', [
+                    'user' => optional($this->users->firstWhere('uuid', $userUuid))->name, 
+                    'card' => $this->card->title, 
+                    'backlog' => $this->card->backlog->name
+                    ])
+                : __('logs.backlog.card_assignee_removed', [
+                    'user' => optional($this->users->firstWhere('uuid', $userUuid))->name, 
+                    'card' => $this->card->title, 
+                    'backlog' => $this->card->backlog->name
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->loadCard();
     }
 
     public function clearAssignees() {
         BacklogCardAssignee::where('backlog_card_id', $this->card->id)->delete();
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'action' => 'delete',
+            'table' => 'backlog_card_assignees',
+            'data' => json_encode(['assignee_user_uuid' => 'all']),
+            'description' => __('logs.backlog.card_assignee_removed_all', [
+                'card' => $this->card->title, 
+                'backlog' => $this->card->backlog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -238,6 +439,22 @@ class Modal extends Component
         BacklogCardAssignee::firstOrCreate([
             'backlog_card_id' => $this->card->id,
             'user_uuid' => auth()->user()->uuid,
+        ]);
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->card->backlog->uuid,
+            'backlog_card_id' => $this->card->id,
+            'action' => 'create',
+            'table' => 'backlog_card_assignees',
+            'data' => json_encode(['assignee_user_uuid' => auth()->user()->uuid]),
+            'description' => __('logs.backlog.card_assignee_added', [
+                'user' => auth()->user()->name, 
+                'card' => $this->card->title, 
+                'backlog' => $this->card->backlog->name
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->loadCard();
@@ -251,14 +468,6 @@ class Modal extends Component
     public function deleteCard() {
         $this->dispatch('closeBacklogCardModal');
         $this->dispatch('backlogCardDeleteInitiated', ['cardId' => $this->card->id]);
-    }
-
-    private function clearTaskState(): void {
-        foreach ($this->columns as &$column) {
-            $column['cards'] = [];
-        }
-
-        unset($column);
     }
 
     public function moveCard() {

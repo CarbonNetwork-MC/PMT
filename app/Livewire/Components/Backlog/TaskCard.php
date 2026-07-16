@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Backlog;
 
 use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogTaskAssignee;
+use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -108,11 +109,53 @@ class TaskCard extends Component
                 ->delete();
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->backlog->project->uuid,
+            'backlog_uuid' => $this->task->card->backlog->uuid,
+            'backlog_card_id' => $this->task->card->id,
+            'backlog_task_id' => $this->task->id,
+            'action' => $isChecked ? 'create' : 'delete',
+            'table' => 'backlog_task_assignees',
+            'data' => json_encode(['assignee_user_uuid' => $userUuid]),
+            'description' => $isChecked
+                ? __('logs.backlog.task_assignee_added', [
+                    'user' => optional($this->users->firstWhere('uuid', $userUuid))->name, 
+                    'task' => $this->task->name,
+                    'card' => $this->task->card->title,
+                    'backlog' => $this->task->card->backlog->name
+                ])
+                : __('logs.backlog.task_assignee_removed', [
+                    'user' => optional($this->users->firstWhere('uuid', $userUuid))->name, 
+                    'task' => $this->task->name,
+                    'card' => $this->task->card->title,
+                    'backlog' => $this->task->card->backlog->name
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->refreshBacklogAndModal();
     }
 
     public function clearAssignees() {
         BacklogTaskAssignee::where('backlog_task_id', $this->task->id)->delete();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->backlog->project->uuid,
+            'backlog_uuid' => $this->task->card->backlog->uuid,
+            'backlog_card_id' => $this->task->card->id,
+            'backlog_task_id' => $this->task->id,
+            'action' => 'delete',
+            'table' => 'backlog_task_assignees',
+            'data' => json_encode([]),
+            'description' => __('logs.backlog.task_assignee_removed_all', [
+                'task' => $this->task->name,
+                'card' => $this->task->card->title,
+                'backlog' => $this->task->card->backlog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->refreshBacklogAndModal();
     }
@@ -121,6 +164,24 @@ class TaskCard extends Component
         BacklogTaskAssignee::firstOrCreate([
             'backlog_task_id' => $this->task->id,
             'user_uuid' => auth()->user()->uuid,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->backlog->project->uuid,
+            'backlog_uuid' => $this->task->card->backlog->uuid,
+            'backlog_card_id' => $this->task->card->id,
+            'backlog_task_id' => $this->task->id,
+            'action' => 'create',
+            'table' => 'backlog_task_assignees',
+            'data' => json_encode(['assignee_user_uuid' => auth()->user()->uuid]),
+            'description' => __('logs.backlog.task_assignee_added', [
+                'user' => auth()->user()->name, 
+                'task' => $this->task->name,
+                'card' => $this->task->card->title,
+                'backlog' => $this->task->card->backlog->name
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->refreshBacklogAndModal();

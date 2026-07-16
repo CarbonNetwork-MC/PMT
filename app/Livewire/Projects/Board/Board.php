@@ -4,6 +4,7 @@ namespace App\Livewire\Projects\Board;
 
 use App\Models\Card;
 use App\Models\CardAssignee;
+use App\Models\Log;
 use App\Models\Project;
 use App\Models\Sprint;
 use App\Models\Task;
@@ -66,6 +67,55 @@ class Board extends Component
     }
 
     public function updateCardOrder($groups) {
+        $oldOrder = $this->columns->mapWithKeys(function ($column) {
+            return [$column->id => $column->cards->pluck('id')->toArray()];
+        })->toArray();
+        $newOrder = collect($groups)
+            ->mapWithKeys(function ($group) {
+                return [
+                    (int) $group['value'] => collect($group['items'])
+                        ->pluck('value')
+                        ->map(fn ($id) => (int) $id)
+                        ->toArray(),
+                ];
+            })
+            ->toArray();
+
+        // Determine which card was moved and from which column to which column
+        $movedCard = null;
+
+        $oldLocations = [];
+        $newLocations = [];
+
+        foreach ($oldOrder as $columnId => $cardIds) {
+            foreach ($cardIds as $cardId) {
+                $oldLocations[$cardId] = $columnId;
+            }
+        }
+
+        foreach ($newOrder as $columnId => $cardIds) {
+            foreach ($cardIds as $cardId) {
+                $newLocations[$cardId] = $columnId;
+            }
+        }
+
+        $columns = $this->columns->keyBy('id');
+
+        foreach ($oldLocations as $cardId => $oldColumnId) {
+            $newColumnId = $newLocations[$cardId] ?? null;
+
+            if ($newColumnId && $newColumnId !== $oldColumnId) {
+                $oldColumnName = $columns[$oldColumnId]->name;
+                $newColumnName = $columns[$newColumnId]->name;
+
+                $movedCard = [
+                    'card_id' => $cardId,
+                    'from' => $oldColumnName,
+                    'to' => $newColumnName,
+                ];
+            }
+        }
+
         foreach ($groups as $group) {
             $columnId = $group['value'];
 
@@ -76,6 +126,22 @@ class Board extends Component
                 ]);
             }
         }
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->sprint->uuid,
+            'action' => 'update',
+            'table' => 'cards',
+            'data' => json_encode(['old_order' => $oldOrder, 'new_order' => $newOrder]),
+            'description' => __('logs.board.card_moved_same_board', [
+                'card' => $movedCard['card_id'], 
+                'fromColumn' => $movedCard['from'], 
+                'toColumn' => $movedCard['to'],
+                'sprint' => $this->sprint->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->reloadBoard();
     }
@@ -105,6 +171,20 @@ class Board extends Component
 
         $this->cardToModify->delete();
         $this->reset(['cardToModify', 'showDeleteCardModal']);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->sprint->uuid,
+            'action' => 'delete',
+            'table' => 'cards',
+            'data' => json_encode($this->cardToModify->toArray()),
+            'description' => __('logs.board.card_deleted', [
+                'card' => $this->cardToModify->title,
+                'sprint' => $this->sprint->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->reloadBoard();
     }
@@ -167,6 +247,21 @@ class Board extends Component
             }
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->sprint->uuid,
+            'card_id' => $newCard->id,
+            'action' => 'create',
+            'table' => 'cards',
+            'data' => json_encode($newCard->toArray()),
+            'description' => __('logs.board.card_copied', [
+                'card' => $card->title,
+                'sprint' => $this->sprint->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->reloadBoard();
     }
 
@@ -196,6 +291,23 @@ class Board extends Component
             ]);
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->sprint->uuid,
+            'card_id' => $card->id,
+            'task_id' => $task->id,
+            'action' => 'create',
+            'table' => 'cards',
+            'data' => json_encode($card->toArray()),
+            'description' => __('logs.board.card_created_from_task', [
+                'task' => $task->description,
+                'card' => $card->title,
+                'sprint' => $this->sprint->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         $task->delete();
 
         $this->reloadBoard();
@@ -213,6 +325,21 @@ class Board extends Component
             $this->showDeleteTaskModal = false;
             return;
         }
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->sprint->uuid,
+            'task_id' => $this->taskToModify->id,
+            'action' => 'delete',
+            'table' => 'tasks',
+            'data' => json_encode($this->taskToModify->toArray()),
+            'description' => __('logs.board.task_deleted', [
+                'task' => $this->taskToModify->description,
+                'sprint' => $this->sprint->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->taskToModify->delete();
         $this->reset(['taskToModify', 'showDeleteTaskModal']);

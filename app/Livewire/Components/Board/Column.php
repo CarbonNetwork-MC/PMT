@@ -3,6 +3,7 @@
 namespace App\Livewire\Components\Board;
 
 use App\Models\Card as CardModel;
+use App\Models\Log;
 use Livewire\Component;
 
 class Column extends Component
@@ -32,10 +33,30 @@ class Column extends Component
     }
 
     public function addCard() {
-        CardModel::create([
+        $card = CardModel::create([
             'sprint_uuid' => $this->sprint->uuid,
             'title' => $this->cardName ?: 'New Card',
             'column_id' => $this->column->id,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->sprint->project_uuid,
+            'sprint_uuid' => $this->sprint->uuid,
+            'card_id' => $card->id,
+            'action' => 'create',
+            'table' => 'cards',
+            'data' => json_encode([
+                'title' => $this->cardName ?: 'New Card',
+                'column_id' => $this->column->id,
+                'sprint_uuid' => $this->sprint->uuid,
+            ]),
+            'description' => __('logs.board.card_created', [
+                'card' => $this->cardName ?: 'New Card', 
+                'column' => $this->column->name, 
+                'sprint' => $this->sprint->name
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->dispatch('refreshBoard');

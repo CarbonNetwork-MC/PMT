@@ -9,6 +9,7 @@ use App\Models\BacklogCardAssignee;
 use App\Models\BacklogTask;
 use App\Models\BacklogTaskAssignee;
 use App\Models\Card;
+use App\Models\Log;
 use App\Models\Project;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -169,6 +170,26 @@ class Overview extends Component
             return;
         }
 
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->selectedBacklog->uuid,
+            'backlog_card_id' => $this->cardToModify->id,
+            'action' => 'delete',
+            'table' => 'backlog_cards',
+            'data' => json_encode([
+                'title' => $this->cardToModify->title,
+                'description' => $this->cardToModify->description,
+                'approval_status' => $this->cardToModify->approval_status,
+                'deadline' => $this->cardToModify->deadline,
+            ]),
+            'description' => __('logs.backlog.card_deleted', [
+                'card' => $this->cardToModify->title, 
+                'backlog' => $this->selectedBacklog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->cardToModify->delete();
         $this->reset(['cardToModify', 'showDeleteCardModal']);
 
@@ -193,10 +214,6 @@ class Overview extends Component
         ?int $column,
         string $position
     ): void {
-        /*
-        * Remove the modal and its model from the parent state before deleting
-        * the database row.
-        */
         $this->selectedCard = null;
 
         try {
@@ -227,6 +244,28 @@ class Overview extends Component
                     $backlogCard->update([
                         'backlog_uuid' => $selectedEntityUuid,
                         'card_index' => $index,
+                    ]);
+
+                    Log::create([
+                        'user_uuid' => Auth::user()->uuid,
+                        'project_uuid' => $this->project->uuid,
+                        'backlog_uuid' => $this->selectedBacklog->uuid,
+                        'backlog_card_id' => $backlogCard->id,
+                        'action' => 'update',
+                        'table' => 'backlog_cards',
+                        'data' => json_encode([
+                            'title' => $backlogCard->title,
+                            'description' => $backlogCard->description,
+                            'approval_status' => $backlogCard->approval_status,
+                            'deadline' => $backlogCard->deadline,
+                            'moved_to_backlog_uuid' => $selectedEntityUuid,
+                        ]),
+                        'description' => __('logs.backlog.card_moved_backlog', [
+                            'card' => $backlogCard->title, 
+                            'fromBacklog' => optional($backlogCard->backlog)->name, 
+                            'toBacklog' => optional(BacklogModel::where('uuid', $selectedEntityUuid)->first())->name, 
+                        ]),
+                        'environment' => app()->environment(),
                     ]);
 
                     return;
@@ -269,6 +308,29 @@ class Overview extends Component
                         'user_uuid' => $assignee->user_uuid,
                     ]);
                 }
+
+                Log::create([
+                    'user_uuid' => Auth::user()->uuid,
+                    'project_uuid' => $this->project->uuid,
+                    'backlog_uuid' => $this->selectedBacklog->uuid,
+                    'backlog_card_id' => $backlogCard->id,
+                    'action' => 'update',
+                    'table' => 'backlog_cards',
+                    'data' => json_encode([
+                        'title' => $backlogCard->title,
+                        'description' => $backlogCard->description,
+                        'approval_status' => $backlogCard->approval_status,
+                        'deadline' => $backlogCard->deadline,
+                        'moved_to_sprint_card_id' => $sprintCard->id,
+                    ]),
+                    'description' => __('logs.backlog.card_moved_sprints', [
+                        'card' => $backlogCard->title, 
+                        'fromBacklog' => $this->selectedBacklog->name, 
+                        'toSprint' => optional($sprintCard->sprint)->name,
+                        'toColumn' => optional($sprintCard->column)->name
+                    ]),
+                    'environment' => app()->environment(),
+                ]);
 
                 $backlogCard->delete();
             });
@@ -333,6 +395,28 @@ class Overview extends Component
             }
         }
 
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->selectedBacklog->uuid,
+            'backlog_card_id' => $card->id,
+            'action' => 'create',
+            'table' => 'backlog_cards',
+            'data' => json_encode([
+                'original_card_id' => $card->id,
+                'new_card_id' => $newCard->id,
+                'title' => $newCard->title,
+                'description' => $newCard->description,
+                'approval_status' => $newCard->approval_status,
+                'deadline' => $newCard->deadline,
+            ]),
+            'description' => __('logs.backlog.card_copied', [
+                'card' => $card->title, 
+                'backlog' => $this->selectedBacklog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->reloadBacklog();
     }
 
@@ -364,6 +448,28 @@ class Overview extends Component
             ]);
         }
 
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->selectedBacklog->uuid,
+            'backlog_card_id' => $newCard->id,
+            'action' => 'create',
+            'table' => 'backlog_cards',
+            'data' => json_encode([
+                'original_task_id' => $task->id,
+                'new_card_id' => $newCard->id,
+                'title' => $newCard->title,
+                'description' => $newCard->description,
+                'approval_status' => $newCard->approval_status,
+                'deadline' => $newCard->deadline,
+            ]),
+            'description' => __('logs.backlog.card_created_from_task', [
+                'task' => $task->id,
+                'backlog' => $this->selectedBacklog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         // Delete the original task
         $task->delete();
 
@@ -382,6 +488,26 @@ class Overview extends Component
             $this->showDeleteTaskModal = false;
             return;
         }
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->selectedBacklog->uuid,
+            'backlog_card_id' => $this->taskToModify->backlog_card_id,
+            'action' => 'delete',
+            'table' => 'backlog_tasks',
+            'data' => json_encode([
+                'description' => $this->taskToModify->description,
+                'status' => $this->taskToModify->status,
+                'task_index' => $this->taskToModify->task_index,
+            ]),
+            'description' => __('logs.backlog.task_deleted', [
+                'task' => $this->taskToModify->description, 
+                'card' => optional($this->taskToModify->card)->title,
+                'backlog' => optional($this->taskToModify->card->backlog)->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->taskToModify->delete();
         $this->reset(['taskToModify', 'showDeleteTaskModal']);
