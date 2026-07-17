@@ -1,7 +1,7 @@
 <div>
     {{-- Breadcrumbs --}}
     <x-slot name="breadcrumbs">
-        <x-breadcrumbs margin="mb-2" :items="[
+        <x-breadcrumbs :items="[
             [
                 'icon' => 'fi fi-rs-house-chimney',
                 'url' => route('dashboard.render'),
@@ -24,7 +24,7 @@
     <x-containers.main padding="4">
         <div class="flex justify-between items-center">
             <div class="flex gap-4">
-                <div>
+                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                     <p class="text-sm font-bold uppercase dark:text-white">
                         {{ __('backlog.labels.buckets') }}
                     </p>
@@ -33,7 +33,7 @@
                         <p class="dark:text-white">{{ $backlogs->count() }}</p>
                     </div>
                 </div>
-                <div>
+                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                     <p class="text-sm font-bold uppercase dark:text-white">
                         {{ __('backlog.labels.total_cards') }}
                     </p>

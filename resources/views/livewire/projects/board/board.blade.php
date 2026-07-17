@@ -33,14 +33,14 @@
     {{-- Information Widget --}}
     <x-containers.main padding="4">
         <div class="flex gap-x-4">
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-2">
+            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                 <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.days_left') }}</p>
                 <div class="flex gap-x-2">
                     <i class="fi fi-ss-calendar-clock text-gray-800 dark:text-gray-300"></i>
                     <p class="{{ $daysLeft < 1 ? 'text-red-400' : 'text-black dark:text-white' }} text-sm">{{ $daysLeft }}</p>
                 </div>
             </div>
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-2">
+            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                 <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.duration') }}</p>
                 <div class="flex gap-x-2">
                     <i class="fi fi-ss-calendar text-gray-800 dark:text-gray-300"></i>
@@ -57,7 +57,7 @@
                     </p>
                 </div>
             </div>
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-2">
+            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                 <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.total_cards') }}</p>
                 <div class="flex gap-x-2">
                     <i class="fi fi-rr-cards-blank text-gray-800 dark:text-gray-300"></i>
@@ -70,7 +70,7 @@
                     </p>
                 </div>
             </div>
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-2">
+            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                 <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.total_tasks') }}</p>
                 <div class="flex gap-x-2">
                     <i class="fi fi-rr-task-checklist text-gray-800 dark:text-gray-300"></i>

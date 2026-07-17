@@ -1,7 +1,7 @@
 <div>
     {{-- Breadcrumbs --}}
     <x-slot name="breadcrumbs">
-        <x-breadcrumbs margin="mb-2" :items="[
+        <x-breadcrumbs :items="[
             [
                 'icon' => 'fi fi-rs-house-chimney',
                 'url' => route('dashboard.render'),
@@ -28,28 +28,28 @@
     <x-containers.main padding="4">
         <div class="flex justify-between">
             <div class="flex gap-6">
-                <div>
+                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                     <p class="text-sm font-bold uppercase dark:text-white">{{ __('sprints.labels.sprints') }}</p>
                     <div class="flex justify-center gap-2">
                         <i class="fi fi-sr-running dark:text-white"></i>
                         <p class="dark:text-white">{{ $sprintCount }}</p>
                     </div>
                 </div>
-                <div>
+                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                     <p class="text-sm font-bold uppercase dark:text-white">{{ __('sprints.labels.active-sprints') }}</p>
                     <div class="flex justify-center gap-2">
                         <i class="fi fi-sr-running dark:text-white"></i>
                         <p class="dark:text-white">{{ $activeSprints }}</p>
                     </div>
                 </div>
-                <div>
+                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                     <p class="text-sm font-bold uppercase dark:text-white">{{ __('sprints.labels.completed-sprints') }}</p>
                     <div class="flex justify-center gap-2">
                         <i class="fi fi-sr-check dark:text-white"></i>
                         <p class="dark:text-white">{{ $completedSprints }}</p>
                     </div>
                 </div>
-                <div>
+                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
                     <p class="text-sm font-bold uppercase dark:text-white">{{ __('sprints.labels.archived-sprints') }}</p>
                     <div class="flex justify-center gap-2">
                         <i class="fi fi-sr-archive dark:text-white"></i>
@@ -66,7 +66,7 @@
         </div>
     </x-containers.main>
 
-    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-2">
+    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
         @forelse ($sprints as $sprint)
             {{-- TODO: burndown chart for $sprint --}}
             <x-project.sprint-card projectUuid="{{ $project->uuid }}" :sprint="$sprint" :isProjectAdminOrOwner="$isProjectAdminOrOwner" />
