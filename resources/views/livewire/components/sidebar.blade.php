@@ -115,8 +115,8 @@
 
                     {{-- Sprint Archive --}}
                     <x-sidebar.nav-item
-                    :href="route('projects.sprints.render', ['uuid' => $selectedProject->uuid])"
-                    :active="false"
+                    :href="route('projects.archive.render', ['uuid' => $selectedProject->uuid])"
+                    :active="request()->routeIs('projects.archive.*')"
                     icon="fi fi-br-archive"
                     :label="__('sidebar.projects.archive')"
                     />
@@ -149,7 +149,7 @@
         <div class="mt-auto">
             @if ($user->hasRole('Superadmin'))
                 {{-- Admin Section --}}
-                <x-sidebar.nav-divider />
+                {{-- <x-sidebar.nav-divider /> --}}
 
                 <div class="mb-2">
                     @if (request()->routeIs('admin.*'))

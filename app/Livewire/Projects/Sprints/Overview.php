@@ -46,8 +46,6 @@ class Overview extends Component
     public $showEditModal = false;
     public $showDeleteModal = false;
 
-    public $showModal = true;
-
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
@@ -128,6 +126,8 @@ class Overview extends Component
     }
 
     public function destroySprint() {
+        $sprintName = $this->deletingSprint->name;
+
         $this->deletingSprint->delete();
 
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
@@ -146,7 +146,10 @@ class Overview extends Component
                 'end_date' => $this->deletingSprint->end_date,
                 'status' => $this->deletingSprint->status,
             ]),
-            'description' => __('logs.sprints.deleted', ['sprint' => $this->deletingSprint->name]),
+            'description' => __('logs.sprints.deleted', [
+                'sprint' => $sprintName
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         Toaster::success(__('sprints.toast.sprint-deleted'));
@@ -300,7 +303,11 @@ class Overview extends Component
 
     public function archiveSprint($uuid) {
         $sprint = $this->sprints->where('uuid', $uuid)->firstOrFail();
-        $sprint->update(['is_archived' => true]);
+        $sprint->update([
+            'is_archived' => true,
+            'archived_at' => now(),
+            'archived_by' => auth()->user()->uuid,
+        ]);
 
         $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
         $this->updateCounts();
@@ -317,7 +324,9 @@ class Overview extends Component
                 'end_date' => $sprint->end_date,
                 'status' => $sprint->status,
             ]),
-            'description' => __('logs.sprints.archived', ['sprint' => $sprint->name]),
+            'description' => __('logs.sprints.archived', [
+                'sprint' => $sprint->name
+            ]),
         ]);
 
         Toaster::success(__('sprints.toast.archive_sprint', ['name' => $sprint->name]));
