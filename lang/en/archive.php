@@ -27,6 +27,7 @@ return [
 
     'messages' => [
         'no_archived_sprints' => 'No archived sprints found.',
+        'sprint_not_archived' => 'Sprint <b>:name</b> is not archived.',
     ],
 
     'toasts' => [
