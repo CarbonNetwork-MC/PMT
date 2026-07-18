@@ -149,7 +149,7 @@
             <x-buttons.secondary-button wire:click="$set('showDeleteModal', false)">
                 {{ __('general.buttons.cancel') }}
             </x-buttons.secondary-button>
-            <x-buttons.danger-button wire:click="deleteSprint({{ $deletingSprint->uuid ?? '' }})">
+            <x-buttons.danger-button wire:click="destroySprint()">
                 {{ __('general.buttons.delete') }}
             </x-buttons.danger-button>
         </x-slot>
