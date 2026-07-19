@@ -127,21 +127,23 @@ class Board extends Component
             }
         }
 
-        Log::create([
-            'user_uuid' => auth()->user()->uuid,
-            'project_uuid' => $this->project->uuid,
-            'sprint_uuid' => $this->sprint->uuid,
-            'action' => 'update',
-            'table' => 'cards',
-            'data' => json_encode(['old_order' => $oldOrder, 'new_order' => $newOrder]),
-            'description' => __('logs.board.card_moved_same_board', [
-                'card' => $movedCard['card_id'], 
-                'fromColumn' => $movedCard['from'], 
-                'toColumn' => $movedCard['to'],
-                'sprint' => $this->sprint->name,
-            ]),
-            'environment' => app()->environment(),
-        ]);
+        if ($movedCard) {
+            Log::create([
+                'user_uuid' => auth()->user()->uuid,
+                'project_uuid' => $this->project->uuid,
+                'sprint_uuid' => $this->sprint->uuid,
+                'action' => 'update',
+                'table' => 'cards',
+                'data' => json_encode(['old_order' => $oldOrder, 'new_order' => $newOrder]),
+                'description' => __('logs.board.card_moved_same_board', [
+                    'card' => $movedCard['card_id'], 
+                    'fromColumn' => $movedCard['from'], 
+                    'toColumn' => $movedCard['to'],
+                    'sprint' => $this->sprint->name,
+                ]),
+                'environment' => app()->environment(),
+            ]);
+        }
 
         $this->reloadBoard();
     }
