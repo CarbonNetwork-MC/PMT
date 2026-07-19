@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-50 overflow-y-auto">
+<div class="fixed inset-0 z-50">
 
     {{-- Background overlay --}}
     <div class="fixed inset-0 bg-gray-900/75"></div>
