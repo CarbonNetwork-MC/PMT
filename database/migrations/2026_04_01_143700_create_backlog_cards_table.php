@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('backlog_cards', function (Blueprint $table) {
             $table->id();
             $table->char('backlog_uuid', 36);
-            $table->string('name');
+            $table->string('title');
             $table->text('description')->nullable();
             $table->enum('approval_status', ['None', 'Approved', 'Needs Work', 'Rejected'])->default('None');
             $table->integer('card_index')->default(0);
