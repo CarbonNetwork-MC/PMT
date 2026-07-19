@@ -116,7 +116,7 @@
                                     </x-tables.table-row>
                             @empty
                                 <x-tables.table-row>
-                                    <x-tables.empty-state :colspan="3">
+                                    <x-tables.empty-state :colspan="5">
                                         {{ __('settings.columns.no_columns') }}
                                     </x-tables.empty-state>
                                 </x-tables.table-row>
