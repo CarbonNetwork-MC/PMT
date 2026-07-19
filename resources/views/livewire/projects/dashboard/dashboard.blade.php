@@ -1,4 +1,7 @@
 <div>
+    {{-- Page Title --}}
+    @section('title', __('titles.project_dashboard') . ' | ' . $project->name)
+
     {{-- Breadcrumbs --}}
     <x-slot name="breadcrumbs">
         <x-breadcrumbs :items="[
