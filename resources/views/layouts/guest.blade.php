@@ -11,6 +11,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }} | @yield('title', 'Project Management Tool')</title>
+        <link rel="icon" type="image/png" href="{{ Vite::asset('resources/images/icon.png') }}" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
