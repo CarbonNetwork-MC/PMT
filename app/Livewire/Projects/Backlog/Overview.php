@@ -187,8 +187,7 @@ class Overview extends Component
                 'name' => $newBacklog->name,
             ]),
             'description' => __('logs.backlog.bucket_created', [
-                'bucket' => $newBacklog->name, 
-                'project' => $this->project->name
+                'bucket' => $newBacklog->name,
             ]),
             'environment' => app()->environment(),
         ]);
@@ -228,8 +227,7 @@ class Overview extends Component
                 'name' => $this->bucketToDelete->name,
             ]),
             'description' => __('logs.backlog.bucket_deleted', [
-                'bucket' => $this->bucketToDelete->name, 
-                'project' => $this->project->name
+                'bucket' => $this->bucketToDelete->name,
             ]),
             'environment' => app()->environment(),
         ]);

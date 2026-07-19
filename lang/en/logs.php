@@ -60,6 +60,8 @@ return [
     ],
 
     'backlog' => [
+        'bucket_created' => 'Backlog bucket <b>:bucket</b> was created.',
+        'bucket_deleted' => 'Backlog bucket <b>:bucket</b> was deleted.',
         'card_approval_status_updated' => 'Card <b>:card</b> approval status changed from <b>:originalStatus</b> to <b>:status</b>.',
         'card_assignee_added' => 'User <b>:user</b> was assigned to card <b>:card</b> on backlog <b>:backlog</b>.',
         'card_assignee_removed' => 'User <b>:user</b> was unassigned from card <b>:card</b> on backlog <b>:backlog</b>.',

@@ -23,7 +23,8 @@ return [
     ],
 
     'messages' => [
-        
+        'no_activity' => 'No activity to display.',
+        'no_active_sprints' => 'No active sprints to display.',
     ],
 
     'toasts' => [
