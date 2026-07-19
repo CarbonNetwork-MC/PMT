@@ -31,9 +31,9 @@ return [
 
     'board' => [
         'card_approval_status_updated' => 'Card <b>:card</b> approval status changed from <b>:originalStatus</b> to <b>:status</b> in sprint <b>:sprint</b>.',
-        'card_assignee_added' => 'User <b>:user</b> was assigned to <b>:card</b> in sprint <b>:sprint</b>.',
-        'card_assignee_removed' => 'User <b>:user</b> was unassigned from <b>:card</b> in sprint <b>:sprint</b>.',
-        'card_assignee_removed_all' => 'All assignees were removed from <b>:card</b> in sprint <b>:sprint</b>.',
+        'card_assignee_added' => 'User <b>:user</b> was assigned to card <b>:card</b> in sprint <b>:sprint</b>.',
+        'card_assignee_removed' => 'User <b>:user</b> was unassigned from card <b>:card</b> in sprint <b>:sprint</b>.',
+        'card_assignee_removed_all' => 'All assignees were removed from card <b>:card</b> in sprint <b>:sprint</b>.',
         'card_copied' => 'Card <b>:card</b> was copied in sprint <b>:sprint</b>.',
         'card_created' => 'Card <b>:card</b> was created in column <b>:column</b>. (Sprint: <b>:sprint</b>)',
         'card_created_from_task' => 'Task <b>:task</b> from <b>:card</b> was converted into a card in sprint <b>:sprint</b>.',
@@ -61,9 +61,9 @@ return [
 
     'backlog' => [
         'card_approval_status_updated' => 'Card <b>:card</b> approval status changed from <b>:originalStatus</b> to <b>:status</b>.',
-        'card_assignee_added' => 'User <b>:user</b> was assigned to <b>:card</b> on backlog <b>:backlog</b>.',
-        'card_assignee_removed' => 'User <b>:user</b> was unassigned from <b>:card</b> on backlog <b>:backlog</b>.',
-        'card_assignee_removed_all' => 'All assignees were removed from <b>:card</b> on backlog <b>:backlog</b>.',
+        'card_assignee_added' => 'User <b>:user</b> was assigned to card <b>:card</b> on backlog <b>:backlog</b>.',
+        'card_assignee_removed' => 'User <b>:user</b> was unassigned from card <b>:card</b> on backlog <b>:backlog</b>.',
+        'card_assignee_removed_all' => 'All assignees were removed from card <b>:card</b> on backlog <b>:backlog</b>.',
         'card_copied' => 'Card <b>:card</b> was copied on backlog <b>:backlog</b>.',
         'card_created' => 'Card <b>:card</b> was created on backlog <b>:backlog</b>.',
         'card_created_from_task' => 'Task <b>:task</b> was converted into a card on backlog <b>:backlog</b>.',
