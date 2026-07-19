@@ -23,17 +23,11 @@
     {{-- Top Bar --}}
     <x-containers.main padding="4">
         <div class="flex gap-4">
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                <p class="text-sm font-bold uppercase dark:text-white">
-                    {{ __('archive.labels.archived_sprints') }}
-                </p>
-                <div class="flex justify-center gap-2">
-                    <i class="fi fi-sr-archive text-gray-800 dark:text-gray-300"></i>
-                    <p class="text-black dark:text-white text-sm">
-                        {{ $project->sprints->where('is_archived', true)->count() }}
-                    </p>
-                </div>
-            </div>
+            <x-widgets.info-card
+                title="{{ __('archive.labels.archived_sprints') }}"
+                value="{{ $project->sprints->where('is_archived', true)->count() }}"
+                icon="sr-archive"
+            />
         </div>
     </x-containers.main>
 

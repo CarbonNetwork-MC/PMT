@@ -31,41 +31,36 @@
         <div class="flex justify-between items-center mt-4">
             {{-- sprints count, member count, (owning) --}}
             <div class="flex gap-4">
-                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                    <p class="text-black dark:text-white text-sm font-bold">{{ __('dashboard.labels.active_sprints') }}</p>
-                    <div class="flex justify-center gap-x-2">
-                        <i class="fi fi-ss-calendar-clock text-gray-800 dark:text-gray-300"></i>
-                        <p class="text-black dark:text-white text-sm">{{ $project->sprints->where('status', 'active')->count() }}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                    <p class="text-black dark:text-white text-sm font-bold">{{ __('dashboard.labels.archived_sprints') }}</p>
-                    <div class="flex justify-center gap-x-2">
-                        <i class="fi fi-ss-calendar-clock text-gray-800 dark:text-gray-300"></i>
-                        <p class="text-black dark:text-white text-sm">{{ $project->sprints->where('is_archived', true)->count() }}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                    <p class="text-black dark:text-white text-sm font-bold">{{ __('dashboard.labels.total_sprints') }}</p>
-                    <div class="flex justify-center gap-x-2">
-                        <i class="fi fi-ss-calendar-clock text-gray-800 dark:text-gray-300"></i>
-                        <p class="text-black dark:text-white text-sm">{{ $project->sprints->count() }}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                    <p class="text-black dark:text-white text-sm font-bold">{{ __('dashboard.labels.members') }}</p>
-                    <div class="flex justify-center gap-x-2">
-                        <i class="fi fi-ss-users text-gray-800 dark:text-gray-300"></i>
-                        <p class="text-black dark:text-white text-sm">{{ $memberCount }}</p>
-                    </div>
-                </div>
+                <x-widgets.info-card
+                    title="{{ __('dashboard.labels.active_sprints') }}"
+                    value="{{ $project->sprints->where('status', 'active')->count() }}"
+                    icon="ss-calendar-clock"
+                />
+                
+                <x-widgets.info-card
+                    title="{{ __('dashboard.labels.archived_sprints') }}"
+                    value="{{ $project->sprints->where('is_archived', true)->count() }}"
+                    icon="ss-calendar-clock"
+                />
+
+                <x-widgets.info-card
+                    title="{{ __('dashboard.labels.total_sprints') }}"
+                    value="{{ $project->sprints->count() }}"
+                    icon="ss-calendar-clock"
+                />
+
+                <x-widgets.info-card
+                    title="{{ __('dashboard.labels.members') }}"
+                    value="{{ $memberCount }}"
+                    icon="ss-users"
+                />
+
                 @if ($project->owner->uuid === auth()->user()->uuid)
-                    <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                        <p class="text-black dark:text-white text-sm font-bold">{{ __('dashboard.labels.owning') }}</p>
-                        <div class="flex justify-center gap-x-2">
-                            <i class="fi fi-ss-users text-gray-800 dark:text-gray-300"></i>
-                        </div>
-                    </div>
+                    <x-widgets.info-card
+                        title="{{ __('dashboard.labels.owning') }}"
+                        value=""
+                        icon="ss-user-crown"
+                    />
                 @endif
             </div>
 

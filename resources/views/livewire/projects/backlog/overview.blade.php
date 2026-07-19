@@ -24,24 +24,17 @@
     <x-containers.main padding="4">
         <div class="flex justify-between items-center">
             <div class="flex gap-4">
-                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                    <p class="text-sm font-bold uppercase dark:text-white">
-                        {{ __('backlog.labels.buckets') }}
-                    </p>
-                    <div class="flex justify-center gap-2">
-                        <i class="fi fi-rr-bucket dark:text-white"></i>
-                        <p class="dark:text-white">{{ $backlogs->count() }}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                    <p class="text-sm font-bold uppercase dark:text-white">
-                        {{ __('backlog.labels.total_cards') }}
-                    </p>
-                    <div class="flex justify-center gap-2">
-                        <i class="fi fi-rr-cards-blank dark:text-white"></i>
-                        <p class="dark:text-white">{{ $backlogs->sum(fn($backlog) => $backlog->cards->count()) }}</p>
-                    </div>
-                </div>
+                <x-widgets.info-card
+                    title="{{ __('backlog.labels.buckets') }}"
+                    value="{{ $backlogs->count() }}"
+                    icon="rr-bucket"
+                />
+
+                <x-widgets.info-card
+                    title="{{ __('backlog.labels.total_cards') }}"
+                    value="{{ $backlogs->sum(fn($backlog) => $backlog->cards->count()) }}"
+                    icon="rr-cards-blank"
+                />
             </div>
         </div>
     </x-containers.main>

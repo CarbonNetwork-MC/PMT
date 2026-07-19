@@ -33,56 +33,56 @@
     {{-- Information Widget --}}
     <x-containers.main padding="4">
         <div class="flex gap-x-4">
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.days_left') }}</p>
-                <div class="flex gap-x-2">
-                    <i class="fi fi-ss-calendar-clock text-gray-800 dark:text-gray-300"></i>
-                    <p class="{{ $daysLeft < 1 ? 'text-red-400' : 'text-black dark:text-white' }} text-sm">{{ $daysLeft }}</p>
-                </div>
-            </div>
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.duration') }}</p>
-                <div class="flex gap-x-2">
-                    <i class="fi fi-ss-calendar text-gray-800 dark:text-gray-300"></i>
-                    <p class="text-black dark:text-white text-sm">
-                        @if ($sprint->start_date->format('Y') === $sprint->end_date->format('Y'))
-                            @if ($sprint->start_date->format('M') === $sprint->end_date->format('M'))
-                                {{ $sprint->start_date->format('M d') }} - {{ $sprint->end_date->format('d, Y') }}
-                            @else
-                                {{ $sprint->start_date->format('M d') }} - {{ $sprint->end_date->format('M d, Y') }}
-                            @endif
+            <x-widgets.info-card
+                title="{{ __('board.labels.days_left') }}"
+                value="{{ $daysLeft }}"
+                icon="ss-calendar-clock"
+                textColor="{{ $daysLeft < 1 ? 'red-400' : 'black' }}"
+                textColorDark="{{ $daysLeft < 1 ? 'red-400' : 'white' }}"
+            />
+
+            <x-widgets.info-card
+                title="{{ __('board.labels.duration') }}"
+                icon="ss-calendar"
+            >
+                <x-slot name="value">
+                    @if ($sprint->start_date->format('Y') === $sprint->end_date->format('Y'))
+                        @if ($sprint->start_date->format('M') === $sprint->end_date->format('M'))
+                            {{ $sprint->start_date->format('M d') }} - {{ $sprint->end_date->format('d, Y') }}
                         @else
-                            {{ $sprint->start_date->format('M d, Y') }} - {{ $sprint->end_date->format('M d, Y') }}
+                            {{ $sprint->start_date->format('M d') }} - {{ $sprint->end_date->format('M d, Y') }}
                         @endif
-                    </p>
-                </div>
-            </div>
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.total_cards') }}</p>
-                <div class="flex gap-x-2">
-                    <i class="fi fi-rr-cards-blank text-gray-800 dark:text-gray-300"></i>
-                    <p class="text-black dark:text-white text-sm">
-                        @if ($sprint->status === 'completed')
-                            {{ $this->columns->where('column_type', 'done')->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->count()) }}
-                        @else
-                            {{ $this->columns->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->count()) }}
-                        @endif
-                    </p>
-                </div>
-            </div>
-            <div class="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                <p class="text-black dark:text-white text-sm font-bold">{{ __('board.labels.total_tasks') }}</p>
-                <div class="flex gap-x-2">
-                    <i class="fi fi-rr-task-checklist text-gray-800 dark:text-gray-300"></i>
-                    <p class="text-black dark:text-white text-sm">
-                        @if ($sprint->status === 'completed')
-                            {{ $this->columns->where('column_type', 'done')->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->sum(fn($card) => $card->tasks->count())) }}
-                        @else
-                            {{ $this->columns->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->sum(fn($card) => $card->tasks->count())) }}
-                        @endif
-                    </p>
-                </div>
-            </div>
+                    @else
+                        {{ $sprint->start_date->format('M d, Y') }} - {{ $sprint->end_date->format('M d, Y') }}
+                    @endif
+                </x-slot>
+            </x-widgets.info-card>
+
+            <x-widgets.info-card
+                title="{{ __('board.labels.total_cards') }}"
+                icon="rr-cards-blank"
+            >
+                <x-slot name="value">
+                    @if ($sprint->status === 'completed')
+                        {{ $this->columns->where('column_type', 'done')->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->count()) }}
+                    @else
+                        {{ $this->columns->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->count()) }}
+                    @endif
+                </x-slot>
+            </x-widgets.info-card>
+
+            <x-widgets.info-card
+                title="{{ __('board.labels.total_tasks') }}"
+                icon="rr-task-checklist"
+            >
+                <x-slot name="value">
+                    @if ($sprint->status === 'completed')
+                        {{ $this->columns->where('column_type', 'done')->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->sum(fn($card) => $card->tasks->count())) }}
+                    @else
+                        {{ $this->columns->sum(fn($column) => $column->cards->where('sprint_uuid', $sprint->uuid)->sum(fn($card) => $card->tasks->count())) }}
+                    @endif
+                </x-slot>
+            </x-widgets.info-card>
         </div>
     </x-containers.main>
 
