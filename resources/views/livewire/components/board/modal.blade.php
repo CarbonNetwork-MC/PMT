@@ -420,7 +420,7 @@
                     <div
                         x-show="!isEditing"
                     >
-                        <p class="text-gray-500 dark:text-gray-400">{{ $cardDescription ? $cardDescription : __('board.messages.no_description') }}</p>
+                        <p class="text-gray-500 dark:text-gray-400">{!! $cardDescription ? $cardDescription : __('board.messages.no_description') !!}</p>
                     </div>
 
                     @if ($card->sprint->status === 'active')
