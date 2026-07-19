@@ -15,15 +15,9 @@ return new class extends Migration
             $table->uuid()->primary()->unique();
             $table->char('project_uuid', 36);
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->enum('status', ['active', 'archived'])->default('active');
-            $table->boolean('is_archived')->default(false);
-            $table->timestamp('archived_at')->nullable();
-            $table->char('archived_by', 36)->nullable();
             $table->timestamps();
 
             $table->foreign('project_uuid')->references('uuid')->on('projects')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('archived_by')->references('uuid')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

@@ -36,6 +36,15 @@ class Overview extends Component
     public $selectedProjectUuid;
     public $selectedEntityUuid;
 
+    public $bucketName = '';
+    public $showBucketCreationModal = false;
+
+    public $bucketToDelete = null;
+    public $showDeleteBucketModal = false;
+
+    public $cardTitle = '';
+    public $showCardCreationModal = false;
+
     public $cardToModify = null;
     public $showDeleteCardModal = false;
 
@@ -152,6 +161,132 @@ class Overview extends Component
         $this->selectedCard = null;
     }
 
+    public function createBucket() {
+        if (empty($this->bucketName)) {
+            Toaster::error(__('backlog.toasts.bucket_name_required'));
+            return;
+        }
+
+        $newBacklog = BacklogModel::create([
+            'uuid' => \Str::uuid(),
+            'project_uuid' => $this->project->uuid,
+            'name' => $this->bucketName,
+        ]);
+
+        if ($this->backlogs->isEmpty()) {
+            $this->selectedBacklog = $newBacklog;
+        }
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $newBacklog->uuid,
+            'action' => 'create',
+            'table' => 'backlogs',
+            'data' => json_encode([
+                'name' => $newBacklog->name,
+            ]),
+            'description' => __('logs.backlog.bucket_created', [
+                'bucket' => $newBacklog->name, 
+                'project' => $this->project->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
+        Toaster::success(__('backlog.toasts.bucket_created', ['bucket' => $newBacklog->name]));
+
+        $this->bucketName = '';
+        $this->showBucketCreationModal = false;
+
+        $this->reloadBacklogState();
+    }
+
+    public function cancelBucketCreation() {
+        $this->bucketName = '';
+        $this->showBucketCreationModal = false;
+    }
+
+    public function removeBucket($backlogId) {
+        $this->bucketToDelete = BacklogModel::where('uuid', $backlogId)->first();
+        $this->showDeleteBucketModal = true;
+    }
+
+    public function destroyBucket() {
+        if (!$this->bucketToDelete) {
+            Toaster::error(__('backlog.toasts.bucket_not_found'));
+            $this->showDeleteBucketModal = false;
+            return;
+        }
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->bucketToDelete->uuid,
+            'action' => 'delete',
+            'table' => 'backlogs',
+            'data' => json_encode([
+                'name' => $this->bucketToDelete->name,
+            ]),
+            'description' => __('logs.backlog.bucket_deleted', [
+                'bucket' => $this->bucketToDelete->name, 
+                'project' => $this->project->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
+        Toaster::success(__('backlog.toasts.bucket_deleted', ['bucket' => $this->bucketToDelete->name]));
+
+        $this->bucketToDelete->delete();
+        $this->reset(['bucketToDelete', 'showDeleteBucketModal']);
+
+        $this->reloadBacklogState();
+    }
+
+    public function createCard() {
+        if (empty($this->cardTitle)) {
+            Toaster::error(__('backlog.toasts.card_title_required'));
+            return;
+        }
+
+        $newCardIndex = BacklogCard::where('backlog_uuid', $this->selectedBacklog->uuid)
+            ->max('card_index') + 1;
+
+        $newCard = BacklogCard::create([
+            'backlog_uuid' => $this->selectedBacklog->uuid,
+            'title' => $this->cardTitle,
+            'description' => null,
+            'approval_status' => 'None',
+            'card_index' => $newCardIndex,
+        ]);
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->selectedBacklog->uuid,
+            'backlog_card_id' => $newCard->id,
+            'action' => 'create',
+            'table' => 'backlog_cards',
+            'data' => json_encode([
+                'title' => $newCard->title,
+                'description' => $newCard->description,
+                'approval_status' => $newCard->approval_status,
+                'deadline' => $newCard->deadline,
+            ]),
+            'description' => __('logs.backlog.card_created', [
+                'card' => $newCard->title, 
+                'backlog' => $this->selectedBacklog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
+        Toaster::success(__('backlog.toasts.card_created', ['card' => $newCard->title]));
+
+        $this->cardTitle = '';
+        $this->showCardCreationModal = false;
+
+        $this->reloadBacklogState();
+    }
+
     #[On('backlogCardDeleteInitiated')]
     public function handleBacklogCardDeleteInitiated($cardId) {
         $this->cardToModify = BacklogCard::where('id', $cardId)->first();
@@ -190,10 +325,12 @@ class Overview extends Component
             'environment' => app()->environment(),
         ]);
 
+        Toaster::success(__('backlog.toasts.card_deleted', ['card' => $this->cardToModify->title]));
+
         $this->cardToModify->delete();
         $this->reset(['cardToModify', 'showDeleteCardModal']);
 
-        $this->reloadBacklog();
+        $this->reloadBacklogState();
     }
 
     public function moveCard($cardId) {

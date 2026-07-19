@@ -14,6 +14,11 @@
             ],
             [
                 'icon' => '',
+                'url' => route('projects.dashboard.render', ['uuid' => $project->uuid]),
+                'label' => $project->name,
+            ],
+            [
+                'icon' => '',
                 'url' => route('projects.backlog.render', ['uuid' => $project->uuid]),
                 'label' => __('backlog.titles.backlog_overview'),
             ]
@@ -36,6 +41,13 @@
                     icon="rr-cards-blank"
                 />
             </div>
+            @if ($selectedBacklog)
+                <div class="flex gap-4">
+                    <x-buttons.primary-button wire:click="$set('showCardCreationModal', true)">
+                        {{ __('backlog.titles.create_card') }}
+                    </x-buttons.primary-button>
+                </div>
+            @endif
         </div>
     </x-containers.main>
 
@@ -50,14 +62,23 @@
                 @foreach ($backlogs as $backlog)
                     <div 
                         @if ($backlog->uuid === $selectedBacklog?->uuid) 
-                            class="w-full bg-blue-300 hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600 rounded-md p-2 cursor-pointer"
+                            class="group flex justify-between items-center w-full bg-blue-300 hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600 rounded-md px-2 cursor-pointer"
                         @else
-                            class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-md p-2 cursor-pointer"
+                            class="group flex justify-between items-center w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-md px-2 cursor-pointer"
                         @endif
-                        wire:click="openBacklog('{{ $backlog->uuid }}')"
                         wire:key="backlog-{{ $backlog->uuid }}"
                     >
-                        <p class="dark:text-white">{{ $backlog->name }}</p>
+                        <p class="w-full dark:text-white p-2"
+                            wire:click="openBacklog('{{ $backlog->uuid }}')"
+                        >
+                            {{ $backlog->name }}
+                        </p>
+                        <i class="hidden! group-hover:flex! fi fi-br-trash hover:text-red-400 rounded-md p-2 
+                            {{ $backlog->uuid === $selectedBacklog?->uuid 
+                                ? 'hover:bg-blue-500 dark:hover:bg-blue-600' 
+                                : 'hover:bg-gray-400 dark:hover:bg-gray-800' 
+                            }}"
+                            wire:click="removeBucket('{{ $backlog->uuid }}')"></i>
                     </div>
                 @endforeach
             </div>
@@ -291,6 +312,76 @@
             :key="'backlog-card-modal-' . $selectedCard->id"
         />
     @endif
+
+    {{-- Create Backlog Modal --}}
+    <x-modals.modal wire:model="showBucketCreationModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('backlog.titles.create_bucket') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <x-forms.text-input 
+                label="{{ __('backlog.labels.bucket_name') }}" 
+                placeholder="{{ __('backlog.placeholders.bucket_name') }}" 
+                wire:model.defer="bucketName" 
+            />
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="cancelBucketCreation">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.primary-button wire:click="createBucket">
+                {{ __('general.buttons.create') }}
+            </x-buttons.primary-button>
+        </x-slot>
+    </x-modals.modal>
+
+    {{-- Delete Backlog Modal --}}
+    <x-modals.modal wire:model="showDeleteBucketModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('backlog.titles.delete_bucket') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-center">
+                {!! __('backlog.messages.confirm_delete_bucket') !!}
+            </p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showDeleteBucketModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.danger-button wire:click="destroyBucket">
+                {{ __('general.buttons.delete') }}
+            </x-buttons.danger-button>
+        </x-slot>
+    </x-modals.modal>
+
+    {{-- Create Card Modal --}}
+    <x-modals.modal wire:model="showCardCreationModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('backlog.titles.create_card') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <x-forms.text-input 
+                label="{{ __('backlog.labels.card_title') }}" 
+                placeholder="{{ __('backlog.placeholders.card_title') }}" 
+                wire:model.defer="cardTitle" 
+            />
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showCardCreationModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.primary-button wire:click="createCard">
+                {{ __('general.buttons.create') }}
+            </x-buttons.primary-button>
+        </x-slot>
+    </x-modals.modal>
 
     {{-- Delete Card Modal --}}
     <x-modals.modal wire:model="showDeleteCardModal">

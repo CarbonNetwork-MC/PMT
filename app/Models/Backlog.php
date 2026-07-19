@@ -15,15 +15,6 @@ class Backlog extends Model
         'uuid',
         'project_uuid',
         'name',
-        'description',
-        'status',
-        'is_archived',
-        'archived_at',
-        'archived_by',
-    ];
-    protected $casts = [
-        'is_archived' => 'boolean',
-        'archived_at' => 'datetime',
     ];
 
     public function project(): BelongsTo {
@@ -32,9 +23,5 @@ class Backlog extends Model
 
     public function cards(): HasMany {
         return $this->hasMany(BacklogCard::class, 'backlog_uuid', 'uuid');
-    }
-
-    public function archivedByUser(): BelongsTo {
-        return $this->belongsTo(User::class, 'archived_by', 'uuid');
     }
 }
