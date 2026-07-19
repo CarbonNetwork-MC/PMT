@@ -57,7 +57,7 @@ class Overview extends Component
 
         $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(auth()->user(), $this->project);
 
-        $this->entities = $this->project->backlogs()->where('is_archived', false)->get();
+        $this->entities = $this->project->backlogs()->get();
         $this->entityUuid = $this->entities->first()?->uuid;
         $this->completeSprintAction = 'backlog';
     }
