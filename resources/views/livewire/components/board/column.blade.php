@@ -4,7 +4,7 @@
         {{-- Column name + Number of cards --}}
         <div class="flex gap-x-2 items-center">
             <p class="font-bold text-white bg-{{ $this->column->color->name }}-{{ $this->column->color->background_color }} px-1.5 rounded-md">
-                {{ $this->column->cards->count() }}
+                {{ $this->cards->count() }}
             </p>
             <h2 class="font-bold text-sm text-{{ $this->column->color->name }}-{{ $this->column->color->text_color }}">{{ $this->column->name }}</h2>
         </div>
