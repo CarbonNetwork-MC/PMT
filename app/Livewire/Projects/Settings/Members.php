@@ -62,6 +62,7 @@ class Members extends Component
         });
 
         $this->roles = ProjectRole::where('slug', '!=', 'owner')->get();
+        $this->newMemberRole = $this->roles->first()->id;
         $this->users = $this->getUsers();
 
         $this->isProjectOwner = auth()->user()->uuid === $this->project->owner_uuid;
