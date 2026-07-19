@@ -400,12 +400,12 @@ class Modal extends Component
             'description' => $isChecked
                 ? __('logs.backlog.card_assignee_added', [
                     'user' => optional($this->users->firstWhere('uuid', $userUuid))->name, 
-                    'card' => $this->card->title, 
+                    'card' => $this->card->id, 
                     'backlog' => $this->card->backlog->name
                     ])
                 : __('logs.backlog.card_assignee_removed', [
                     'user' => optional($this->users->firstWhere('uuid', $userUuid))->name, 
-                    'card' => $this->card->title, 
+                    'card' => $this->card->id, 
                     'backlog' => $this->card->backlog->name
                 ]),
             'environment' => app()->environment(),
@@ -451,7 +451,7 @@ class Modal extends Component
             'data' => json_encode(['assignee_user_uuid' => auth()->user()->uuid]),
             'description' => __('logs.backlog.card_assignee_added', [
                 'user' => auth()->user()->name, 
-                'card' => $this->card->title, 
+                'card' => $this->card->id, 
                 'backlog' => $this->card->backlog->name
             ]),
             'environment' => app()->environment(),

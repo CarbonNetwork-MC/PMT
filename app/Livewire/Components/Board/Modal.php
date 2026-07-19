@@ -399,10 +399,12 @@ class Modal extends Component
             'description' => $isChecked
                 ? __('logs.board.card_assignee_added', [
                     'user' => $this->users->firstWhere('uuid', $userUuid)->name,
+                    'card' => $this->card->id,
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ])
                 : __('logs.board.card_assignee_removed', [
                     'user' => $this->users->firstWhere('uuid', $userUuid)->name,
+                    'card' => $this->card->id,
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),

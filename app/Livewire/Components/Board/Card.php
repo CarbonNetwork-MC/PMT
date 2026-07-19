@@ -133,12 +133,12 @@ class Card extends Component
             'description' => $isChecked
                 ? __('logs.board.card_assignee_added', [
                     'user' => optional($this->users->firstWhere('uuid', $userUuid))->name,
-                    'card' => $this->card->title,
+                    'card' => $this->card->id,
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ])
                 : __('logs.board.card_assignee_removed', [
                     'user' => optional($this->users->firstWhere('uuid', $userUuid))->name,
-                    'card' => $this->card->title,
+                    'card' => $this->card->id,
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
@@ -183,7 +183,7 @@ class Card extends Component
             'data' => json_encode(['user_uuid' => auth()->user()->uuid]),
             'description' => __('logs.board.card_assignee_added', [
                 'user' => auth()->user()->name,
-                'card' => $this->card->title,
+                'card' => $this->card->id,
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
