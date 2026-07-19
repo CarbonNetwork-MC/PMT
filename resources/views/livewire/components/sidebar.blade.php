@@ -58,7 +58,7 @@
                     <x-sidebar.nav-item
                         :href="route('projects.dashboard.render', ['uuid' => $selectedProject->uuid])"
                         :active="request()->routeIs('projects.dashboard.*')"
-                        icon="fi fi-br-grid-alt"
+                        icon="fi fi-rs-dashboard"
                         :label="__('sidebar.projects.dashboard')"
                     />
 
