@@ -4,6 +4,7 @@ namespace App\Livewire\Components\Board;
 
 use App\Helpers\CheckProjectPermissions;
 use App\Helpers\TimeFormatter;
+use App\Models\Log;
 use App\Models\TaskAssignee;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -110,11 +111,55 @@ class TaskCard extends Component
                 ->delete();
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => $isChecked ? 'create' : 'delete',
+            'table' => 'task_assignees',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+                'user_uuid' => $userUuid,
+            ]),
+            'description' => $isChecked
+                ? __('logs.board.task_assignee_added', [
+                    'user' => $this->users->firstWhere('uuid', $userUuid)->name, 
+                    'task' => $this->task->title,
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.task_assignee_removed', [
+                    'user' => $this->users->firstWhere('uuid', $userUuid)->name,
+                    'task' => $this->task->title,
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->refreshBoardAndModal();
     }
 
     public function clearAssignees() {
         TaskAssignee::where('task_id', $this->task->id)->delete();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => 'delete',
+            'table' => 'task_assignees',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+            ]),
+            'description' => __('logs.board.task_assignee_removed_all', [
+                'task' => $this->task->title,
+                'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->refreshBoardAndModal();
     }
@@ -123,6 +168,26 @@ class TaskCard extends Component
         TaskAssignee::firstOrCreate([
             'task_id' => $this->task->id,
             'user_uuid' => auth()->user()->uuid,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => 'create',
+            'table' => 'task_assignees',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+                'user_uuid' => auth()->user()->uuid,
+            ]),
+            'description' => __('logs.board.task_assignee_added', [
+                'user' => auth()->user()->name,
+                'task' => $this->task->title,
+                'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->refreshBoardAndModal();
@@ -155,6 +220,31 @@ class TaskCard extends Component
             'estimated_time' => TimeFormatter::humanToMinutes($data['estimatedTimeInput']),
         ]);
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => 'update',
+            'table' => 'tasks',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+                'estimated_time' => TimeFormatter::humanToMinutes($data['estimatedTimeInput']),
+            ]),
+            'description' => $this->estimatedTimeInput
+                ? __('logs.board.task_estimated_time_updated', [
+                    'task' => $this->task->title,
+                    'estimated_time' => $data['estimatedTimeInput'],
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.task_estimated_time_cleared', [
+                    'task' => $this->task->title,
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->estimatedTimeInput = null;
 
         $this->refreshBoardAndModal();
@@ -172,6 +262,31 @@ class TaskCard extends Component
             'actual_time' => TimeFormatter::humanToMinutes($this->actualTimeInput),
         ]);
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => 'update',
+            'table' => 'tasks',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+                'actual_time' => TimeFormatter::humanToMinutes($this->actualTimeInput),
+            ]),
+            'description' => $this->actualTimeInput
+                ? __('logs.board.task_actual_time_updated', [
+                    'task' => $this->task->title,
+                    'actual_time' => $this->actualTimeInput,
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.task_actual_time_cleared', [
+                    'task' => $this->task->title,
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->actualTimeInput = null;
 
         $this->refreshBoardAndModal();
@@ -186,6 +301,31 @@ class TaskCard extends Component
             'deadline' => $this->deadlineInput
                 ? \Carbon\Carbon::parse($this->deadlineInput)
                 : null,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => 'update',
+            'table' => 'tasks',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+                'deadline' => $this->deadlineInput ? \Carbon\Carbon::parse($this->deadlineInput)->toDateTimeString() : null,
+            ]),
+            'description' => $this->deadlineInput
+                ? __('logs.board.task_deadline_updated', [
+                    'task' => $this->task->title,
+                    'deadline' => \Carbon\Carbon::parse($this->deadlineInput)->format('Y-m-d H:i'),
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.task_deadline_cleared', [
+                    'task' => $this->task->title,
+                    'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->refreshBoardAndModal();

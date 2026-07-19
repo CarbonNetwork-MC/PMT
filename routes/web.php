@@ -8,6 +8,11 @@ use App\Livewire\Dashboard;
 use App\Livewire\Projects\NewProject;
 use App\Livewire\Projects\Projects;
 
+use App\Livewire\Projects\Archive\Overview as ProjectArchiveOverview;
+use App\Livewire\Projects\Archive\Board as ProjectArchiveBoard;
+
+use App\Livewire\Projects\Backlog\Overview as ProjectBacklogOverview;
+
 use App\Livewire\Projects\Board\Board as ProjectBoard;
 
 use App\Livewire\Projects\Dashboard\Dashboard as ProjectDashboard;
@@ -53,6 +58,13 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/new', NewProject::class)->name('projects.new.render');
     
         Route::get('/{uuid}/dashboard', ProjectDashboard::class)->name('projects.dashboard.render');
+
+        Route::get('/{uuid}/archive', ProjectArchiveOverview::class)->name('projects.archive.render');
+        Route::get('/{uuid}/archive/{sprintUuid}', ProjectArchiveBoard::class)
+            ->middleware('sprint-archived')
+            ->name('projects.archive.board.render');
+
+        Route::get('/{uuid}/backlog', ProjectBacklogOverview::class)->name('projects.backlog.render');
 
         Route::get('/{uuid}/board/{sprintUuid}', ProjectBoard::class)
             ->middleware('sprint-started')

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
+use App\Http\Middleware\EnsureSprintIsArchived;
 use App\Http\Middleware\EnsureSprintIsStarted;
 use App\Http\Middleware\EnsureUserIsProjectOwner;
 use App\Http\Middleware\EnsureUserIsProjectOwnerOrAdmin;
@@ -39,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'sprint-started' => EnsureSprintIsStarted::class,
+            'sprint-archived' => EnsureSprintIsArchived::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

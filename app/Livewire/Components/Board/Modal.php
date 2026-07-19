@@ -6,6 +6,7 @@ use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\Card;
 use App\Models\CardAssignee;
+use App\Models\Log;
 use App\Models\Task;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,8 @@ use Masmerise\Toaster\Toaster;
 
 class Modal extends Component
 {
+    public $project;
     public $card;
-    public $sprint;
     public $users;
 
     public $cardTitle = '';
@@ -52,9 +53,9 @@ class Modal extends Component
     public $column;
     public $position = 'top';
 
-    public function mount($card, $sprint, $users) {
+    public function mount($project, $card, $users) {
+        $this->project = $project;
         $this->card = $card->load('assignees.user');
-        $this->sprint = $sprint;
         $this->users = $users;
         $this->filteredUsers = $users;
 
@@ -66,7 +67,7 @@ class Modal extends Component
             $column['cards'] = $tasks->where('status', $column['type'])->values();
         }
 
-        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $card->column->project);
+        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(Auth::user(), $this->project);
 
         // Load projects for move options
         $user = Auth::user();
@@ -139,6 +140,26 @@ class Modal extends Component
             'task_index' => $maxIndex !== null ? $maxIndex + 1 : 0,
         ]);
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'create',
+            'table' => 'tasks',
+            'data' => json_encode([
+                'description' => $this->taskName,
+                'status' => $this->creatingTaskInColumn,
+                'task_index' => $maxIndex !== null ? $maxIndex + 1 : 0,
+            ]),
+            'description' => __('logs.board.task_created', [
+                'task' => $this->taskName,
+                'card' => $this->card->title,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->createNewTask = false;
         $this->taskName = '';
 
@@ -159,8 +180,26 @@ class Modal extends Component
             return;
         }
 
+        $originalTitle = $this->card->title;
+
         $this->card->title = $title;
         $this->card->save();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'cards',
+            'data' => json_encode(['title' => $title]),
+            'description' => __('logs.board.card_updated_title', [
+                'title' => $originalTitle,
+                'newTitle' => $title,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -171,6 +210,21 @@ class Modal extends Component
 
         $this->card->description = $description;
         $this->card->save();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'cards',
+            'data' => json_encode(['description' => $description]),
+            'description' => __('logs.board.card_updated_description', [
+                'card' => $this->card->title,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -196,6 +250,69 @@ class Modal extends Component
     }
 
     public function updateCardOrder($groups) {
+        $oldOrder = $this->card->tasks()
+            ->get(['id', 'status', 'task_index'])
+            ->mapWithKeys(fn ($task) => [
+                $task->id => [
+                    'group' => $task->status,
+                    'index' => $task->task_index,
+                ],
+            ])
+            ->toArray();
+
+        $newOrder = collect($groups)
+            ->mapWithKeys(function ($group) {
+                return [
+                    $group['value'] => collect($group['items'])
+                        ->pluck('value')
+                        ->map(fn ($id) => (int) $id)
+                        ->values()
+                        ->toArray(),
+                ];
+            })
+            ->toArray();
+
+        $newTaskPositions = collect($newOrder)
+            ->mapWithKeys(function ($taskIds, $group) {
+                return collect($taskIds)
+                    ->mapWithKeys(fn ($taskId, $index) => [
+                        $taskId => [
+                            'group' => $group,
+                            'index' => $index,
+                        ],
+                    ])
+                    ->all();
+            });
+
+        $movedTask = null;
+
+        foreach ($newTaskPositions as $taskId => $newPosition) {
+            $oldPosition = $oldOrder[$taskId] ?? null;
+
+            if ($oldPosition === null) {
+                continue;
+            }
+
+            $columnChanged =
+                $oldPosition['group'] !== $newPosition['group'];
+
+            $indexChanged =
+                (int) $oldPosition['index'] !== (int) $newPosition['index'];
+
+            if ($columnChanged || $indexChanged) {
+                $movedTask = [
+                    'id' => (int) $taskId,
+                    'from_group' => $oldPosition['group'],
+                    'to_group' => $newPosition['group'],
+                    'from_index' => (int) $oldPosition['index'],
+                    'to_index' => (int) $newPosition['index'],
+                    'column_changed' => $columnChanged,
+                ];
+
+                break;
+            }
+        }
+
         foreach ($groups as $group) {
             $status = $group['value'];
 
@@ -207,14 +324,54 @@ class Modal extends Component
             }
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'tasks',
+            'data' => json_encode([
+                'old_order' => $oldOrder,
+                'new_order' => $newOrder,
+            ]),
+            'description' => __('logs.board.task_order_updated', [
+                'task' => $movedTask ? Task::find($movedTask['id'])->id : null,
+                'from' => $movedTask ? $movedTask['from_group'] : null,
+                'to' => $movedTask ? $movedTask['to_group'] : null,
+                'card' => $this->card->title,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->loadTasks();
         $this->dispatch('$refresh');
         $this->dispatch('refreshBoard');
     }
 
     public function updateApprovalStatus($status) {
+        $originalStatus = $this->card->approval_status;
+
         $this->card->approval_status = $status;
         $this->card->save();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'cards',
+            'data' => json_encode(['approval_status' => $status]),
+            'description' => __('logs.board.card_approval_status_updated', [
+                'card' => $this->card->title,
+                'originalStatus' => $originalStatus,
+                'status' => $status,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -231,11 +388,45 @@ class Modal extends Component
                 ->delete();
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => $isChecked ? 'create' : 'delete',
+            'table' => 'card_assignees',
+            'data' => json_encode(['user_uuid' => $userUuid]),
+            'description' => $isChecked
+                ? __('logs.board.card_assignee_added', [
+                    'user' => $this->users->firstWhere('uuid', $userUuid)->name,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.card_assignee_removed', [
+                    'user' => $this->users->firstWhere('uuid', $userUuid)->name,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->loadCard();
     }
 
     public function clearAssignees() {
         CardAssignee::where('card_id', $this->card->id)->delete();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'delete',
+            'table' => 'card_assignees',
+            'data' => json_encode([]),
+            'description' => __('logs.board.card_assignee_removed_all', [
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
 
         $this->loadCard();
     }
@@ -244,6 +435,21 @@ class Modal extends Component
         CardAssignee::firstOrCreate([
             'card_id' => $this->card->id,
             'user_uuid' => auth()->user()->uuid,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'create',
+            'table' => 'card_assignees',
+            'data' => json_encode(['user_uuid' => auth()->user()->uuid]),
+            'description' => __('logs.board.card_assignee_added', [
+                'user' => auth()->user()->name,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->loadCard();
@@ -278,6 +484,28 @@ class Modal extends Component
                 Toaster::error(__('board.toast.card_move_failed'));
                 return;
             }
+
+            Log::create([
+                'user_uuid' => auth()->user()->uuid,
+                'project_uuid' => $this->project->uuid,
+                'sprint_uuid' => $this->selectedEntityUuid,
+                'card_id' => $this->card->id,
+                'action' => 'update',
+                'table' => 'cards',
+                'data' => json_encode([
+                    'sprint_uuid' => $this->selectedEntityUuid,
+                    'column_id' => $this->column,
+                    'card_index' => $index,
+                ]),
+                'description' => __('logs.board.card_moved_sprints', [
+                    'card' => $this->card->title,
+                    'fromSprint' => $this->card->sprint ? $this->card->sprint->name : __('board.backlog'),
+                    'toSprint' => $this->selectedProject->sprints->firstWhere('uuid', $this->selectedEntityUuid)->name ?? __('board.backlog'),
+                    'fromColumn' => $this->card->column ? $this->card->column->name : __('board.no_column'),
+                    'toColumn' => $this->selectedProject->columns->firstWhere('id', $this->column)->name ?? __('board.no_column'),
+                ]),
+                'environment' => app()->environment(),
+            ]);
         } else {
             $index = $this->position === 'top' ? 0 : BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)->max('card_index') + 1;
             if ($index != 0) {
@@ -320,6 +548,29 @@ class Modal extends Component
                     ]);
                 }
 
+                Log::create([
+                    'user_uuid' => auth()->user()->uuid,
+                    'project_uuid' => $this->project->uuid,
+                    'backlog_uuid' => $this->selectedEntityUuid,
+                    'card_id' => $backlogCard->id,
+                    'action' => 'create',
+                    'table' => 'backlog_cards',
+                    'data' => json_encode([
+                        'backlog_uuid' => $this->selectedEntityUuid,
+                        'title' => $backlogCard->title,
+                        'description' => $backlogCard->description,
+                        'approval_status' => $backlogCard->approval_status,
+                        'card_index' => $index,
+                    ]),
+                    'description' => __('logs.board.card_moved_backlog', [
+                        'card' => $this->card->title,
+                        'fromSprint' => $this->card->sprint ? $this->card->sprint->name : __('board.backlog'),
+                        'toBacklog' => $this->selectedProject->backlogs->firstWhere('uuid', $this->selectedEntityUuid)->name ?? __('board.backlog'),
+                        'fromColumn' => $this->card->column ? $this->card->column->name : __('board.no_column'),
+                    ]),
+                    'environment' => app()->environment(),
+                ]);
+
                 $this->card->delete();
 
                 DB::commit();
@@ -344,6 +595,27 @@ class Modal extends Component
             'deadline' => $this->deadlineInput
                 ? \Carbon\Carbon::parse($this->deadlineInput)
                 : null,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->card->sprint_uuid,
+            'card_id' => $this->card->id,
+            'action' => 'update',
+            'table' => 'cards',
+            'data' => json_encode(['deadline' => $this->deadlineInput]),
+            'description' => $this->deadlineInput
+                ? __('logs.board.card_deadline_updated', [
+                    'card' => $this->card->title,
+                    'deadline' => \Carbon\Carbon::parse($this->deadlineInput)->format('Y-m-d'),
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.card_deadline_cleared', [
+                    'card' => $this->card->title,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->loadCard();

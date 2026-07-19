@@ -1,33 +1,31 @@
 <div class="fixed inset-0 z-50 overflow-y-auto">
 
-    {{-- Background overlay --}}
-    <div class="fixed inset-0 bg-gray-900/75"></div>
+    @if ($card)
+        {{-- Background overlay --}}
+        <div class="fixed inset-0 bg-gray-900/75"></div>
 
-    {{-- Close Button --}}
-    <div class="relative z-50 flex justify-end mr-8 pt-4">
-        <div
-            wire:click="closeModal"
-            class="bg-gray-800 text-white rounded-lg w-8 h-8 flex items-center justify-center cursor-pointer">
-            <i class="fi fi-br-cross"></i>
+        {{-- Close Button --}}
+        <div class="relative z-50 flex justify-end mr-8 pt-4">
+            <div
+                wire:click="closeModal"
+                class="bg-gray-800 text-white rounded-lg w-8 h-8 flex items-center justify-center cursor-pointer">
+                <i class="fi fi-br-cross"></i>
+            </div>
         </div>
-    </div>
 
-    {{-- Modal Content --}}
-    <div class="relative z-40 flex justify-center w-[85%] h-[90vh] mx-auto">
-        <div class="w-full h-full flex flex-col bg-gray-100 dark:bg-gray-800 rounded-sm p-4">
-            {{-- Top Bar --}}
-            <div class="flex justify-between">
-                {{-- Title --}}
-                <div @if ($card->sprint->status === 'active') x-data="{ isEditing: false }" @endif>
-                    <div @if ($card->sprint->status === 'active') x-show="!isEditing" @endif class="flex gap-4 mt-2">
-                        <p class="text-gray-600">#{{ $card->id }}</p>
-                        <p class="text-gray-900 dark:text-gray-400 font-bold">{{ $card->title }}</p>
-                        @if ($card->sprint->status === 'active')
+        {{-- Modal Content --}}
+        <div class="relative z-40 flex justify-center w-[85%] h-[90vh] mx-auto">
+            <div class="w-full h-full flex flex-col bg-gray-100 dark:bg-gray-800 rounded-sm p-4">
+                {{-- Top Bar --}}
+                <div class="flex justify-between">
+                    {{-- Title --}}
+                    <div x-data="{ isEditing: false }">
+                        <div x-show="!isEditing" class="flex gap-4 mt-2">
+                            <p class="text-gray-600">#{{ $card->id }}</p>
+                            <p class="text-gray-900 dark:text-gray-400 font-bold">{{ $card->title }}</p>
                             <i class="fi fi-bs-pencil dark:text-gray-400 hover:text-blue-500 cursor-pointer" @click="isEditing = true"></i>
-                        @endif
-                    </div>
+                        </div>
 
-                    @if ($card->sprint->status === 'active')
                         <div x-show="isEditing" class="flex gap-4 mt-2">
                             <p class="text-gray-600">#{{ $card->id }}</p>
                             <x-forms.text-input 
@@ -39,23 +37,21 @@
                                 autofocus
                             />
                         </div>
-                    @endif
-                </div>
+                    </div>
 
-                <div class="flex items-center gap-2">
-                    {{-- Approval Status --}}
-                    @php
-                        $approvalStatus = strtolower($card->approval_status);
-                        $approvalStatusKey = str_replace(' ', '_', $approvalStatus);
-                        $statusColors = [
-                            'approved' => 'text-green-500 hover:bg-green-500 hover:text-white border-green-500 px-4',
-                            'needs work' => 'text-yellow-500 hover:bg-yellow-500 hover:text-white border-yellow-500 px-2',
-                            'rejected' => 'text-red-500 hover:bg-red-500 hover:text-white border-red-500 px-4',
-                        ];
-                        $statusColor = $statusColors[$approvalStatus] ?? 'text-gray-800 dark:text-gray-400 border-gray-800 dark:border-gray-400 px-4';
-                    @endphp
+                    <div class="flex items-center gap-2">
+                        {{-- Approval Status --}}
+                        @php
+                            $approvalStatus = strtolower($card->approval_status);
+                            $approvalStatusKey = str_replace(' ', '_', $approvalStatus);
+                            $statusColors = [
+                                'approved' => 'text-green-500 hover:bg-green-500 hover:text-white border-green-500 px-4',
+                                'needs work' => 'text-yellow-500 hover:bg-yellow-500 hover:text-white border-yellow-500 px-2',
+                                'rejected' => 'text-red-500 hover:bg-red-500 hover:text-white border-red-500 px-4',
+                            ];
+                            $statusColor = $statusColors[$approvalStatus] ?? 'text-gray-800 dark:text-gray-400 border-gray-800 dark:border-gray-400 px-4';
+                        @endphp
 
-                    @if ($card->sprint->status === 'active')
                         <x-dropdown.wrapper
                             state="open"
                             :useOwnState="true"
@@ -87,85 +83,26 @@
                                 <x-dropdown.dropdown-button icon="" margin="mb-1" label="{{ __('board.status.' . $optionStatusKey) }}" wireClick="updateApprovalStatus('{{ $status }}')" alpineClick="open = false" />
                             @endforeach
                         </x-dropdown.wrapper>
-                    @else
-                        <div class="flex items-center py-1.5 rounded text-sm font-semibold border {{ $statusColor }} cursor-pointer">
-                            <p>{{ __('board.status.' . $approvalStatusKey) }}</p>
-                        </div>
-                    @endif
 
-                    {{-- Total Actual Time --}}
-                    <div class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-actual-time-{{ $card->id }}">
-                        <i class="fi fi-sr-hourglass text-gray-700 dark:text-white text-sm"></i>
-                        <p class="text-gray-700 dark:text-white text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('actual_time')) }}</p>
+                        {{-- Users --}}
+                        @php
+                            $assignees = $card->assignees;
+                            $maxVisible = 3;
 
-                        <x-tooltip id="modal-actual-time-{{ $card->id }}" content="{{ __('board.labels.total_actual_time') }}" />
-                    </div>
+                            $visibleAssignees = null;
 
-                    {{-- Total Estimated Time --}}
-                    <div class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5" data-tooltip-target="modal-estimated-time-{{ $card->id }}">
-                        <i class="fi fi-sr-clock text-gray-700 dark:text-white text-sm"></i>
-                        <p class="text-gray-700 dark:text-white text-sm">{{ \App\Helpers\TimeFormatter::minutesToHuman($card->tasks->sum('estimated_time')) }}</p>
-
-                        <x-tooltip id="modal-estimated-time-{{ $card->id }}" content="{{ __('board.labels.total_estimated_time') }}" />
-                    </div>
-
-                    {{-- Deadline --}}
-                    <div @if ($card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="deadline-{{ $card->id }}" data-tooltip-target="modal-deadline-{{ $card->id }}">
-                        <div 
-                            @if ($card->sprint->status === 'active') @click="editing = true" @endif
-                            class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 {{ ($card->sprint->status === 'active') ? 'cursor-pointer' : '' }}"
-                        >
-                            <i class="fi fi-sr-calendar text-gray-700 dark:text-white text-sm"></i>
-                            <span class="text-gray-700 dark:text-white text-sm">
-                                {{ $card->deadline ? \Carbon\Carbon::parse($card->deadline)->format('M d, H:i') : '-' }}
-                            </span>
-
-                            <x-tooltip id="modal-deadline-{{ $card->id }}" content="{{ __('board.labels.deadline') }}" />
-                        </div>
-
-                        {{-- Edit Deadline --}}
-                        @if ($card->sprint->status === 'active')
-                            <div 
-                                x-show="editing" 
-                                @click.outside="editing = false" 
-                                class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
-                            >
-                                <input 
-                                    type="datetime-local"
-                                    class="w-full text-sm px-2 py-1 rounded border border-gray-300 focus:outline-none"
-                                    wire:model.live="deadlineInput"
-                                    wire:keydown.enter.prevent="updateCardDeadline"
-                                    wire:blur="updateCardDeadline"
-                                    @keydown.enter="editing = false"
-                                />
-                            </div>
-                        @endif
-                    </div>
-
-                    {{-- Users --}}
-                    @php
-                        $assignees = $card->assignees;
-                        $maxVisible = 3;
-
-                        $visibleAssignees = null;
-
-                        if ($card->sprint->status === 'active') {
                             $visibleAssignees = $assignees->take($maxVisible);
-                        } else {
-                            $visibleAssignees = $assignees;
-                        }
 
-                        $remainingCount = $assignees->count() - $maxVisible;
-                    @endphp
+                            $remainingCount = $assignees->count() - $maxVisible;
+                        @endphp
 
-                    <div class="flex justify-end">
-                        <div @if ($card->sprint->status === 'active') x-data="{ open: false }" @endif class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5">
-                            <i 
-                                @if ($card->sprint->status === 'active') @click="open = !open" @endif
-                                class="fi fi-sr-users text-sm text-gray-700 dark:text-white {{ ($card->sprint->status === 'active') ? 'cursor-pointer' : '' }}"
-                            ></i>
+                        <div class="flex justify-end">
+                            <div x-data="{ open: false }" class="relative flex items-center gap-x-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5">
+                                <i 
+                                    @click="open = !open"
+                                    class="fi fi-sr-users text-sm text-gray-700 dark:text-white cursor-pointer"
+                                ></i>
 
-                            @if ($card->sprint->status === 'active')
                                 <div 
                                     x-show="open"
                                     x-transition
@@ -230,41 +167,39 @@
                                         </button>
                                     </div>
                                 </div>
-                            @endif
 
-                            @if ($assignees->count() === 0)
-                                <p class="text-xs text-gray-700 dark:text-white">
-                                    {{ __('board.messages.no_users_assigned') }}
-                                </p>
-                            @else
-                                <div class="flex -space-x-2">
-                                    @foreach ($visibleAssignees as $assignee)
-                                        @php
-                                            $profilePicture = $assignee->user->profile_picture
-                                                ? asset('storage/' . $assignee->user->profile_picture)
-                                                : null;
-                                        @endphp
+                                @if ($assignees->count() === 0)
+                                    <p class="text-xs text-gray-700 dark:text-white">
+                                        {{ __('board.messages.no_users_assigned') }}
+                                    </p>
+                                @else
+                                    <div class="flex -space-x-2">
+                                        @foreach ($visibleAssignees as $assignee)
+                                            @php
+                                                $profilePicture = $assignee->user->profile_picture
+                                                    ? asset('storage/' . $assignee->user->profile_picture)
+                                                    : null;
+                                            @endphp
 
-                                        <img 
-                                            src="{{ $profilePicture ?? 'https://ui-avatars.com/api/?name=' . urlencode($assignee->user->name ?? 'U') . '&background=16a34a&color=ffffff' }}" 
-                                            alt="{{ $assignee->user->name }}" 
-                                            title="{{ $assignee->user->name }}"
-                                            class="w-5 h-5 rounded-full border border-white dark:border-gray-800"
-                                        />
-                                    @endforeach
+                                            <img 
+                                                src="{{ $profilePicture ?? 'https://ui-avatars.com/api/?name=' . urlencode($assignee->user->name ?? 'U') . '&background=16a34a&color=ffffff' }}" 
+                                                alt="{{ $assignee->user->name }}" 
+                                                title="{{ $assignee->user->name }}"
+                                                class="w-5 h-5 rounded-full border border-white dark:border-gray-800"
+                                            />
+                                        @endforeach
 
-                                    @if ($remainingCount > 0 && $card->sprint->status === 'active')
-                                        <div class="w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 text-2xs text-gray-800 dark:text-white border border-white dark:border-gray-800">
-                                            +{{ $remainingCount }}
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
+                                        @if ($remainingCount > 0)
+                                            <div class="w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 text-2xs text-gray-800 dark:text-white border border-white dark:border-gray-800">
+                                                +{{ $remainingCount }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    </div>
 
-                    {{-- Actions --}}
-                    @if ($card->sprint->status === 'active')
+                        {{-- Actions --}}
                         <div 
                             x-data="{ open: false, showMoveOptions: false }"
                             class="relative"
@@ -370,6 +305,7 @@
                                         <x-forms.select
                                             wire:key="columns-{{ $selectedProjectUuid }}"
                                             :options="$selectedProjectModel?->columns
+                                                ->sortBy('position')
                                                 ->map(fn($column) => ['value' => $column->id, 'label' => $column->name])
                                                 ->values()
                                                 ->toArray()
@@ -392,17 +328,15 @@
                                 </div>
                             </x-dropdown.wrapper>
                         </div>
-                    @endif
+                    </div>
                 </div>
-            </div>
 
-            <div class="w-full h-full flex-1 min-h-0 flex flex-col bg-white dark:bg-gray-900 rounded-sm p-4 mt-2">
-                {{-- Description --}}
-                <div 
-                    x-data="{ isEditing: false }"
-                    class="w-full flex gap-2"
-                >
-                    @if ($card->sprint->status === 'active')
+                <div class="w-full h-full flex-1 min-h-0 flex flex-col bg-white dark:bg-gray-900 rounded-sm p-4 mt-2">
+                    {{-- Description --}}
+                    <div 
+                        x-data="{ isEditing: false }"
+                        class="w-full flex gap-2"
+                    >
                         <div
                             x-show="isEditing"
                             class="w-full"
@@ -415,94 +349,84 @@
                                 wire:blur="saveDescription"
                             />
                         </div>
-                    @endif
 
-                    <div
-                        x-show="!isEditing"
-                    >
-                        <p class="text-gray-500 dark:text-gray-400">{{ $cardDescription ? $cardDescription : __('board.messages.no_description') }}</p>
+                        <div
+                            x-show="!isEditing"
+                        >
+                            <p class="text-gray-500 dark:text-gray-400">{{ $cardDescription ? $cardDescription : __('board.messages.no_description') }}</p>
+                        </div>
+
+                        <i class="fi fi-bs-pencil dark:text-gray-400 hover:text-blue-500 cursor-pointer" x-show="!isEditing" @click="isEditing = true"></i>
                     </div>
 
-                    @if ($card->sprint->status === 'active')
-                        <i class="fi fi-bs-pencil dark:text-gray-400 hover:text-blue-500 cursor-pointer" x-show="!isEditing" @click="isEditing = true"></i>
-                    @endif
-                </div>
+                    <x-containers.divider margin="my-6" color="gray-400" />
 
-                <x-containers.divider margin="my-6" color="gray-400" />
-
-                {{-- Task Columns --}}
-                <div 
-                    class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0"
-                    @if ($card->sprint->status === 'active')
+                    {{-- Task Columns --}}
+                    <div 
+                        class="h-full grid grid-cols-3 gap-4 flex-1 min-h-0"
                         wire:sortable-group="updateCardOrder"
-                    @endif
-                >
-                    @foreach ($columns as $column)
-                        <div 
-                            class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0 sortable-column"
-                            wire:key="column-{{ $column['type'] }}"
-                        >
-                            {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
-                            <div class="flex justify-between mb-2">
-                                {{-- Count + Title --}}
-                                <div class="flex gap-2">
-                                    <div class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column['color'] }} text-white px-1.5 py-0.5">{{ count($column['cards']) }}</div>
-                                    <p class="text-{{ $column['color'] }} font-bold">{{ $column['name'] }}</p>
-                                </div>
+                    >
+                        @foreach ($columns as $column)
+                            <div 
+                                class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0 sortable-column"
+                                wire:key="column-{{ $column['type'] }}"
+                            >
+                                {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
+                                <div class="flex justify-between mb-2">
+                                    {{-- Count + Title --}}
+                                    <div class="flex gap-2">
+                                        <div class="flex items-center justify-center rounded-md text-sm font-bold bg-{{ $column['color'] }} text-white px-1.5 py-0.5">{{ count($column['cards']) }}</div>
+                                        <p class="text-{{ $column['color'] }} font-bold">{{ $column['name'] }}</p>
+                                    </div>
 
-                                {{-- Add task button --}}
-                                @if ($card->sprint->status === 'active')
+                                    {{-- Add task button --}}
                                     <button 
                                         class="text-gray-700 dark:text-gray-300 hover:text-gray-400 rounded-full p-1 cursor-pointer"
                                         wire:click="addTask('{{ $column['type'] }}')"
                                     >
                                         <i class="fi fi-sr-plus text-sm"></i>
                                     </button>
-                                @endif
-                            </div>
+                                </div>
 
-                            {{-- Tasks --}}
-                            <div 
-                                class="flex-1 min-h-32 space-y-2"
-                                @if ($card->sprint->status === 'active')
+                                {{-- Tasks --}}
+                                <div 
+                                    class="flex-1 min-h-32 space-y-2"
                                     wire:sortable-group.item-group="{{ $column['type'] }}"
                                     wire:sortable-group.options="{ animation: 100 }"
-                                @endif
-                            >
-                                @if ($createNewTask && $column['type'] === $creatingTaskInColumn) 
-                                    <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
-                                        <input 
-                                            type="text" 
-                                            wire:model="taskName" 
-                                            wire:keydown.enter="addTaskToColumn" 
-                                            wire:blur="cancelTaskCreation" 
-                                            class="w-full border border-gray-300 rounded-md p-1"
-                                            placeholder="{{ __('board.placeholders.new_task') }}"
-                                            autofocus
-                                        />
-                                    </div>
-                                @endif
-                                
-                                @foreach ($column['cards'] as $task)
-                                    <div 
-                                        wire:key="task-{{ $task->id }}"
-                                        @if ($card->sprint->status === 'active')
-                                            wire:sortable-group.item="{{ $task->id }}"
-                                        @endif
-                                    >
-                                        <livewire:components.board.task-card 
-                                            :task="$task"
-                                            :users="$users"
+                                >
+                                    @if ($createNewTask && $column['type'] === $creatingTaskInColumn) 
+                                        <div class="bg-white dark:bg-gray-700 p-2 rounded-md">
+                                            <input 
+                                                type="text" 
+                                                wire:model="taskName" 
+                                                wire:keydown.enter="addTaskToColumn" 
+                                                wire:blur="cancelTaskCreation" 
+                                                class="w-full border border-gray-300 rounded-md p-1"
+                                                placeholder="{{ __('board.placeholders.new_task') }}"
+                                                autofocus
+                                            />
+                                        </div>
+                                    @endif
+                                    
+                                    @foreach ($column['cards'] as $task)
+                                        <div 
                                             wire:key="task-{{ $task->id }}"
-                                        />
-                                    </div>
-                                @endforeach
+                                            wire:sortable-group.item="{{ $task->id }}"
+                                        >
+                                            <livewire:components.backlog.task-card 
+                                                :task="$task"
+                                                :users="$users"
+                                                wire:key="task-{{ $task->id }}"
+                                            />
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 
 </div>

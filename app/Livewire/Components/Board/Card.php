@@ -9,6 +9,7 @@ use App\Models\BacklogTask;
 use App\Models\BacklogTaskAssignee;
 use App\Models\Card as CardModel;
 use App\Models\CardAssignee;
+use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
@@ -121,18 +122,71 @@ class Card extends Component
                 ->delete();
         }
 
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->selectedProject->uuid,
+            'sprint_uuid' => $this->sprintOrBacklog === 'sprint' ? $this->selectedEntityUuid : null,
+            'card_id' => $this->cardId,
+            'action' => $isChecked ? 'create' : 'delete',
+            'table' => 'card_assignees',
+            'data' => json_encode(['user_uuid' => $userUuid]),
+            'description' => $isChecked
+                ? __('logs.board.card_assignee_added', [
+                    'user' => optional($this->users->firstWhere('uuid', $userUuid))->name,
+                    'card' => $this->card->title,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.card_assignee_removed', [
+                    'user' => optional($this->users->firstWhere('uuid', $userUuid))->name,
+                    'card' => $this->card->title,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
+        ]);
+
         $this->loadCard();
     }
 
     public function clearAssignees() {
         CardAssignee::where('card_id', $this->cardId)->delete();
         $this->loadCard();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->selectedProject->uuid,
+            'sprint_uuid' => $this->sprintOrBacklog === 'sprint' ? $this->selectedEntityUuid : null,
+            'card_id' => $this->cardId,
+            'action' => 'delete',
+            'table' => 'card_assignees',
+            'data' => json_encode(['cleared_all_assignees' => true]),
+            'description' => __('logs.board.card_assignee_removed_all', [
+                'card' => $this->card->title,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
     }
 
     public function assignToMe() {
         CardAssignee::firstOrCreate([
             'card_id' => $this->cardId,
             'user_uuid' => auth()->user()->uuid,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->selectedProject->uuid,
+            'sprint_uuid' => $this->sprintOrBacklog === 'sprint' ? $this->selectedEntityUuid : null,
+            'card_id' => $this->cardId,
+            'action' => 'create',
+            'table' => 'card_assignees',
+            'data' => json_encode(['user_uuid' => auth()->user()->uuid]),
+            'description' => __('logs.board.card_assignee_added', [
+                'user' => auth()->user()->name,
+                'card' => $this->card->title,
+                'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->loadCard();
@@ -163,6 +217,28 @@ class Card extends Component
                 Toaster::error(__('board.toast.card_move_failed'));
                 return;
             }
+
+            Log::create([
+                'user_uuid' => auth()->user()->uuid,
+                'project_uuid' => $this->selectedProject->uuid,
+                'sprint_uuid' => $this->selectedEntityUuid,
+                'card_id' => $this->cardId,
+                'action' => 'update',
+                'table' => 'cards',
+                'data' => json_encode([
+                    'new_sprint_uuid' => $this->selectedEntityUuid,
+                    'new_column_id' => $this->column,
+                    'new_card_index' => $index,
+                ]),
+                'description' => __('logs.board.card_moved_sprints', [
+                    'card' => $card->title,
+                    'fromSprint' => optional($card->sprint)->name,
+                    'toSprint' => optional($this->selectedProject->sprints()->find($this->selectedEntityUuid))->name,
+                    'fromColumn' => optional($card->column)->name,
+                    'toColumn' => optional($this->selectedProject->columns()->find($this->column))->name,
+                ]),
+                'environment' => app()->environment(),
+            ]);
         } else {
             $index = $this->position === 'top' ? 0 : BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)->max('card_index') + 1;
             BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)
@@ -203,6 +279,27 @@ class Card extends Component
                     ]);
                 }
 
+                Log::create([
+                    'user_uuid' => auth()->user()->uuid,
+                    'project_uuid' => $this->selectedProject->uuid,
+                    'backlog_uuid' => $this->selectedEntityUuid,
+                    'card_id' => $this->cardId,
+                    'action' => 'create',
+                    'table' => 'backlog_cards',
+                    'data' => json_encode([
+                        'new_backlog_card_id' => $backlogCard->id,
+                        'new_backlog_uuid' => $this->selectedEntityUuid,
+                        'new_card_index' => $index,
+                    ]),
+                    'description' => __('logs.board.card_moved_backlog', [
+                        'card' => $card->title,
+                        'fromSprint' => optional($card->sprint)->name,
+                        'toBacklog' => optional($this->selectedProject->backlogs()->find($this->selectedEntityUuid))->name,
+                        'fromColumn' => optional($card->column)->name,
+                    ]),
+                    'environment' => app()->environment(),
+                ]);
+
                 $card->delete();
 
                 DB::commit();
@@ -231,6 +328,27 @@ class Card extends Component
             'deadline' => $this->deadlineInput
                 ? \Carbon\Carbon::parse($this->deadlineInput)
                 : null,
+        ]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->selectedProject->uuid,
+            'sprint_uuid' => $this->sprintOrBacklog === 'sprint' ? $this->selectedEntityUuid : null,
+            'card_id' => $this->cardId,
+            'action' => 'update',
+            'table' => 'cards',
+            'data' => json_encode(['new_deadline' => $this->deadlineInput]),
+            'description' => $this->deadlineInput
+                ? __('logs.board.card_deadline_updated', [
+                    'card' => $card->title, 
+                    'deadline' => $this->deadlineInput,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ])
+                : __('logs.board.card_deadline_cleared', [
+                    'card' => $card->title,
+                    'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
+                ]),
+            'environment' => app()->environment(),
         ]);
 
         $this->loadCard();
