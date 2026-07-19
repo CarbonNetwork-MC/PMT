@@ -26,4 +26,9 @@ return [
     'sprints_overview' => 'Sprints Overview',
     'sprints_new' => 'New Sprint',
 
+    'auth' => [
+        'login' => 'Login',
+        'register' => 'Register',
+    ]
+
 ];

@@ -1,5 +1,7 @@
 @extends('layouts.guest')
 
+@section('title', __('titles.auth.register'))
+
 @section('content')
     <div class="auth-background hidden lg:block">
         <div class="grid grid-cols-3 xl:grid-cols-5!">
