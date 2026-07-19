@@ -112,113 +112,117 @@
         {{ __('dashboard.labels.activity_stream') }}
     </div>
 
-    <div class="mx-auto w-full max-w-6xl">
-        <div class="space-y-0">
-            @foreach ($logs as $log)
-                <div class="grid min-h-40 grid-cols-[minmax(0,1fr)_6rem_minmax(0,1fr)] items-stretch">
-                    {{-- Left side --}}
-                    <div class="flex items-center justify-end py-5 pr-8">
-                        @if ($loop->odd)
-                            <x-project.log-card :log="$log" />
-                        @else
+    @if ($logs->isNotEmpty())
+        <div class="mx-auto w-full max-w-6xl">
+            <div class="space-y-0">
+                @foreach ($logs as $log)
+                    <div class="grid min-h-40 grid-cols-[minmax(0,1fr)_6rem_minmax(0,1fr)] items-stretch">
+                        {{-- Left side --}}
+                        <div class="flex items-center justify-end py-5 pr-8">
+                            @if ($loop->odd)
+                                <x-project.log-card :log="$log" />
+                            @else
+                                <time
+                                    datetime="{{ $log->created_at->toIso8601String() }}"
+                                    class="text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700 pb-1"
+                                >
+                                    {{ $log->created_at->format('d M Y') }}
+                                </time>
+                            @endif
+                        </div>
+
+                        {{-- Center timeline --}}
+                        <div class="relative flex items-center justify-center">
+                            {{-- Vertical line --}}
+                            <div
+                                @class([
+                                    'absolute left-1/2 w-0.5 -translate-x-1/2 bg-mist-400 dark:bg-gray-700',
+                                    'top-1/2 bottom-0' => $loop->first,
+                                    'top-0 bottom-1/2' => $loop->last,
+                                    'inset-y-0' => ! $loop->first && ! $loop->last,
+                                ])
+                            ></div>
+
+                            {{-- Time circle --}}
                             <time
                                 datetime="{{ $log->created_at->toIso8601String() }}"
-                                class="text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700 pb-1"
+                                class="relative z-10 flex size-20 items-center justify-center rounded-full
+                                    border-4 border-white bg-blue-600 text-sm font-semibold text-white
+                                    shadow-sm ring-1 ring-gray-200
+                                    dark:border-gray-900 dark:bg-blue-500 dark:ring-gray-700"
                             >
-                                {{ $log->created_at->format('d M Y') }}
+                                {{ $log->created_at->format('H:i') }}
                             </time>
-                        @endif
+                        </div>
+
+                        {{-- Right side --}}
+                        <div class="flex items-center justify-start py-5 pl-8">
+                            @if ($loop->odd)
+                                <time
+                                    datetime="{{ $log->created_at->toIso8601String() }}"
+                                    class="text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700 pb-1"
+                                >
+                                    {{ $log->created_at->format('d M Y') }}
+                                </time>
+                            @else
+                                <x-project.log-card :log="$log" />
+                            @endif
+                        </div>
                     </div>
-
-                    {{-- Center timeline --}}
-                    <div class="relative flex items-center justify-center">
-                        {{-- Vertical line --}}
-                        <div
-                            @class([
-                                'absolute left-1/2 w-0.5 -translate-x-1/2 bg-mist-400 dark:bg-gray-700',
-                                'top-1/2 bottom-0' => $loop->first,
-                                'top-0 bottom-1/2' => $loop->last,
-                                'inset-y-0' => ! $loop->first && ! $loop->last,
-                            ])
-                        ></div>
-
-                        {{-- Time circle --}}
-                        <time
-                            datetime="{{ $log->created_at->toIso8601String() }}"
-                            class="relative z-10 flex size-20 items-center justify-center rounded-full
-                                border-4 border-white bg-blue-600 text-sm font-semibold text-white
-                                shadow-sm ring-1 ring-gray-200
-                                dark:border-gray-900 dark:bg-blue-500 dark:ring-gray-700"
-                        >
-                            {{ $log->created_at->format('H:i') }}
-                        </time>
-                    </div>
-
-                    {{-- Right side --}}
-                    <div class="flex items-center justify-start py-5 pl-8">
-                        @if ($loop->odd)
-                            <time
-                                datetime="{{ $log->created_at->toIso8601String() }}"
-                                class="text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700 pb-1"
-                            >
-                                {{ $log->created_at->format('d M Y') }}
-                            </time>
-                        @else
-                            <x-project.log-card :log="$log" />
-                        @endif
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        @if ($hasMoreLogs)
-            <div class="mt-8 flex justify-center">
-                <button
-                    type="button"
-                    wire:click="loadMoreLogs"
-                    wire:loading.attr="disabled"
-                    class="inline-flex items-center rounded-lg border border-gray-200 bg-white
-                        px-5 py-2.5 text-sm font-medium text-gray-900
-                        hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-100
-                        disabled:cursor-not-allowed disabled:opacity-50
-                        dark:border-gray-600 dark:bg-gray-800 dark:text-white
-                        dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-                >
-                    <span wire:loading.remove wire:target="loadMoreLogs">
-                        Load more
-                    </span>
-
-                    <span
-                        wire:loading.flex
-                        wire:target="loadMoreLogs"
-                        class="items-center gap-2"
-                    >
-                        <svg
-                            class="size-4 animate-spin"
-                            aria-hidden="true"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                        >
-                            <circle
-                                class="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                stroke-width="4"
-                            ></circle>
-
-                            <path
-                                class="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4Z"
-                            ></path>
-                        </svg>
-
-                        Loading...
-                    </span>
-                </button>
+                @endforeach
             </div>
-        @endif
-    </div>
+
+            @if ($hasMoreLogs)
+                <div class="mt-8 flex justify-center">
+                    <button
+                        type="button"
+                        wire:click="loadMoreLogs"
+                        wire:loading.attr="disabled"
+                        class="inline-flex items-center rounded-lg border border-gray-200 bg-white
+                            px-5 py-2.5 text-sm font-medium text-gray-900
+                            hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-100
+                            disabled:cursor-not-allowed disabled:opacity-50
+                            dark:border-gray-600 dark:bg-gray-800 dark:text-white
+                            dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                    >
+                        <span wire:loading.remove wire:target="loadMoreLogs">
+                            Load more
+                        </span>
+
+                        <span
+                            wire:loading.flex
+                            wire:target="loadMoreLogs"
+                            class="items-center gap-2"
+                        >
+                            <svg
+                                class="size-4 animate-spin"
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                            >
+                                <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                ></circle>
+
+                                <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4Z"
+                                ></path>
+                            </svg>
+
+                            Loading...
+                        </span>
+                    </button>
+                </div>
+            @endif
+        </div>
+    @else
+        <p class="text-center text-gray-600 dark:text-gray-300 mt-4">{{ __('dashboard.messages.no_activity') }}</p>
+    @endif
 </div>
