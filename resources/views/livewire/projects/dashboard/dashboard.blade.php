@@ -98,7 +98,9 @@
                 wire:key="sprint-{{ $sprint->uuid }}"
             />
         @empty
-            <p class="text-gray-600 dark:text-gray-300">{{ __('dashboard.labels.no_active_sprints') }}</p>
+            <div class="col-span-2 lg:col-span-3 xl:col-span-4 bg-yellow-100 p-4 rounded-lg">
+                <p class="text-center text-yellow-800">{{ __('dashboard.messages.no_active_sprints') }}</p>
+            </div>
         @endforelse
     </div>
 
