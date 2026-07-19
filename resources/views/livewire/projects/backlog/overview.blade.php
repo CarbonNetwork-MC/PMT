@@ -73,12 +73,22 @@
                         >
                             {{ $backlog->name }}
                         </p>
-                        <i class="hidden! group-hover:flex! fi fi-br-trash hover:text-red-400 rounded-md p-2 
-                            {{ $backlog->uuid === $selectedBacklog?->uuid 
-                                ? 'hover:bg-blue-500 dark:hover:bg-blue-600' 
-                                : 'hover:bg-gray-400 dark:hover:bg-gray-800' 
-                            }}"
-                            wire:click="removeBucket('{{ $backlog->uuid }}')"></i>
+                        <div class="flex gap-1">
+                            <i class="hidden! group-hover:flex! fi fi-rr-edit hover:text-white rounded-md p-2 
+                                {{ $backlog->uuid === $selectedBacklog?->uuid 
+                                    ? 'hover:bg-blue-500 dark:hover:bg-blue-600' 
+                                    : 'hover:bg-gray-400 dark:hover:bg-gray-800' 
+                                }}"
+                                wire:click="editBucket('{{ $backlog->uuid }}')"
+                            ></i>
+                            <i class="hidden! group-hover:flex! fi fi-rr-trash hover:text-white rounded-md p-2 
+                                {{ $backlog->uuid === $selectedBacklog?->uuid 
+                                    ? 'hover:bg-blue-500 dark:hover:bg-blue-600' 
+                                    : 'hover:bg-gray-400 dark:hover:bg-gray-800' 
+                                }}"
+                                wire:click="removeBucket('{{ $backlog->uuid }}')"
+                            ></i>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -333,6 +343,30 @@
             </x-buttons.secondary-button>
             <x-buttons.primary-button wire:click="createBucket">
                 {{ __('general.buttons.create') }}
+            </x-buttons.primary-button>
+        </x-slot>
+    </x-modals.modal>
+
+    {{-- Edit Backlog Modal --}}
+    <x-modals.modal wire:model="showBucketEditModal">
+        <x-slot name="title">
+            <p class="text-center">
+                {{ __('backlog.titles.edit_bucket') }}
+            </p>
+        </x-slot>
+        <x-slot name="content">
+            <x-forms.text-input 
+                label="{{ __('backlog.labels.bucket_name') }}" 
+                placeholder="{{ __('backlog.placeholders.bucket_name') }}" 
+                wire:model.defer="bucketName" 
+            />
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showBucketEditModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.primary-button wire:click="updateBucket">
+                {{ __('general.buttons.update') }}
             </x-buttons.primary-button>
         </x-slot>
     </x-modals.modal>

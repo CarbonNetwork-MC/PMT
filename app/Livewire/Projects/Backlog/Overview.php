@@ -39,6 +39,9 @@ class Overview extends Component
     public $bucketName = '';
     public $showBucketCreationModal = false;
 
+    public $bucketToEdit = null;
+    public $showBucketEditModal = false;
+
     public $bucketToDelete = null;
     public $showDeleteBucketModal = false;
 
@@ -203,6 +206,45 @@ class Overview extends Component
     public function cancelBucketCreation() {
         $this->bucketName = '';
         $this->showBucketCreationModal = false;
+    }
+
+    public function editBucket($backlogId) {
+        $this->bucketToEdit = BacklogModel::where('uuid', $backlogId)->first();
+        $this->bucketName = $this->bucketToEdit->name;
+        $this->showBucketEditModal = true;
+    }
+
+    public function updateBucket() {
+        if (!$this->bucketToEdit) {
+            Toaster::error(__('backlog.toasts.bucket_not_found'));
+            $this->showBucketEditModal = false;
+            return;
+        }
+
+        $this->bucketToEdit->name = $this->bucketName;
+        $this->bucketToEdit->save();
+
+        Log::create([
+            'user_uuid' => Auth::user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'backlog_uuid' => $this->bucketToEdit->uuid,
+            'action' => 'update',
+            'table' => 'backlogs',
+            'data' => json_encode([
+                'name' => $this->bucketToEdit->name,
+            ]),
+            'description' => __('logs.backlog.bucket_updated', [
+                'bucket' => $this->bucketToEdit->name,
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
+        Toaster::success(__('backlog.toasts.bucket_updated', ['bucket' => $this->bucketToEdit->name]));
+
+        $this->bucketName = '';
+        $this->showBucketEditModal = false;
+
+        $this->reloadBacklogState();
     }
 
     public function removeBucket($backlogId) {

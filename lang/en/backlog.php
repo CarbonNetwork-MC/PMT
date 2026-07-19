@@ -16,6 +16,7 @@ return [
         'delete_bucket' => 'Delete Bucket',
         'delete_card' => 'Delete Card',
         'delete_task' => 'Delete Task',
+        'edit_bucket' => 'Edit Bucket',
     ],
         
         
@@ -39,6 +40,7 @@ return [
         'bucket_name_required' => 'Bucket name is required.',
         'bucket_created' => 'Bucket <b>:bucket</b> created successfully.',
         'bucket_deleted' => 'Bucket <b>:bucket</b> deleted successfully.',
+        'bucket_updated' => 'Bucket <b>:bucket</b> updated successfully.',
         'card_created' => 'Card <b>:card</b> created successfully.',
         'card_deleted' => 'Card <b>:card</b> deleted successfully.',
     ],
