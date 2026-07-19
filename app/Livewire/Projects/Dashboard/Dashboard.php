@@ -58,18 +58,9 @@ class Dashboard extends Component
     public function render()
     {
         $logs = $this->project->logs()
-            ->whereIn('sprint_uuid', $this->sprints->pluck('uuid'))
             ->orderBy('created_at', 'desc')
             ->limit($this->limit + 1)
             ->get();
-
-        $deleteSprintLogs = $this->project->logs()
-            ->where('action', 'delete')
-            ->where('table', 'sprints')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $logs = $logs->merge($deleteSprintLogs)->sortByDesc('created_at');
 
         $hasMoreLogs = $logs->count() > $this->limit;
 
