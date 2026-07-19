@@ -8,7 +8,6 @@ use App\Models\ProjectMember;
 use App\Models\ProjectRole;
 use App\Models\User;
 use Livewire\Component;
-use Masmerise\Toaster\Toaster;
 
 class Members extends Component
 {
@@ -127,7 +126,10 @@ class Members extends Component
 
         $this->showChangeRoleModal = false;
 
-        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.role_changed', ['name' => $this->userToModify['user']]));
+        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.role_changed', [
+            'name' => $this->userToModify['user'], 
+            'role' => ProjectRole::find($this->newRole)->name
+        ]));
     }
 
     public function addMember() {
@@ -178,7 +180,7 @@ class Members extends Component
             'environment' => config('app.env'),
         ]);
 
-        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('general.toast.member_removed', ['name' => $this->userToModify['user']]));
+        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.member_removed', ['name' => $this->userToModify['user']]));
     }
 
     public function render()

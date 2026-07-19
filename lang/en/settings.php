@@ -79,7 +79,7 @@ return [
         'member_removed' => '<b>:name</b> has been removed from the project.',
         'owner_changed' => 'Project ownership has been transferred to <b>:newOwner</b>.',
         'project_deleted' => 'Project has been deleted.',
-        'role_changed' => '<b>:name</b>\'s role has been updated.',
+        'role_changed' => '<b>:name</b>\'s role has been updated to <b>:role</b>.',
     ],
 
     'placeholders' => [
