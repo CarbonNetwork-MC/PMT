@@ -371,7 +371,6 @@
                                 class="bg-gray-100 dark:bg-gray-800 rounded-sm p-2 h-full flex flex-col min-h-0 sortable-column"
                                 wire:key="column-{{ $column['type'] }}"
                             >
-                                {{-- <p class="text-gray-900 dark:text-gray-400 font-bold mb-2">{{ $column['name'] }}</p> --}}
                                 <div class="flex justify-between mb-2">
                                     {{-- Count + Title --}}
                                     <div class="flex gap-2">
