@@ -48,6 +48,7 @@ return [
     'placeholders' => [
         'bucket_name' => 'Enter bucket name',
         'card_title' => 'Enter card title',
+        'task_description' => 'Enter task description...',
     ],
 
 ];

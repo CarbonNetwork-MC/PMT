@@ -64,7 +64,41 @@
     </div>
 
     {{-- Description --}}
-    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">{{ $task->description }}</p>
+    <div
+        x-data="{ isEditing: false }"
+        class="w-full mb-2"
+    >
+        {{-- Default --}}
+        <div
+            x-show="!isEditing"
+            class="group flex w-full items-center gap-2"
+        >
+            <p class="text-sm text-gray-700 dark:text-gray-300">
+                {{ $taskTitle }}
+            </p>
+
+            <i
+                class="hidden! group-hover:flex! fi fi-bs-pencil text-sm hover:text-blue-500 cursor-pointer"
+                @click="isEditing = true"
+            ></i>
+        </div>
+
+        {{-- Editing --}}
+        <div
+            x-show="isEditing"
+            class="w-full"
+        >
+            <x-forms.text-area
+                class="block w-full"
+                placeholder="{{ __('backlog.placeholders.task_description') }}"
+                rows="3"
+                wire:model.live="taskTitle"
+                @keydown.enter.prevent="isEditing = false"
+                @blur="isEditing = false"
+                wire:blur="updateTitle"
+            />
+        </div>
+    </div>
 
     {{-- Bottom Bar - Users --}}
     <div class="flex items-center justify-end">

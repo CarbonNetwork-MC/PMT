@@ -12,6 +12,7 @@ use Livewire\Component;
 class TaskCard extends Component
 {
     public $task;
+    public $taskTitle;
 
     public $users;
     public $filteredUsers = [];
@@ -36,8 +37,10 @@ class TaskCard extends Component
     public $column;
     public $position = 'top';
 
+
     public function mount($task, $users) {
         $this->task = $task;
+        $this->taskTitle = $task->description;
         $this->users = $users;
         $this->filteredUsers = $users;
 
@@ -99,6 +102,35 @@ class TaskCard extends Component
         $this->dispatch('refreshModal');
     }
 
+    public function updateTitle() {
+        $this->validate([
+            'taskTitle' => ['required', 'string', 'max:255'],
+        ]);
+
+        $this->task->update(['description' => $this->taskTitle]);
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->column->project->uuid,
+            'sprint_uuid' => $this->task->card->sprint_id ? $this->task->card->sprint->uuid : null,
+            'card_id' => $this->task->card_id,
+            'task_id' => $this->task->id,
+            'action' => 'update',
+            'table' => 'tasks',
+            'data' => json_encode([
+                'task_id' => $this->task->id,
+                'description' => $this->taskTitle,
+            ]),
+            'description' => __('logs.board.task_title_updated', [
+                'task' => $this->taskTitle,
+                'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
+        $this->refreshBoardAndModal();
+    }
+
     public function toggleAssignee($userUuid, $isChecked) {
         if ($isChecked) {
             TaskAssignee::firstOrCreate([
@@ -126,12 +158,12 @@ class TaskCard extends Component
             'description' => $isChecked
                 ? __('logs.board.task_assignee_added', [
                     'user' => $this->users->firstWhere('uuid', $userUuid)->name, 
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ])
                 : __('logs.board.task_assignee_removed', [
                     'user' => $this->users->firstWhere('uuid', $userUuid)->name,
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
@@ -155,7 +187,7 @@ class TaskCard extends Component
                 'task_id' => $this->task->id,
             ]),
             'description' => __('logs.board.task_assignee_removed_all', [
-                'task' => $this->task->title,
+                'task' => $this->task->description,
                 'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
@@ -184,7 +216,7 @@ class TaskCard extends Component
             ]),
             'description' => __('logs.board.task_assignee_added', [
                 'user' => auth()->user()->name,
-                'task' => $this->task->title,
+                'task' => $this->task->description,
                 'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
@@ -234,12 +266,12 @@ class TaskCard extends Component
             ]),
             'description' => $this->estimatedTimeInput
                 ? __('logs.board.task_estimated_time_updated', [
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'estimated_time' => $data['estimatedTimeInput'],
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ])
                 : __('logs.board.task_estimated_time_cleared', [
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
@@ -276,12 +308,12 @@ class TaskCard extends Component
             ]),
             'description' => $this->actualTimeInput
                 ? __('logs.board.task_actual_time_updated', [
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'actual_time' => $this->actualTimeInput,
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ])
                 : __('logs.board.task_actual_time_cleared', [
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
@@ -317,12 +349,12 @@ class TaskCard extends Component
             ]),
             'description' => $this->deadlineInput
                 ? __('logs.board.task_deadline_updated', [
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'deadline' => \Carbon\Carbon::parse($this->deadlineInput)->format('Y-m-d H:i'),
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ])
                 : __('logs.board.task_deadline_cleared', [
-                    'task' => $this->task->title,
+                    'task' => $this->task->description,
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),

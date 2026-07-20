@@ -85,6 +85,7 @@ return [
     'placeholders' => [
         'new_card' => 'Enter card name...',
         'new_task' => 'Enter task description...',
+        'task_description' => 'Enter task description...',
     ],
 
     'status' => [

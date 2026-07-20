@@ -11,6 +11,7 @@ use Livewire\Component;
 class TaskCard extends Component
 {
     public $task;
+    public $taskTitle;
 
     public $users;
     public $filteredUsers = [];
@@ -37,6 +38,7 @@ class TaskCard extends Component
 
     public function mount($task, $users) {
         $this->task = $task;
+        $this->taskTitle = $task->description;
         $this->users = $users;
         $this->filteredUsers = $users;
 
@@ -95,6 +97,30 @@ class TaskCard extends Component
         $this->task->refresh();
         $this->dispatch('refreshBacklog');
         $this->dispatch('refreshBacklogModal');
+    }
+
+    public function updateTitle() {
+        $this->task->description = $this->taskTitle;
+        $this->task->save();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->task->card->backlog->project->uuid,
+            'backlog_uuid' => $this->task->card->backlog->uuid,
+            'backlog_card_id' => $this->task->card->id,
+            'backlog_task_id' => $this->task->id,
+            'action' => 'update',
+            'table' => 'backlog_tasks',
+            'data' => json_encode(['description' => $this->taskTitle]),
+            'description' => __('logs.backlog.task_title_updated', [
+                'task' => $this->taskTitle,
+                'card' => $this->task->card->title,
+                'backlog' => $this->task->card->backlog->name
+            ]),
+            'environment' => app()->environment(),
+        ]);
+
+        $this->refreshBacklogAndModal();
     }
 
     public function toggleAssignee($userUuid, $isChecked) {

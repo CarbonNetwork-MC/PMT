@@ -24,7 +24,7 @@
         @if($required) required @endif
         @if($disabled) disabled @endif
         {{ $attributes->class([
-            'bg-gray-100 border border-default-medium text-black text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-3.5 shadow-xs placeholder:text-body dark:placeholder:text-gray-800'
+            'w-full block bg-gray-100 border border-default-medium text-black text-sm rounded-base focus:ring-brand focus:border-brand p-3.5 shadow-xs placeholder:text-body dark:placeholder:text-gray-800'
         ]) }}
     ></textarea>
 </div>
