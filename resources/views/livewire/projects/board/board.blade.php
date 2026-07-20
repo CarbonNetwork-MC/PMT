@@ -1,6 +1,6 @@
 <div>
     {{-- Page Title --}}
-    @section('title', __('titles.project_board') . ' | ' . $project->name . ' | ' . $sprint->name)
+    @section('title', __('titles.projects.board') . ' | ' . $project->name . ' | ' . $sprint->name)
 
     {{-- Breadcrumbs --}}
     <x-slot name="breadcrumbs">

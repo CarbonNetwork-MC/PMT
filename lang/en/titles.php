@@ -10,25 +10,42 @@ return [
     */
 
     'dashboard' => 'Dashboard',
-    'projects' => 'Projects',
-    'project_archive' => 'Project Archive',
-    'project_backlog' => 'Project Backlog',
-    'project_board' => 'Project Board',
-    'project_dashboard' => 'Project Dashboard',
-    'projects_new' => 'Projects | New Project',
-    'project_settings' => 'Project Settings',
-    'project_settings_admin' => 'Project Settings - Admin',
-    'project_settings_general' => 'Project Settings - General',
-    'project_settings_members' => 'Project Settings - Members',
-    'project_settings_columns' => 'Project Settings - Columns',
-    'project_settings_columns_new' => 'Project Settings - Columns | New Column',
-    'project_settings_columns_edit' => 'Project Settings - Columns | Edit Column',
-    'sprints_overview' => 'Sprints Overview',
-    'sprints_new' => 'New Sprint',
+
+    'projects' => [
+        'projects' => 'Projects',
+        'archive' => 'Project Archive',
+        'backlog' => 'Project Backlog',
+        'board' => 'Project Board',
+        'dashboard' => 'Project Dashboard',
+        'new' => 'Projects | New Project',
+        'settings' => [
+            'settings' => 'Project Settings',
+            'admin' => 'Project Settings - Admin',
+            'general' => 'Project Settings - General',
+            'members' => 'Project Settings - Members',
+            'columns' => [
+                'columns' => 'Project Settings - Columns',
+                'new' => 'Project Settings - Columns | New Column',
+                'edit' => 'Project Settings - Columns | Edit Column',
+            ],
+        ],
+        'sprints' => [
+            'overview' => 'Sprints Overview',
+            'new' => 'New Sprint',
+        ],
+    ],
 
     'auth' => [
         'login' => 'Login',
         'register' => 'Register',
+    ],
+
+    'profile' => [
+        'overview' => 'Profile Overview',
+        'settings' => 'Profile Settings',
+        'settings_general' => 'Profile Settings - General',
+        'settings_security' => 'Profile Settings - Security',
+        'settings_notifications' => 'Profile Settings - Notifications',
     ]
 
 ];
