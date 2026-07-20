@@ -120,7 +120,7 @@ class Modal extends Component
         $this->creatingTaskInColumn = $columnType;
     }
 
-    public function addTaskToColumn() {
+    public function addTaskToColumn($columnType) {
         if (empty($this->taskName)) {
             Toaster::error(__('board.toast.task_name_required'));
             return;
@@ -132,6 +132,7 @@ class Modal extends Component
         $newTask = BacklogTask::create([
             'backlog_card_id' => $this->card->id,
             'description' => $this->taskName,
+            'status' => $columnType,
             'task_index' => $maxIndex !== null ? $maxIndex + 1 : 0,
         ]);
 

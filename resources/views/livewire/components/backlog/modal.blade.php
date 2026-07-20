@@ -399,7 +399,7 @@
                                             <input 
                                                 type="text" 
                                                 wire:model="taskName" 
-                                                wire:keydown.enter="addTaskToColumn" 
+                                                wire:keydown.enter="addTaskToColumn('{{ $column['type'] }}')" 
                                                 wire:blur="cancelTaskCreation" 
                                                 class="w-full border border-gray-300 rounded-md p-1"
                                                 placeholder="{{ __('board.placeholders.new_task') }}"
