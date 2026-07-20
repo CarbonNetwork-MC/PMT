@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Livewire\Colors;
 use App\Livewire\Dashboard;
 
+use App\Livewire\Profile\Overview as ProfileOverview;
+
 use App\Livewire\Projects\NewProject;
 use App\Livewire\Projects\Projects;
 
@@ -51,6 +53,11 @@ Route::middleware(['auth'])->group(function() {
 
     // ? Dashboard
     Route::get('/dashboard', Dashboard::class)->name('dashboard.render');
+
+    // ? Profile
+    Route::prefix('/profile')->group(function() {
+        Route::get('/', ProfileOverview::class)->name('profile.overview.render');
+    });
 
     // ? Projects
     Route::prefix('/projects')->group(function() {

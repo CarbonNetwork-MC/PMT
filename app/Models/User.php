@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -81,5 +80,9 @@ class User extends Authenticatable
                         $q->whereIn('slug', ['member']);
                     });
             });
+    }
+
+    public function sessions(): HasMany {
+        return $this->hasMany(DatabaseSession::class, 'user_id', 'uuid');
     }
 }

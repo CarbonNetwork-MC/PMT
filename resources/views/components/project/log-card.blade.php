@@ -1,5 +1,14 @@
 @props(['log'])
 
+@php
+    $user = $log->user;
+    $isDeletedUser = false;
+    if (!$user) {
+        $user = \App\Helpers\GetDeletedUser::getDeletedUserByUuid($log->user_uuid);
+        $isDeletedUser = true;
+    }
+@endphp
+
 <article
     class="w-full max-w-md rounded-lg border border-gray-200 bg-white p-5 shadow-sm
            dark:border-gray-700 dark:bg-gray-800"
@@ -7,19 +16,23 @@
     <div class="mb-3 flex items-start justify-between gap-4">
         <div class="flex min-w-0 items-center gap-3">
             @php
-                $profilePicture = $log->user?->profile_photo_path
-                    ? asset('storage/' . $log->user?->profile_photo_path)
+                $profilePicture = $user?->profile_photo_path
+                    ? asset('storage/' . $user?->profile_photo_path)
                     : null;
             @endphp
             <img
-                src="{{ $profilePicture ?? 'https://ui-avatars.com/api/?name=' . urlencode($log->user?->name ?? 'U') . '&background=16a34a&color=ffffff' }}"
-                alt="{{ $log->user?->name ?? 'System' }}"
+                src="{{ $profilePicture ?? 'https://ui-avatars.com/api/?name=' . urlencode($user?->name ?? 'S') . '&background=16a34a&color=ffffff' }}"
+                alt="{{ $user?->name ?? 'System' }}"
                 class="size-9 rounded-full object-cover"
             >
 
             <div class="min-w-0">
                 <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                    {{ $log->user?->name ?? 'System' }}
+                    @if ($isDeletedUser)
+                        {{ $user?->name ? $user?->name . ' (Deleted)' : 'System' }}
+                    @else
+                        {{ $user?->name ?? 'System' }}
+                    @endif
                 </p>
 
                 <p class="text-xs text-gray-500 dark:text-gray-400">

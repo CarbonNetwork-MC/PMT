@@ -224,7 +224,7 @@
 
                             <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
-                            <a href="{{-- route('profile.render') --}}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
+                            <a href="{{ route('profile.overview.render') }}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
                                 <i class="fi fi-rr-user"></i>
                                 <span>Profile</span>
                             </a>

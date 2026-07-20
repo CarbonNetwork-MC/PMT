@@ -3,6 +3,7 @@
 namespace App\Livewire\Components;
 
 use App\Models\Project;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Sidebar extends Component
@@ -19,6 +20,14 @@ class Sidebar extends Component
             : null;
 
         $this->selectedProject = request()->route('uuid') ? Project::where('uuid', request()->route('uuid'))->first() : null;
+    }
+
+    #[On('reloadUser')]
+    public function reloadUser() {
+        $this->user = auth()->user();
+        $this->userProfilePicture = $this->user->profile_picture
+            ? asset('storage/' . $this->user->profile_picture)
+            : null;
     }
 
     public function render()
