@@ -30,8 +30,8 @@ class Admin extends Component
             ->select('project_members.*')
             ->get();
         
-        $this->newOwner = $this->projectMembers->first();
-        $this->newOwnerId = $this->newOwner->user->uuid;
+        $this->newOwner = $this->projectMembers->first()->user;
+        $this->newOwnerId = $this->newOwner->uuid;
     }
 
     public function updated($key, $value) {
