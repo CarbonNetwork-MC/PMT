@@ -69,16 +69,16 @@
 
             {{-- Project Users --}}
             <div class="flex bg-gray-100 dark:bg-gray-900 rounded-lg px-4 py-1.5">
-                <i class="fi fi-sr-users text-gray-700 dark:text-white me-2"></i>
+                <i class="fi fi-sr-users text-lg text-gray-700 dark:text-white me-2"></i>
                 <div class="flex ">
                     @foreach ($users as $user)
                         @php
-                            $profilePicture = $user->profile_picture
-                                ? asset('storage/' . $user->profile_picture)
+                            $profilePicture = $user->profile_photo_path
+                                ? asset('storage/' . $user->profile_photo_path)
                                 : null;
                         @endphp
                         <img 
-                            class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-900 cursor-help" 
+                            class="w-7 h-7 rounded-full border-2 border-white dark:border-gray-900 cursor-help" 
                             src="{{ $profilePicture ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'U') . '&background=16a34a&color=ffffff' }}" 
                             alt="{{ $user->name }}"
                             data-tooltip-target="user-{{ $user->uuid }}"

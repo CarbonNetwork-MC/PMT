@@ -293,8 +293,8 @@
                     @foreach ($filteredUsers as $user)
                         @php
                             $isAssigned = $card->assignees->contains('user_uuid', $user->uuid);
-                            $profilePicture = $user->profile_picture
-                                ? asset('storage/' . $user->profile_picture)
+                            $profilePicture = $user->profile_photo_path
+                                ? asset('storage/' . $user->profile_photo_path)
                                 : 'https://ui-avatars.com/api/?name=' . urlencode($user->name);
                         @endphp
 
@@ -346,8 +346,8 @@
                 <div class="flex -space-x-2 py-1">
                     @foreach ($visibleAssignees as $assignee)
                         @php
-                            $profilePicture = $assignee->user->profile_picture
-                                ? asset('storage/' . $assignee->user->profile_picture)
+                            $profilePicture = $assignee->user->profile_photo_path
+                                ? asset('storage/' . $assignee->user->profile_photo_path)
                                 : null;
                         @endphp
 

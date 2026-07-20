@@ -15,8 +15,8 @@ class Sidebar extends Component
 
     public function mount() {
         $this->user = auth()->user();
-        $this->userProfilePicture = $this->user->profile_picture
-            ? asset('storage/' . $this->user->profile_picture)
+        $this->userProfilePicture = $this->user->profile_photo_path
+            ? asset('storage/' . $this->user->profile_photo_path)
             : null;
 
         $this->selectedProject = request()->route('uuid') ? Project::where('uuid', request()->route('uuid'))->first() : null;
@@ -25,8 +25,8 @@ class Sidebar extends Component
     #[On('reloadUser')]
     public function reloadUser() {
         $this->user = auth()->user();
-        $this->userProfilePicture = $this->user->profile_picture
-            ? asset('storage/' . $this->user->profile_picture)
+        $this->userProfilePicture = $this->user->profile_photo_path
+            ? asset('storage/' . $this->user->profile_photo_path)
             : null;
     }
 
