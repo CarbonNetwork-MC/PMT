@@ -74,7 +74,7 @@
     <div class="flex items-center justify-end">
         <div class="flex items-center gap-1">
             {{-- Actual Time --}}
-            <div @if ($task->card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="actual-time-{{ $task->id }}">
+            <div class="relative" @if ($task->card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="actual-time-{{ $task->id }}">
                 <div 
                     @if ($task->card->sprint->status === 'active') @click="editing = true" @endif
                     class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 {{ ($task->card->sprint->status === 'active') ? 'cursor-pointer' : 'cursor-help' }}"
@@ -93,7 +93,7 @@
                     <div 
                         x-show="editing" 
                         @click.outside="editing = false" 
-                        class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
+                        class="absolute mt-1 z-10 w-48 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
                     >
                         <input 
                             type="text"
@@ -107,7 +107,7 @@
             </div>
 
             {{-- Estimated Time --}}
-            <div @if ($task->card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="estimated-time-{{ $task->id }}">
+            <div class="relative" @if ($task->card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="estimated-time-{{ $task->id }}">
                 <div 
                     @if ($task->card->sprint->status === 'active') @click="editing = true" @endif
                     class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 {{ ($task->card->sprint->status === 'active') ? 'cursor-pointer' : 'cursor-help' }}"
@@ -126,7 +126,7 @@
                     <div 
                         x-show="editing" 
                         @click.outside="editing = false" 
-                        class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
+                        class="absolute mt-1 z-10 w-48 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
                     >
                         <input 
                             type="text" 
@@ -140,7 +140,7 @@
             </div>
 
             {{-- Deadline --}}
-            <div @if ($task->card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="deadline-{{ $task->id }}">
+            <div class="relative" @if ($task->card->sprint->status === 'active') x-data="{ editing: false }" @endif wire:key="deadline-{{ $task->id }}">
                 <div 
                     @if ($task->card->sprint->status === 'active') @click="editing = true" @endif
                     class="flex items-center gap-2 bg-gray-200 dark:bg-gray-900 rounded-md px-2.5 py-1.5 {{ ($task->card->sprint->status === 'active') ? 'cursor-pointer' : 'cursor-help' }}"
@@ -159,7 +159,7 @@
                     <div 
                         x-show="editing" 
                         @click.outside="editing = false" 
-                        class="absolute mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
+                        class="absolute -left-10 mt-1 z-10 bg-gray-200 dark:bg-gray-900 rounded-lg p-2 shadow-lg"
                     >
                         <input 
                             type="datetime-local"
