@@ -56,7 +56,7 @@
             {{ $attributes->class([
                 'block ' . $width . ' rounded-base text-sm shadow-xs ' . $sizeClasses,
                 'placeholder:text-gray-500 dark:placeholder:text-gray-600',
-                'text-black bg-gray-100 dark:text-white dark:bg-gray-900',
+                'text-black bg-gray-100',
                 $disabled
                     ? 'bg-gray-300 cursor-not-allowed'
                     : 'bg-gray-100',

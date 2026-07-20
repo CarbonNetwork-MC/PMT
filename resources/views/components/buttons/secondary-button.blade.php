@@ -13,7 +13,7 @@
 <button 
     type="button" 
     {{ $attributes->merge([
-        'class' => "text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base {$sizeClasses} focus:outline-none " . ($disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer')
+        'class' => "text-black bg-gray-200 box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base {$sizeClasses} focus:outline-none " . ($disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer')
     ]) }}
     @if($disabled) disabled @endif
 >

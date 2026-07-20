@@ -36,7 +36,7 @@
         @if($disabled) disabled @endif
         {{ $attributes->class([
             'block w-full rounded-base text-sm shadow-xs ' . $sizeClasses,
-            'bg-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-600',
+            'bg-gray-100 text-black placeholder:text-gray-500 dark:placeholder:text-gray-600',
             $hasError
                 ? 'border border-red-500 focus:ring-red-500 focus:border-red-500'
                 : 'border border-default-medium focus:ring-brand focus:border-brand',
