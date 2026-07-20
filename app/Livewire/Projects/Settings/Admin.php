@@ -24,6 +24,10 @@ class Admin extends Component
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
         $this->projectMembers = ProjectMember::where('project_uuid', $this->project->uuid)
             ->with(['user', 'role'])
+            ->orderBy('project_role_id')
+            ->join('users', 'project_members.user_uuid', '=', 'users.uuid')
+            ->orderBy('users.name')
+            ->select('project_members.*')
             ->get();
     }
 
