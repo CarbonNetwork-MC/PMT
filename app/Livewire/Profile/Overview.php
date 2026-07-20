@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Profile;
     
+use App\Models\DeletedUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -48,7 +49,7 @@ class Overview extends Component
 
         $path = $this->profileImage->store(path: 'profile-images', options: 'public');
 
-        // Delete old profile image if exists
+        // Delete old profile image if it exists
         if ($this->user->profile_photo_path) {
             Storage::disk('public')->delete($this->user->profile_photo_path);
         }
@@ -124,6 +125,17 @@ class Overview extends Component
         if (!Hash::check($this->currentPasswordDelete, $this->user->password)) {
             Toaster::error(__('profile.toasts.current_password_incorrect'));
             return;
+        }
+
+        // Create a record in the deleted_users table before deleting the user
+        DeletedUser::create([
+            'uuid' => $this->user->uuid,
+            'name' => $this->user->name,
+        ]);
+
+        // Delete the profile image if it exists
+        if ($this->user->profile_photo_path) {
+            Storage::disk('public')->delete($this->user->profile_photo_path);
         }
 
         $this->user->syncRoles([]);
