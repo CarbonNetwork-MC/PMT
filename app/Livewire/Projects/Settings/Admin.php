@@ -29,6 +29,9 @@ class Admin extends Component
             ->orderBy('users.name')
             ->select('project_members.*')
             ->get();
+        
+        $this->newOwner = $this->projectMembers->first();
+        $this->newOwnerId = $this->newOwner->user->uuid;
     }
 
     public function updated($key, $value) {
