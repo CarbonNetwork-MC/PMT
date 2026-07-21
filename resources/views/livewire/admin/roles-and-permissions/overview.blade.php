@@ -165,7 +165,42 @@
     </x-containers.main>
 
     {{-- Delete Role Modal --}}
-
+    <x-modals.modal wire:model.live="showDeleteRoleModal">
+        <x-slot name="title">
+            {{ __('admin.titles.delete_role') }}
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-gray-700">
+                {!! __('admin.messages.delete_role_confirmation', ['role' => $entityToDelete->name ?? '']) !!}
+            </p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showDeleteRoleModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.danger-button wire:click="confirmDeleteRole">
+                {{ __('general.buttons.delete') }}
+            </x-buttons.danger-button>
+        </x-slot>
+    </x-modals.modal>
 
     {{-- Delete Permission Modal --}}
+    <x-modals.modal wire:model.live="showDeletePermissionModal">
+        <x-slot name="title">
+            {{ __('admin.titles.delete_permission') }}
+        </x-slot>
+        <x-slot name="content">
+            <p class="text-gray-700">
+                {!! __('admin.messages.delete_permission_confirmation', ['permission' => $entityToDelete->name ?? '']) !!}
+            </p>
+        </x-slot>
+        <x-slot name="footer">
+            <x-buttons.secondary-button wire:click="$set('showDeletePermissionModal', false)">
+                {{ __('general.buttons.cancel') }}
+            </x-buttons.secondary-button>
+            <x-buttons.danger-button wire:click="confirmDeletePermission">
+                {{ __('general.buttons.delete') }}
+            </x-buttons.danger-button>
+        </x-slot>
+    </x-modals.modal>
 </div>
