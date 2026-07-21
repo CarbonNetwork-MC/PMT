@@ -46,6 +46,17 @@ return [
         'settings_general' => 'Profile Settings - General',
         'settings_security' => 'Profile Settings - Security',
         'settings_notifications' => 'Profile Settings - Notifications',
+    ],
+
+    'admin' => [
+        'dashboard' => 'Admin | Dashboard',
+        'roles_and_permissions' => [
+            'create_permission' => 'Admin | Create Permission',
+            'create_role' => 'Admin | Create Role',
+            'edit_permission' => 'Admin | Edit Permission',
+            'edit_role' => 'Admin | Edit Role',
+            'overview' => 'Admin | Roles and Permissions Overview',
+        ],
     ]
 
 ];

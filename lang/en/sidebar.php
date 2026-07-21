@@ -10,7 +10,9 @@ return [
     */
 
     // ? Public
+    'back_to_dashboard' => 'Back to Dashboard',
     'dashboard' => 'Dashboard',
+    'management' => 'Management',
 
     // ? Projects
     'projects' => [
@@ -21,6 +23,11 @@ return [
         'title' => 'Projects',
         'sprints' => 'Sprints',
         'settings' => 'Settings',
-    ]
+    ],
+
+    // ? Admin
+    'admin' => [
+        'roles_permissions' => 'Roles & Permissions',
+    ],
 
 ];

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Livewire\Colors;
 use App\Livewire\Dashboard;
 
+use App\Livewire\Admin\Dashboard as AdminDashboard;
 use App\Livewire\Profile\Overview as ProfileOverview;
 
 use App\Livewire\Projects\NewProject;
@@ -14,9 +15,7 @@ use App\Livewire\Projects\Archive\Overview as ProjectArchiveOverview;
 use App\Livewire\Projects\Archive\Board as ProjectArchiveBoard;
 
 use App\Livewire\Projects\Backlog\Overview as ProjectBacklogOverview;
-
 use App\Livewire\Projects\Board\Board as ProjectBoard;
-
 use App\Livewire\Projects\Dashboard\Dashboard as ProjectDashboard;
 
 use App\Livewire\Projects\Settings\Admin as ProjectSettingsAdmin;
@@ -88,6 +87,34 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/{uuid}/settings/admin', ProjectSettingsAdmin::class)
             ->middleware('project-owner')
             ->name('projects.settings.admin.render');
+    });
+
+    // ? Admin
+    Route::prefix('/admin')->group(function() {
+        Route::get('/', AdminDashboard::class)
+            ->middleware(['role:Superadmin|Admin'])
+            ->name('admin.dashboard.render');
+        
+        // ? Roles and Permissions
+        Route::get('/roles-and-permissions', \App\Livewire\Admin\RolesAndPermissions\Overview::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-permissions'])
+            ->name('admin.roles-and-permissions.render');
+
+        Route::get('/roles-and-permissions/create-permission', \App\Livewire\Admin\RolesAndPermissions\CreatePermission::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-permissions'])
+            ->name('admin.roles-and-permissions.create-permission.render');
+
+        Route::get('/roles-and-permissions/edit-permission/{uuid}', \App\Livewire\Admin\RolesAndPermissions\EditPermission::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-permissions'])
+            ->name('admin.roles-and-permissions.edit-permission.render');
+
+        Route::get('/roles-and-permissions/create-role', \App\Livewire\Admin\RolesAndPermissions\CreateRole::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-roles'])
+            ->name('admin.roles-and-permissions.create-role.render');
+
+        Route::get('/roles-and-permissions/edit-role/{uuid}', \App\Livewire\Admin\RolesAndPermissions\EditRole::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-roles'])
+            ->name('admin.roles-and-permissions.edit-role.render');
     });
 });
 

@@ -133,23 +133,33 @@
         @endif
 
         <!-- Admin Nav -->
-        @if (request()->routeIs('admin.*') && $user->hasRole('Superadmin'))
+        @if (request()->routeIs('admin.*') && ($user->hasRole('Superadmin') || $user->hasRole('Admin')))
             <nav class="space-y-2 flex-1 min-h-0 overflow-y-auto hide-scrollbar">
                 {{-- Admin Dashboard --}}
-                {{-- <x-sidebar.nav-item
+                <x-sidebar.nav-item
                     :href="route('admin.dashboard.render')"
                     :active="request()->routeIs('admin.dashboard.*')"
                     icon="fi fi-rr-home"
                     :label="__('sidebar.dashboard')"
-                /> --}}
+                />
+
+                {{-- Roles and Permissions --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-permissions') && $user->can('manage-permissions'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.roles-and-permissions.render')"
+                        :active="request()->routeIs('admin.roles-and-permissions.*')"
+                        icon="fi fi-rr-shield-check"
+                        :label="__('sidebar.admin.roles_permissions')"
+                    />
+                @endif
             </nav>
         @endif
 
         <!-- Footer -->
         <div class="mt-auto">
-            @if ($user->hasRole('Superadmin'))
+            @if ($user->hasRole('Superadmin') || $user->hasRole('Admin'))
                 {{-- Admin Section --}}
-                {{-- <x-sidebar.nav-divider /> --}}
+                <x-sidebar.nav-divider />
 
                 <div class="mb-2">
                     @if (request()->routeIs('admin.*'))
@@ -160,12 +170,12 @@
                             :label="__('sidebar.back_to_dashboard')"
                         />
                     @else
-                        {{-- <x-sidebar.nav-item
+                        <x-sidebar.nav-item
                             :href="route('admin.dashboard.render')"
                             :active="request()->routeIs('admin.dashboard.*')"
                             icon="fi fi-rr-admin-alt"
                             :label="__('sidebar.management')"
-                        /> --}}
+                        />
                     @endif
                 </div>
             @endif
