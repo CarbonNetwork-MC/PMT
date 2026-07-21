@@ -10,22 +10,26 @@ class EditPermission extends Component
     public $permission;
 
     public $permissionName;
+    public $permissionDisplayName;
     public $permissionDescription;
 
     public function mount($uuid) {
         $this->permission = Permission::where('uuid', $uuid)->firstOrFail();
         $this->permissionName = $this->permission->name;
+        $this->permissionDisplayName = $this->permission->display_name;
         $this->permissionDescription = $this->permission->description;
     }
 
     public function updatePermission() {
         $this->validate([
             'permissionName' => ['required', 'string', 'max:255', 'unique:permissions,name,' . $this->permission->uuid . ',uuid'],
-            'permissionDescription' => ['nullable', 'string', 'max:255'],
+            'permissionDisplayName' => ['nullable', 'string', 'max:255'],
+            'permissionDescription' => ['nullable', 'string'],
         ]);
 
         $this->permission->update([
             'name' => $this->permissionName,
+            'display_name' => $this->permissionDisplayName,
             'description' => $this->permissionDescription,
         ]);
 

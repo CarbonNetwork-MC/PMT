@@ -8,16 +8,19 @@ use Livewire\Component;
 class CreatePermission extends Component
 {
     public $permissionName;
+    public $permissionDisplayName;
     public $permissionDescription;
 
     public function createPermission() {
         $this->validate([
             'permissionName' => ['required', 'string', 'max:255', 'unique:permissions,name'],
-            'permissionDescription' => ['nullable', 'string', 'max:255'],
+            'permissionDisplayName' => ['nullable', 'string', 'max:255'],
+            'permissionDescription' => ['nullable', 'string'],
         ]);
 
         Permission::create([
             'name' => $this->permissionName,
+            'display_name' => $this->permissionDisplayName,
             'description' => $this->permissionDescription,
         ]);
 

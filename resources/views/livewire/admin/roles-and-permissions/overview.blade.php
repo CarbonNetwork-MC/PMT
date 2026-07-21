@@ -42,7 +42,7 @@
                         <x-tables.table-data>
                             @forelse ($role->permissions as $permission)
                                 <span class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                                    {{ $permission->name }}
+                                    {{ $permission->display_name ?? $permission->name }}
                                 </span>
                             @empty
                                 @if ($role->name === 'Superadmin')
@@ -102,6 +102,7 @@
         <x-tables.table-striped class="mt-4">
             <x-slot name="headers">
                 <x-tables.table-header>{{ __('admin.labels.name') }}</x-tables.table-header>
+                <x-tables.table-header>{{ __('admin.labels.display_name') }}</x-tables.table-header>
                 <x-tables.table-header>{{ __('admin.labels.description') }}</x-tables.table-header>
                 <x-tables.table-header></x-tables.table-header>
             </x-slot>
@@ -109,15 +110,22 @@
                 @forelse ($permissions as $permission)
                     <x-tables.table-row>
                         <x-tables.table-data>
-                            <span class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                                {{ $permission->name }}
-                            </span>
+                            {{ $permission->name }}
+                        </x-tables.table-data>
+                        <x-tables.table-data>
+                            @if ($permission->display_name)
+                                {{ $permission->display_name }}
+                            @else
+                                <span class="italic text-gray-500">
+                                    {{ __('admin.labels.no_display_name') }}
+                                </span>
+                            @endif
                         </x-tables.table-data>
                         <x-tables.table-data>
                             @if ($permission->description)
                                 {{ $permission->description }}
                             @else
-                                <span class="italic text-gray-400">
+                                <span class="italic text-gray-500">
                                     {{ __('admin.labels.no_description') }}
                                 </span>
                             @endif

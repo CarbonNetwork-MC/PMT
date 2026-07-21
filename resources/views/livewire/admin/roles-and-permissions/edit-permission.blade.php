@@ -28,8 +28,8 @@
             {{ __('admin.titles.edit_permission') }}
         </h1>
 
-        <div class="mt-4 space-y-2">
-            <div class="w-full lg:w-1/2 xl:w-1/4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mt-4">
+            <div class="col-span-1">
                 <x-forms.text-input
                     wire:model.live="permissionName"
                     label="{{ __('admin.labels.name') }}"
@@ -37,7 +37,16 @@
                 />
             </div>
 
-            <div class="w-full lg:w-1/2">
+            <div class="col-span-1">
+                <x-forms.text-input
+                    wire:model="permissionDisplayName"
+                    label="{{ __('admin.labels.display_name') }}"
+                />
+            </div>
+
+            <div class="hidden lg:block lg:col-span-2"></div>
+
+            <div class="col-span-1 lg:col-span-2">
                 <x-forms.text-area
                     wire:model.live="permissionDescription"
                     label="{{ __('admin.labels.description') }}"
