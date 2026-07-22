@@ -66,7 +66,7 @@
                             >
 
                             <div>
-                                <p class="font-medium">{{ $permission->name }}</p>
+                                <p class="font-medium">{{ $permission->display_name ?? $permission->name }}</p>
                                 <p class="text-sm text-gray-500">
                                     {{ $permission->description ?? __('admin.labels.no_description') }}
                                 </p>
