@@ -21,6 +21,7 @@ class Log extends Model
         'data',
         'description',
         'environment',
+        'by_admin',
     ];
 
     public function user(): BelongsTo {

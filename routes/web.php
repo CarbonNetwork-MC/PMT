@@ -6,6 +6,8 @@ use App\Livewire\Colors;
 use App\Livewire\Dashboard;
 
 use App\Livewire\Admin\Dashboard as AdminDashboard;
+use App\Livewire\Admin\Users\Overview as AdminUsersOverview;
+
 use App\Livewire\Profile\Overview as ProfileOverview;
 
 use App\Livewire\Projects\NewProject;
@@ -94,6 +96,15 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/', AdminDashboard::class)
             ->middleware(['role:Superadmin|Admin'])
             ->name('admin.dashboard.render');
+
+        // ? Users
+        Route::get('/users', AdminUsersOverview::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-users'])
+            ->name('admin.users.render');
+
+        Route::get('/users/edit/{uuid}', \App\Livewire\Admin\Users\EditUser::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-users'])
+            ->name('admin.users.edit.render');
         
         // ? Roles and Permissions
         Route::get('/roles-and-permissions', \App\Livewire\Admin\RolesAndPermissions\Overview::class)

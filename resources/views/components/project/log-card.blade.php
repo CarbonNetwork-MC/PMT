@@ -31,7 +31,7 @@
                     @if ($isDeletedUser)
                         {{ $user?->name ? $user?->name . ' (Deleted)' : 'System' }}
                     @else
-                        {{ $user?->name ?? 'System' }}
+                        {{ $user?->name ?? 'System' }} {{ $log->by_admin ? '(Admin)' : '' }}
                     @endif
                 </p>
 

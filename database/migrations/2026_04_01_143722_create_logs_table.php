@@ -26,6 +26,7 @@ return new class extends Migration
             $table->json('data');
             $table->text('description')->nullable();
             $table->enum('environment', ['local', 'staging', 'production']);
+            $table->boolean('by_admin')->default(false);
             $table->timestamps();
         });
     }

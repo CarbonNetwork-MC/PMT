@@ -57,6 +57,11 @@ return [
             'edit_role' => 'Admin | Edit Role',
             'overview' => 'Admin | Roles and Permissions Overview',
         ],
+        'users' => [
+            'edit_user' => 'Admin | Edit User',
+            'invite_user' => 'Admin | Invite User',
+            'overview' => 'Admin | Users Overview',
+        ],
     ]
 
 ];

@@ -100,7 +100,7 @@ class Members extends Component
     public function changeRole($uuid) {
         $this->showChangeRoleModal = true;
         $this->userToModify = $this->members->where('uuid', $uuid)->first();
-        $this->newRole = ProjectRole::where('name', $this->userToModify['role'])->first()->id;
+        $this->newRole = ProjectRole::where('name', $this->userToModify['role'])->first();
     }
 
     public function confirmChangeRole() {
@@ -108,7 +108,7 @@ class Members extends Component
             ->where('user_uuid', $this->userToModify['uuid'])
             ->first();
 
-        $member->project_role_id = $this->newRole;
+        $member->project_role_id = $this->newRole->id;
         $member->save();
 
         Log::create([
@@ -120,7 +120,7 @@ class Members extends Component
                 'user_uuid' => $member->user_uuid,
                 'project_role_id' => $member->project_role_id,
             ]),
-            'description' => __('logs.project_members.role_changed', ['user' => $this->userToModify['user'], 'role' => $this->newRole]),
+            'description' => __('logs.project_members.role_changed', ['user' => $this->userToModify['user'], 'role' => $this->newRole->name]),
             'environment' => config('app.env'),
         ]);
 
@@ -128,7 +128,7 @@ class Members extends Component
 
         return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.role_changed', [
             'name' => $this->userToModify['user'], 
-            'role' => ProjectRole::find($this->newRole)->name
+            'role' => $this->newRole->name
         ]));
     }
 

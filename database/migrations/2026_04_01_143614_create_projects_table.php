@@ -15,10 +15,14 @@ return new class extends Migration
             $table->uuid()->primary()->unique();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->char('owner_uuid', 36);
+            $table->char('owner_uuid', 36)->nullable();
+            $table->boolean('is_archived')->default(false);
+            $table->char('archived_by', 36)->nullable();
+            $table->timestamp('archived_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('owner_uuid')->references('uuid')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('owner_uuid')->references('uuid')->on('users')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('archived_by')->references('uuid')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

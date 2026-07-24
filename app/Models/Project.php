@@ -17,6 +17,13 @@ class Project extends Model
         'name',
         'description',
         'owner_uuid',
+        'is_archived',
+        'archived_by',
+        'archived_at',
+    ];
+    protected $casts = [
+        'is_archived' => 'boolean',
+        'archived_at' => 'datetime',
     ];
 
     public function owner(): BelongsTo {
@@ -41,5 +48,9 @@ class Project extends Model
 
     public function logs(): HasMany {
         return $this->hasMany(Log::class, 'project_uuid', 'uuid');
+    }
+
+    public function archivedBy(): BelongsTo {
+        return $this->belongsTo(User::class, 'archived_by', 'uuid');
     }
 }

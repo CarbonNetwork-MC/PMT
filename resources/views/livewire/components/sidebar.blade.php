@@ -143,6 +143,16 @@
                     :label="__('sidebar.dashboard')"
                 />
 
+                {{-- Users --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-users') && $user->can('manage-users'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.users.render')"
+                        :active="request()->routeIs('admin.users.*')"
+                        icon="fi fi-rr-users-alt"
+                        :label="__('sidebar.admin.users')"
+                    />
+                @endif
+
                 {{-- Roles and Permissions --}}
                 @if (\App\Helpers\CheckIfPermissionExists::check('manage-permissions') && $user->can('manage-permissions'))
                     <x-sidebar.nav-item

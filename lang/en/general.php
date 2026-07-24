@@ -38,6 +38,9 @@ return [
         'select' => 'Select',
         'update' => 'Update',
         'view' => 'View',
+
+        'collapse_all' => 'Collapse All',
+        'expand_all' => 'Expand All',
     ],
 
     // Labels
@@ -48,6 +51,7 @@ return [
         'updated_at' => 'Updated At',
         'id' => 'ID',
         'none' => 'None',
+        'processing' => 'Processing...',
     ],
 
     // Messages

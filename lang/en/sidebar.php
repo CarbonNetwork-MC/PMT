@@ -27,6 +27,7 @@ return [
 
     // ? Admin
     'admin' => [
+        'users' => 'Users',
         'roles_permissions' => 'Roles & Permissions',
     ],
 

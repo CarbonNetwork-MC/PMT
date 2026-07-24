@@ -10,6 +10,7 @@ return [
     */
 
     'project' => [
+        'archived' => 'Project <b>:project</b> was archived.',
         'created' => 'Project <b>:project</b> was created.',
         'updated' => 'Project <b>:project</b> was updated.',
         'owner_changed' => 'Project ownership was transferred from <b>:oldOwner</b> to <b>:newOwner</b>.',
