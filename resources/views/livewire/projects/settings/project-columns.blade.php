@@ -52,20 +52,23 @@
                         'key' => 'columns',
                         'label' => __('settings.nav.columns'),
                         'href' => route('projects.settings.columns.render', ['uuid' => $project->uuid]),
-                        'disabled' => !$isProjectAdmin && !$isProjectOwner
+                        'disabled' => !$isProjectAdmin && !$isProjectOwner && !$isAppAdmin
                     ],
                     [
                         'key' => 'admin',
                         'label' => __('settings.nav.admin'),
                         'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid]),
-                        'disabled' => !$isProjectOwner
+                        'disabled' => !$isProjectOwner && !$isAppAdmin
                     ],
                 ]"
             />
 
             <div class="mt-8 mx-4">
                 <div class="flex justify-end">
-                    <x-buttons.primary-button href="{{ route('projects.settings.columns.new.render', ['uuid' => $project->uuid]) }}">
+                    <x-buttons.primary-button 
+                        href="{{ route('projects.settings.columns.new.render', ['uuid' => $project->uuid]) }}"
+                        :disabled="!$isProjectAdmin && !$isProjectOwner && !$isAppAdmin"
+                    >
                         {{ __('settings.buttons.add_column') }}
                     </x-buttons.primary-button>
                 </div>

@@ -10,6 +10,7 @@ use App\Models\ProjectRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class Members extends Component
 {
@@ -23,6 +24,7 @@ class Members extends Component
 
     public $isProjectOwner;
     public $isProjectAdmin;
+    public $isAppAdmin;
 
     public $userToModify;
     public $newRole;
@@ -73,6 +75,7 @@ class Members extends Component
                 $query->where('name', 'Admin');
             })
             ->exists();
+        $this->isAppAdmin = auth()->user()->can('manage-projects');
     }
 
     public function updated($key, $value) {
@@ -100,12 +103,22 @@ class Members extends Component
     }
 
     public function changeRole($uuid) {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $this->showChangeRoleModal = true;
         $this->userToModify = $this->members->where('uuid', $uuid)->first();
         $this->newRole = ProjectRole::where('name', $this->userToModify['role'])->first();
     }
 
     public function confirmChangeRole() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $member = ProjectMember::where('project_uuid', $this->project->uuid)
             ->where('user_uuid', $this->userToModify['uuid'])
             ->first();
@@ -136,6 +149,11 @@ class Members extends Component
     }
 
     public function addMember() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $member = ProjectMember::create([
             'project_uuid' => $this->project->uuid,
             'user_uuid' => $this->newMemberUuid,
@@ -160,11 +178,21 @@ class Members extends Component
     }
 
     public function removeMember($uuid) {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $this->showRemoveMemberModal = true;
         $this->userToModify = $this->members->where('uuid', $uuid)->first();
     }
 
     public function confirmRemoveMember() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $member = ProjectMember::where('project_uuid', $this->project->uuid)
             ->where('user_uuid', $this->userToModify['uuid'])
             ->first();

@@ -52,13 +52,13 @@
                         'key' => 'columns',
                         'label' => __('settings.nav.columns'),
                         'href' => route('projects.settings.columns.render', ['uuid' => $project->uuid]),
-                        'disabled' => !$isProjectAdmin && !$isProjectOwner
+                        'disabled' => !$isProjectAdmin && !$isProjectOwner && !$isAppAdmin
                     ],
                     [
                         'key' => 'admin',
                         'label' => __('settings.nav.admin'),
                         'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid]),
-                        'disabled' => !$isProjectOwner
+                        'disabled' => !$isProjectOwner && !$isAppAdmin
                     ],
                 ]"
             />
@@ -85,7 +85,10 @@
                 </x-project.settings-card>
 
                 <div class="flex justify-end items-center mt-16">
-                    <x-buttons.primary-button wire:click="save">
+                    <x-buttons.primary-button 
+                        wire:click="save"
+                        :disabled="!$isProjectAdmin && !$isProjectOwner && !$isAppAdmin"
+                    >
                         {{ __('general.buttons.save') }}
                     </x-buttons.primary-button>
                 </div>

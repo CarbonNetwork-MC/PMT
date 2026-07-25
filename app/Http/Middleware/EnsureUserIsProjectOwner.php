@@ -16,13 +16,11 @@ class EnsureUserIsProjectOwner
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) return redirect()->route('login');
+        $user = $request->user();
+        if ($user->can('manage-projects')) return $next($request);
 
-        $projectUuid = $request->route('uuid');
-        if (!$projectUuid) abort(400, 'Project UUID is required.');
-
-        $user = auth()->user();
-        $project = Project::where('uuid', $projectUuid)->firstOrFail();
+        $project = Project::where('uuid', $request->route('uuid'))
+            ->firstOrFail();
 
         if ($user->uuid !== $project->owner_uuid) {
             abort(403, 'You do not have permission to access this resource.');

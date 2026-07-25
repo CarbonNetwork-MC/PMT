@@ -58,4 +58,9 @@ return [
     'messages' => [
         'required_fields' => 'Required fields'
     ],
+
+    // Toasts
+    'toasts' => [
+        'unauthorized' => 'You are not authorized to perform this action.',
+    ]
 ];

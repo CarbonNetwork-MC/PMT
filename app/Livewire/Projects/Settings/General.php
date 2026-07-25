@@ -7,6 +7,7 @@ use App\Models\Log;
 use App\Models\Project;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class General extends Component
 {
@@ -17,6 +18,7 @@ class General extends Component
     
     public $isProjectOwner;
     public $isProjectAdmin;
+    public $isAppAdmin;
 
     public function mount($uuid) {
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
@@ -31,9 +33,15 @@ class General extends Component
                 $query->where('name', 'Admin');
             })
             ->exists();
+        $this->isAppAdmin = auth()->user()->can('manage-projects');
     }
 
     public function save() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',

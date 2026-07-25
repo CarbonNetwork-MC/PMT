@@ -75,12 +75,15 @@ Route::middleware(['auth'])->group(function() {
                 ->name('projects.settings.members.render');
 
             Route::get('/{uuid}/settings/columns', \App\Livewire\Projects\Settings\ProjectColumns::class)
+                ->middleware('project-owner-or-admin')
                 ->name('projects.settings.columns.render');
 
             Route::get('/{uuid}/settings/columns/new', \App\Livewire\Projects\Settings\Columns\NewColumn::class)
+                ->middleware('project-owner-or-admin')
                 ->name('projects.settings.columns.new.render');
 
             Route::get('/{uuid}/settings/columns/{columnId}/edit', \App\Livewire\Projects\Settings\Columns\EditColumn::class)
+                ->middleware('project-owner-or-admin')
                 ->name('projects.settings.columns.edit.render');
 
             Route::get('/{uuid}/settings/admin', \App\Livewire\Projects\Settings\Admin::class)

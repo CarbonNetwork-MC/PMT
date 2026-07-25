@@ -16,10 +16,7 @@ class EnsureUserCanViewProject
      */
     public function handle(Request $request, Closure $next): Response {
         $user = $request->user();
-
-        if ($user->can('manage-projects')) {
-            return $next($request);
-        }
+        if ($user->can('manage-projects')) return $next($request);
 
         $project = Project::where('uuid', $request->route('uuid'))
             ->firstOrFail();

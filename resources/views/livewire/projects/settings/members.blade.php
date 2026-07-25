@@ -52,13 +52,13 @@
                         'key' => 'columns',
                         'label' => __('settings.nav.columns'),
                         'href' => route('projects.settings.columns.render', ['uuid' => $project->uuid]),
-                        'disabled' => !$isProjectAdmin && !$isProjectOwner
+                        'disabled' => !$isProjectAdmin && !$isProjectOwner && !$isAppAdmin
                     ],
                     [
                         'key' => 'admin',
                         'label' => __('settings.nav.admin'),
                         'href' => route('projects.settings.admin.render', ['uuid' => $project->uuid]),
-                        'disabled' => !$isProjectOwner
+                        'disabled' => !$isProjectOwner && !$isAppAdmin
                     ],
                 ]"
             />
@@ -66,7 +66,11 @@
             <div class="mt-8 mx-4">
                 <div class="flex justify-end gap-x-4">
                     <x-forms.search-bar id="search" wire:model.live="search" class="w-full" />
-                    <x-buttons.primary-button wire:click="$set('showAddMemberModal', true)" size="sm">
+                    <x-buttons.primary-button 
+                        wire:click="$set('showAddMemberModal', true)" 
+                        :disabled="!$isProjectOwner && !$isProjectAdmin && !$isAppAdmin"
+                        size="sm"
+                    >
                         {{ __('settings.buttons.add_member') }}
                     </x-buttons.primary-button>
                 </div>
@@ -77,7 +81,7 @@
                             <tr>
                                 <x-tables.table-header>{{ __('settings.labels.member_name') }}</x-tables.table-header>
                                 <x-tables.table-header>{{ __('settings.labels.member_role') }}</x-tables.table-header>
-                                @if ($isProjectOwner) <th></th> @endif
+                                @if ($isProjectOwner || $isAppAdmin) <th></th> @endif
                             </tr>
                         </x-slot>
                         <x-slot name="rows">
@@ -89,7 +93,7 @@
                                     <x-tables.table-data>
                                         {{ $member['role'] }}
                                     </x-tables.table-data>
-                                    @if ($isProjectOwner && $member['is_owner'] === false)
+                                    @if (($isProjectOwner && $member['is_owner'] === false) || $isAppAdmin)
                                         <x-tables.table-actions>
                                             <x-tables.primary-action wire:click="changeRole('{{ $member['uuid'] }}')">
                                                 {{ __('settings.buttons.change_role') }}

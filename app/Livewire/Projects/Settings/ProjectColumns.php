@@ -18,6 +18,7 @@ class ProjectColumns extends Component
 
     public $isProjectOwner;
     public $isProjectAdmin;
+    public $isAppAdmin;
 
     public $removeColumnId;
     public $showRemoveColumnModal = false;
@@ -33,14 +34,25 @@ class ProjectColumns extends Component
                 $query->where('name', 'Admin');
             })
             ->exists();
+        $this->isAppAdmin = auth()->user()->can('manage-projects');
     }
 
     public function removeColumn($columnId) {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         $this->removeColumnId = $columnId;
         $this->showRemoveColumnModal = true;
     }
 
     public function confirmRemoveColumn() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
         DB::transaction(function () {
             $column = ProjectColumn::findOrFail($this->removeColumnId);
 
