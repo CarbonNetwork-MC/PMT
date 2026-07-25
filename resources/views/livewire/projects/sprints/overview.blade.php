@@ -61,7 +61,7 @@
                 </div>
             </div>
             
-            @if ($isProjectAdminOrOwner)
+            @if ($isProjectAdminOrOwner || $isAppAdmin)
                 <x-buttons.primary-button href="{{ route('projects.sprints.new.render', ['uuid' => $project->uuid]) }}">
                     {{ __('sprints.buttons.new_sprint') }}
                 </x-buttons.primary-button>
@@ -72,7 +72,7 @@
     <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
         @forelse ($sprints as $sprint)
             {{-- TODO: burndown chart for $sprint --}}
-            <x-project.sprint-card projectUuid="{{ $project->uuid }}" :sprint="$sprint" :isProjectAdminOrOwner="$isProjectAdminOrOwner" />
+            <x-project.sprint-card projectUuid="{{ $project->uuid }}" :sprint="$sprint" :isProjectAdminOrOwner="$isProjectAdminOrOwner" :isAppAdmin="$isAppAdmin" />
         @empty
             <div class="col-span-3 lg:col-span-4 3xl:col-span-5 bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
                 <p class="text-center text-gray-600 dark:text-gray-300">

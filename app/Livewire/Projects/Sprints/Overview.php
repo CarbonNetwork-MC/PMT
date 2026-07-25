@@ -32,6 +32,7 @@ class Overview extends Component
     public $status;
 
     public $isProjectAdminOrOwner = false;
+    public $isAppAdmin = false;
 
     public $editingSprint;
     public $deletingSprint;
@@ -58,6 +59,7 @@ class Overview extends Component
         $this->archivedSprints = $this->project->sprints()->where('is_archived', true)->count();
 
         $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(auth()->user(), $this->project);
+        $this->isAppAdmin = auth()->user()->can('manage-projects');
 
         $this->entities = $this->project->backlogs()->get();
         $this->entityUuid = $this->entities->first()?->uuid;
