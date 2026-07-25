@@ -87,7 +87,7 @@
                                 @endif
                                 @if ($permission['has_permission_via_role'])
                                     <p class="text-sm text-red-500">
-                                        {!! __('admin.titles.users.permission_via_role', [
+                                        {!! __('admin.messages.users.permission_via_role', [
                                             'roles' => implode(', ', $permission['roles']),
                                         ]) !!}
                                     </p>
