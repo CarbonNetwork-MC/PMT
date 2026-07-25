@@ -74,6 +74,7 @@ return [
         'column_added' => 'Column <b>:name</b> has been added.',
         'column_removed' => 'Column has been removed.',
         'column_updated' => 'Column <b>:name</b> has been updated.',
+        'general_updated' => 'Project general settings have been updated.',
         'max_columns_reached' => 'Maximum number of columns (5) has been reached.',
         'member_added' => '<b>:name</b> has been added to the project.',
         'member_removed' => '<b>:name</b> has been removed from the project.',
@@ -83,6 +84,8 @@ return [
     ],
 
     'placeholders' => [
+        'description' => 'Enter a brief description of the project',
+        'name' => 'Enter the project name',
         'select_new_owner' => 'Select a new owner',
     ],
 
