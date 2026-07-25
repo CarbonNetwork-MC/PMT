@@ -68,7 +68,7 @@
                 >
                     <x-slot name="content">
                         <div class="flex justify-end">
-                            <x-buttons.danger-button wire:click="$set('showChangeOwnerModal', true)">
+                            <x-buttons.danger-button wire:click="changeOwner">
                                 {{ __('settings.buttons.change_owner') }}
                             </x-buttons.danger-button>
                         </div>

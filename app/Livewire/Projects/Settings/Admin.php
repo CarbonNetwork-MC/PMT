@@ -10,6 +10,7 @@ use App\Models\ProjectRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class Admin extends Component
 {
@@ -32,14 +33,23 @@ class Admin extends Component
             ->select('project_members.*')
             ->get();
         
-        $this->newOwner = $this->projectMembers->first()->user;
-        $this->newOwnerId = $this->newOwner->uuid;
+        $this->newOwner = $this->projectMembers->first()?->user;
+        $this->newOwnerId = $this->newOwner?->uuid;
     }
 
     public function updated($key, $value) {
         if ($key === 'newOwnerId') {
             $this->newOwner = User::where('uuid', $value)->first();
         }
+    }
+
+    public function changeOwner() {
+        if (!$this->newOwner) {
+            Toaster::error(__('settings.toast.no_other_members'));
+            return;
+        }
+
+        $this->showChangeOwnerModal = true;
     }
 
     public function confirmChangeOwner() {

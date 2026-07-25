@@ -78,6 +78,7 @@ return [
         'max_columns_reached' => 'Maximum number of columns (5) has been reached.',
         'member_added' => '<b>:name</b> has been added to the project.',
         'member_removed' => '<b>:name</b> has been removed from the project.',
+        'no_other_members' => 'There are no other members in the project to transfer ownership to.',
         'owner_changed' => 'Project ownership has been transferred to <b>:newOwner</b>.',
         'project_deleted' => 'Project has been deleted.',
         'role_changed' => '<b>:name</b>\'s role has been updated to <b>:role</b>.',
