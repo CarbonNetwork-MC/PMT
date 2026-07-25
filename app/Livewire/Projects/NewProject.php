@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Projects;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\ColumnColor;
 use App\Models\Log;
 use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class NewProject extends Component
@@ -45,7 +47,8 @@ class NewProject extends Component
             'table' => 'projects',
             'data' => json_encode($data),
             'description' => __('logs.project.created', ['project' => $project->name]),
-            'environment' => config('app.env') 
+            'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $project->uuid)
         ]);
 
         return redirect()->route('projects.dashboard.render', ['uuid' => $project->uuid])->success(__('projects.toast.project-created'));

@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Components\Board;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Card as CardModel;
 use App\Models\Log;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Column extends Component
@@ -57,6 +59,7 @@ class Column extends Component
                 'sprint' => $this->sprint->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->sprint->project_uuid)
         ]);
 
         $this->dispatch('refreshBoard');

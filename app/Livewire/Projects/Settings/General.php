@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Log;
 use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class General extends Component
@@ -53,6 +55,7 @@ class General extends Component
             ]),
             'description' => __('logs.project.updated', ['project' => $this->project->name]),
             'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         return redirect()->route('projects.settings.general.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.general_updated'));

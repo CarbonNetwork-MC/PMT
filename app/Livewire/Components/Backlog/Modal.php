@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Backlog;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\BacklogCardAssignee;
@@ -154,6 +155,7 @@ class Modal extends Component
                 'backlog' => $this->card->backlog->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->createNewTask = false;
@@ -198,6 +200,7 @@ class Modal extends Component
                 'backlog' => $this->card->backlog->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -225,6 +228,7 @@ class Modal extends Component
                 'backlog' => $this->card->backlog->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -345,6 +349,7 @@ class Modal extends Component
                     'backlog' => $this->card->backlog->name,
                 ]),
                 'environment' => app()->environment(),
+                'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
             ]);
         }
 
@@ -373,6 +378,7 @@ class Modal extends Component
                 'status' => $status,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -410,6 +416,7 @@ class Modal extends Component
                     'backlog' => $this->card->backlog->name
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -431,6 +438,7 @@ class Modal extends Component
                 'backlog' => $this->card->backlog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -456,6 +464,7 @@ class Modal extends Component
                 'backlog' => $this->card->backlog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();

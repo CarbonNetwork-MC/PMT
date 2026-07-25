@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Board;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\Card;
@@ -158,6 +159,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->createNewTask = false;
@@ -199,6 +201,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -224,6 +227,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -343,6 +347,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadTasks();
@@ -371,6 +376,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -408,6 +414,7 @@ class Modal extends Component
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -428,6 +435,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -452,6 +460,7 @@ class Modal extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();
@@ -507,6 +516,7 @@ class Modal extends Component
                     'toColumn' => $this->selectedProject->columns->firstWhere('id', $this->column)->name ?? __('board.no_column'),
                 ]),
                 'environment' => app()->environment(),
+                'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
             ]);
         } else {
             $index = $this->position === 'top' ? 0 : BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)->max('card_index') + 1;
@@ -571,6 +581,7 @@ class Modal extends Component
                         'fromColumn' => $this->card->column ? $this->card->column->name : __('board.no_column'),
                     ]),
                     'environment' => app()->environment(),
+                    'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
                 ]);
 
                 $this->card->delete();
@@ -618,6 +629,7 @@ class Modal extends Component
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->loadCard();

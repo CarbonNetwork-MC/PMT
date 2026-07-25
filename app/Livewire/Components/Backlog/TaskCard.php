@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Backlog;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogTaskAssignee;
 use App\Models\Log;
@@ -118,6 +119,7 @@ class TaskCard extends Component
                 'backlog' => $this->task->card->backlog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->backlog->project->uuid)
         ]);
 
         $this->refreshBacklogAndModal();
@@ -158,6 +160,7 @@ class TaskCard extends Component
                     'backlog' => $this->task->card->backlog->name
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->backlog->project->uuid)
         ]);
 
         $this->refreshBacklogAndModal();
@@ -181,6 +184,7 @@ class TaskCard extends Component
                 'backlog' => $this->task->card->backlog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->backlog->project->uuid)
         ]);
 
         $this->refreshBacklogAndModal();
@@ -208,6 +212,7 @@ class TaskCard extends Component
                 'backlog' => $this->task->card->backlog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->backlog->project->uuid)
         ]);
 
         $this->refreshBacklogAndModal();

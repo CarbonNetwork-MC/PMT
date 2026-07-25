@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Projects\Archive;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Models\Log;
 use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
@@ -47,6 +49,7 @@ class Overview extends Component
                 'sprint' => $sprintName,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('archive.toasts.delete_sprint', ['name' => $sprintName]));
@@ -72,6 +75,7 @@ class Overview extends Component
                 'sprint' => $sprint->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('archive.toasts.unarchive_sprint', ['name' => $sprint->name]));

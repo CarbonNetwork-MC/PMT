@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Projects\Sprints;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Models\BacklogCard;
 use App\Models\Log;
 use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
@@ -115,6 +117,8 @@ class Overview extends Component
                 'status' => $this->editingSprint->status,
             ]),
             'description' => __('logs.sprints.updated', ['sprint' => $this->editingSprint->name]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('sprints.toast.sprint-updated'));
@@ -150,6 +154,7 @@ class Overview extends Component
                 'sprint' => $sprintName
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('sprints.toast.sprint-deleted'));
@@ -175,6 +180,8 @@ class Overview extends Component
                 'status' => $sprint->status,
             ]),
             'description' => __('logs.sprints.status_changed', ['sprint' => $sprint->name, 'status' => $sprint->status]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('sprints.toast.start_sprint', ['name' => $sprint->name]));
@@ -292,6 +299,8 @@ class Overview extends Component
                 'sprint' => $sprint->name, 
                 'status' => $sprint->status
             ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->showCompleteSprintModal = false;
@@ -327,6 +336,8 @@ class Overview extends Component
             'description' => __('logs.sprints.archived', [
                 'sprint' => $sprint->name
             ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('sprints.toast.archive_sprint', ['name' => $sprint->name]));

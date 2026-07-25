@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Backlog;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Models\Backlog as BacklogModel;
 use App\Models\BacklogCard;
@@ -193,6 +194,7 @@ class Overview extends Component
                 'bucket' => $newBacklog->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('backlog.toasts.bucket_created', ['bucket' => $newBacklog->name]));
@@ -237,6 +239,7 @@ class Overview extends Component
                 'bucket' => $this->bucketToEdit->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('backlog.toasts.bucket_updated', ['bucket' => $this->bucketToEdit->name]));
@@ -272,6 +275,7 @@ class Overview extends Component
                 'bucket' => $this->bucketToDelete->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('backlog.toasts.bucket_deleted', ['bucket' => $this->bucketToDelete->name]));
@@ -317,6 +321,7 @@ class Overview extends Component
                 'backlog' => $this->selectedBacklog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('backlog.toasts.card_created', ['card' => $newCard->title]));
@@ -363,6 +368,7 @@ class Overview extends Component
                 'backlog' => $this->selectedBacklog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         Toaster::success(__('backlog.toasts.card_deleted', ['card' => $this->cardToModify->title]));
@@ -443,6 +449,7 @@ class Overview extends Component
                             'toBacklog' => optional(BacklogModel::where('uuid', $selectedEntityUuid)->first())->name, 
                         ]),
                         'environment' => app()->environment(),
+                        'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
                     ]);
 
                     return;
@@ -507,6 +514,7 @@ class Overview extends Component
                         'toColumn' => optional($sprintCard->column)->name
                     ]),
                     'environment' => app()->environment(),
+                    'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
                 ]);
 
                 $backlogCard->delete();
@@ -592,6 +600,7 @@ class Overview extends Component
                 'backlog' => $this->selectedBacklog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->reloadBacklog();
@@ -645,6 +654,7 @@ class Overview extends Component
                 'backlog' => $this->selectedBacklog->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         // Delete the original task
@@ -684,6 +694,7 @@ class Overview extends Component
                 'backlog' => optional($this->taskToModify->card->backlog)->name
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->taskToModify->delete();

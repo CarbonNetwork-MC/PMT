@@ -2,11 +2,13 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Log;
 use App\Models\Project;
 use App\Models\ProjectMember;
 use App\Models\ProjectRole;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Admin extends Component
@@ -74,6 +76,8 @@ class Admin extends Component
                 'oldOwner' => $oldOwner->name,
                 'newOwner' => $this->newOwner->name,
             ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         return redirect()->route('projects.settings.general.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.owner_changed', ['newOwner' => $this->newOwner->name]));

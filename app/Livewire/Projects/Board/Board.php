@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Projects\Board;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Card;
 use App\Models\CardAssignee;
 use App\Models\Log;
@@ -9,6 +10,7 @@ use App\Models\Project;
 use App\Models\Sprint;
 use App\Models\Task;
 use App\Models\TaskAssignee;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
@@ -142,6 +144,7 @@ class Board extends Component
                     'sprint' => $this->sprint->name,
                 ]),
                 'environment' => app()->environment(),
+                'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
             ]);
         }
 
@@ -186,6 +189,7 @@ class Board extends Component
                 'sprint' => $this->sprint->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->reloadBoard();
@@ -262,6 +266,7 @@ class Board extends Component
                 'sprint' => $this->sprint->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->reloadBoard();
@@ -308,6 +313,7 @@ class Board extends Component
                 'sprint' => $this->sprint->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $task->delete();
@@ -341,6 +347,7 @@ class Board extends Component
                 'sprint' => $this->sprint->name,
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->taskToModify->delete();

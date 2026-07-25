@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
+use App\Helpers\CheckIfUserIsAdmin;
 
 class Card extends Component
 {
@@ -142,6 +143,7 @@ class Card extends Component
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->selectedProject->uuid)
         ]);
 
         $this->loadCard();
@@ -164,6 +166,7 @@ class Card extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->selectedProject->uuid)
         ]);
     }
 
@@ -187,6 +190,7 @@ class Card extends Component
                 'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->selectedProject->uuid)
         ]);
 
         $this->loadCard();
@@ -238,6 +242,7 @@ class Card extends Component
                     'toColumn' => optional($this->selectedProject->columns()->find($this->column))->name,
                 ]),
                 'environment' => app()->environment(),
+                'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->selectedProject->uuid)
             ]);
         } else {
             $index = $this->position === 'top' ? 0 : BacklogCard::where('backlog_uuid', $this->selectedEntityUuid)->max('card_index') + 1;
@@ -298,6 +303,7 @@ class Card extends Component
                         'fromColumn' => optional($card->column)->name,
                     ]),
                     'environment' => app()->environment(),
+                    'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->selectedProject->uuid)
                 ]);
 
                 $card->delete();
@@ -349,6 +355,7 @@ class Card extends Component
                     'sprint' => $this->card->sprint ? $this->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->selectedProject->uuid)
         ]);
 
         $this->loadCard();

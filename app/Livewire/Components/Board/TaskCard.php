@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Board;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Helpers\CheckProjectPermissions;
 use App\Helpers\TimeFormatter;
 use App\Models\Log;
@@ -126,6 +127,7 @@ class TaskCard extends Component
                 'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->refreshBoardAndModal();
@@ -167,6 +169,7 @@ class TaskCard extends Component
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->refreshBoardAndModal();
@@ -191,6 +194,7 @@ class TaskCard extends Component
                 'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->refreshBoardAndModal();
@@ -220,6 +224,7 @@ class TaskCard extends Component
                 'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->refreshBoardAndModal();
@@ -275,6 +280,7 @@ class TaskCard extends Component
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->estimatedTimeInput = null;
@@ -317,6 +323,7 @@ class TaskCard extends Component
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->actualTimeInput = null;
@@ -358,6 +365,7 @@ class TaskCard extends Component
                     'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
                 ]),
             'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->task->card->column->project->uuid)
         ]);
 
         $this->refreshBoardAndModal();

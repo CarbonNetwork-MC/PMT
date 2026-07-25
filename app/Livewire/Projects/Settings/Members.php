@@ -2,11 +2,13 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Log;
 use App\Models\Project;
 use App\Models\ProjectMember;
 use App\Models\ProjectRole;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Members extends Component
@@ -122,6 +124,7 @@ class Members extends Component
             ]),
             'description' => __('logs.project_members.role_changed', ['user' => $this->userToModify['user'], 'role' => $this->newRole->name]),
             'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         $this->showChangeRoleModal = false;
@@ -150,6 +153,7 @@ class Members extends Component
             ]),
             'description' => __('logs.project_members.added', ['user' => $member->user->name, 'role' => $member->role->name]),
             'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.member_added', ['name' => $member->user->name]));
@@ -178,6 +182,7 @@ class Members extends Component
             ]),
             'description' => __('logs.project_members.removed', ['user' => $this->userToModify['user']]),
             'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
         return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.member_removed', ['name' => $this->userToModify['user']]));
