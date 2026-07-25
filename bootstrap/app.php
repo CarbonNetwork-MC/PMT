@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckIfRegistrationIsAllowed;
 use App\Http\Middleware\EnsureSprintIsArchived;
 use App\Http\Middleware\EnsureSprintIsStarted;
+use App\Http\Middleware\EnsureUserCanViewProject;
 use App\Http\Middleware\EnsureUserIsProjectOwner;
 use App\Http\Middleware\EnsureUserIsProjectOwnerOrAdmin;
 use Illuminate\Foundation\Application;
@@ -20,25 +21,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
+
             'check-registration' => CheckIfRegistrationIsAllowed::class,
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
+
+            'project-view' => EnsureUserCanViewProject::class,
             'project-owner-or-admin' => EnsureUserIsProjectOwnerOrAdmin::class,
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
             'project-owner' => EnsureUserIsProjectOwner::class,
-        ]);
-    })
-    ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
+
             'sprint-started' => EnsureSprintIsStarted::class,
             'sprint-archived' => EnsureSprintIsArchived::class,
         ]);
