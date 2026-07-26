@@ -21,7 +21,7 @@ Route::middleware('guest')->group(function() {
         ->name('register.post');
 });
 
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth', 'locale'])->group(function() {
     // ? Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
