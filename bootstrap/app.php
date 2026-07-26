@@ -1,11 +1,5 @@
 <?php
 
-use App\Http\Middleware\CheckIfRegistrationIsAllowed;
-use App\Http\Middleware\EnsureSprintIsArchived;
-use App\Http\Middleware\EnsureSprintIsStarted;
-use App\Http\Middleware\EnsureUserCanViewProject;
-use App\Http\Middleware\EnsureUserIsProjectOwner;
-use App\Http\Middleware\EnsureUserIsProjectOwnerOrAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,14 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
 
-            'check-registration' => CheckIfRegistrationIsAllowed::class,
+            'check-registration' => \App\Http\Middleware\CheckIfRegistrationIsAllowed::class,
 
-            'project-view' => EnsureUserCanViewProject::class,
-            'project-owner-or-admin' => EnsureUserIsProjectOwnerOrAdmin::class,
-            'project-owner' => EnsureUserIsProjectOwner::class,
+            'project-view' => \App\Http\Middleware\EnsureUserCanViewProject::class,
+            'project-owner-or-admin' => \App\Http\Middleware\EnsureUserIsProjectOwnerOrAdmin::class,
+            'project-owner' => \App\Http\Middleware\EnsureUserIsProjectOwner::class,
 
-            'sprint-started' => EnsureSprintIsStarted::class,
-            'sprint-archived' => EnsureSprintIsArchived::class,
+            'sprint-started' => \App\Http\Middleware\EnsureSprintIsStarted::class,
+            'sprint-archived' => \App\Http\Middleware\EnsureSprintIsArchived::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
