@@ -28,6 +28,13 @@ return [
             'edit'=> 'Edit User',
             'delete' => 'Delete User',
             'users' => 'Users',
+        ],
+
+        // ? Invite Codes
+        'invite_codes' => [
+            'overview' => 'Invite Codes Overview',
+            'create' => 'Create Invite Code',
+            'delete' => 'Delete Invite Code',
         ]
     ],
 
@@ -54,6 +61,13 @@ return [
             'project_will_be_transferred_to_you' => 'You will become the owner of this project.',
             'project_will_be_archived' => 'The project will be made inactive but retained.',
             'project_will_be_deleted' => 'Warning: this project and its related data will be deleted.',
+        ],
+
+        // ? Invite Codes
+        'invite_codes' => [
+            'confirm_delete' => 'Are you sure you want to delete this invite code? This action cannot be undone.',
+            'create_invite_code' => 'New users can create an account using this invite code. Once used, the code will be marked as used and cannot be reused.',
+            'no_invite_codes' => 'No invite codes found.',
         ]
     ],
 
@@ -77,6 +91,13 @@ return [
             'projects_completed' => 'Projects configured',
             'superadmin' => 'Superadmin',
         ],
+
+        // ? Invite Codes
+        'invite_codes' => [
+            'code' => 'Code',
+            'used' => 'Used',
+            'used_by' => 'Used By',
+        ]
     ],
 
     'buttons' => [
@@ -89,6 +110,12 @@ return [
         'new_role' => 'New Role',
         'update_permission' => 'Update Permission',
         'update_role' => 'Update Role',
+
+        // ? Invite Codes
+        'invite_codes' => [
+            'create' => 'Create Invite Code',
+            'generate' => 'Generate Code',
+        ]
     ],
 
     'toasts' => [
@@ -106,6 +133,12 @@ return [
             'user_is_superadmin' => 'User <b>:user</b> is a <b>Superadmin</b> and cannot be deleted by anyone other than another <b>Superadmin</b>.',
             'user_updated' => 'User <b>:user</b> updated successfully.',
         ],
+
+        // ? Invite Codes
+        'invite_codes' => [
+            'created' => 'Invite code created successfully.',
+            'deleted' => 'Invite code deleted successfully.',
+        ]
     ],
 
     'placeholders' => [

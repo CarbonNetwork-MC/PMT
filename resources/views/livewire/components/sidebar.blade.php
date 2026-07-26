@@ -162,6 +162,16 @@
                         :label="__('sidebar.admin.roles_permissions')"
                     />
                 @endif
+
+                {{-- Invite Codes --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-users') && $user->can('manage-users'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.invite-codes.render')"
+                        :active="request()->routeIs('admin.invite-codes.*')"
+                        icon="fi fi-rr-ticket"
+                        :label="__('sidebar.admin.invite_codes')"
+                    />
+                @endif
             </nav>
         @endif
 

@@ -127,6 +127,11 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/roles-and-permissions/edit-role/{uuid}', \App\Livewire\Admin\RolesAndPermissions\EditRole::class)
             ->middleware(['role:Superadmin|Admin', 'permission:manage-roles'])
             ->name('admin.roles-and-permissions.edit-role.render');
+
+        // ? Invite Codes
+        Route::get('/invite-codes', \App\Livewire\Admin\InviteCodes\Overview::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-users'])
+            ->name('admin.invite-codes.render');
     });
 });
 

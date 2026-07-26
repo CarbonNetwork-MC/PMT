@@ -29,6 +29,7 @@ return [
     'admin' => [
         'users' => 'Users',
         'roles_permissions' => 'Roles & Permissions',
+        'invite_codes' => 'Invite Codes',
     ],
 
 ];
