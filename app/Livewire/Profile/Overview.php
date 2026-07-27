@@ -20,8 +20,10 @@ class Overview extends Component
     public $email;
     public $profileImage;
     public $currentProfileImage;
+    public $language;
 
     public $sessions = [];
+    public $languages;
 
     public $currentPassword = '';
     public $newPassword = '';
@@ -38,8 +40,11 @@ class Overview extends Component
         $this->currentProfileImage = $this->user->profile_photo_path
             ? asset('storage/' . $this->user->profile_photo_path)
             : null;
+        $this->language = auth()->user()->locale;
 
         $this->sessions = $this->user->sessions()->orderBy('last_activity', 'desc')->get();
+        $this->languages = collect(config('app.available_locales'))
+            ->mapWithKeys(fn($locale) => [$locale => __('languages.' . $locale)]);
     }
 
     public function updatedProfileImage() {
@@ -102,6 +107,18 @@ class Overview extends Component
         $this->reset(['currentPassword', 'newPassword', 'newPassword_confirmation']);
 
         Toaster::success(__('profile.toasts.password_updated'));
+    }
+
+    public function saveLanguage() {
+        $this->validate([
+            'language' => 'required|in:' . implode(',', config('app.available_locales')),
+        ]);
+
+        auth()->user()->update([
+            'locale' => $this->language,
+        ]);
+
+        Toaster::success(__('profile.toasts.settings_updated'));
     }
 
     public function logoutOtherSessions() {

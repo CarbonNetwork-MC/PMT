@@ -200,83 +200,76 @@
                 </div>
             @endif
 
-            <div class="border-t border-zinc-200 dark:border-zinc-800 pt-3">
-                <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
-                    <!-- Profile button -->
-                    <button type="button" @click="open = !open" :title="isCollapsed ? '{{ Auth::user()->name ?? 'Account' }}' : null"
-                        class="w-full rounded-xl px-2 py-2 hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
+            <x-sidebar.nav-divider />
+
+            <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false">
+                <!-- Profile button -->
+                <button type="button" @click="open = !open" :title="isCollapsed ? '{{ Auth::user()->name ?? 'Account' }}' : null"
+                    class="w-full rounded-xl px-2 py-2 hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
+                >
+
+                    <!-- Avatar -->
+                    <img src="{{ $userProfilePicture
+                        ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'U') . '&background=16a34a&color=ffffff' }}"
+                        alt="{{ Auth::user()->name ?? 'User' }}" class="h-8 w-8 rounded-xl object-cover" />
+
+                    <!-- Name / email (hidden when collapsed) -->
+                    <div x-show="!isCollapsed" class="min-w-0 text-left">
+                        <p class="text-sm font-medium text-zinc-100 truncate">
+                            {{ Auth::user()->name ?? 'Your Name' }}
+                        </p>
+                        <p class="text-xs text-zinc-300 truncate">
+                            {{ Auth::user()->email ?? 'you@example.com' }}
+                        </p>
+                    </div>
+
+                    <!-- Chevron (hidden when collapsed) -->
+                    <svg x-show="!isCollapsed" :class="{ 'rotate-0': open, 'rotate-180': !open }" class="ml-auto h-4 w-4 text-zinc-300 transition-transform" viewBox="0 0 20 20"
+                        fill="currentColor" aria-hidden="true"
                     >
+                        <path fill-rule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
 
-                        <!-- Avatar -->
-                        <img src="{{ $userProfilePicture
-                            ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'U') . '&background=16a34a&color=ffffff' }}"
-                            alt="{{ Auth::user()->name ?? 'User' }}" class="h-8 w-8 rounded-xl object-cover" />
+                <!-- Dropdown (opens UP) -->
+                <div x-show="open" x-transition.origin-bottom @click.outside="open = false" class="absolute left-0 right-0 z-50 bottom-12 mb-2"
+                    :class="isCollapsed ? 'left-1/2 -translate-x-1/2 w-56' : 'left-0 right-0'">
 
-                        <!-- Name / email (hidden when collapsed) -->
-                        <div x-show="!isCollapsed" class="min-w-0 text-left">
-                            <p class="text-sm font-medium text-zinc-100 truncate">
-                                {{ Auth::user()->name ?? 'Your Name' }}
-                            </p>
-                            <p class="text-xs text-zinc-300 truncate">
-                                {{ Auth::user()->email ?? 'you@example.com' }}
-                            </p>
-                        </div>
-
-                        <!-- Chevron (hidden when collapsed) -->
-                        <svg x-show="!isCollapsed" :class="{ 'rotate-0': open, 'rotate-180': !open }" class="ml-auto h-4 w-4 text-zinc-300 transition-transform" viewBox="0 0 20 20"
-                            fill="currentColor" aria-hidden="true"
+                    <div class="rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
+                        <!-- Dark mode switch -->
+                        <label class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none hover:bg-zinc-800"
+                            role="switch" :aria-checked="dark.toString()"
                         >
-                            <path fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                            <i class="fi text-white" :class="dark ? 'fi-rr-moon' : 'fi-rr-sun'"></i>
+                            <span class="text-zinc-200">Dark mode</span>
 
-                    <!-- Dropdown (opens UP) -->
-                    <div x-show="open" x-transition.origin-bottom @click.outside="open = false" class="absolute left-0 right-0 z-50 bottom-12 mb-2"
-                        :class="isCollapsed ? 'left-1/2 -translate-x-1/2 w-56' : 'left-0 right-0'">
+                            <input type="checkbox" x-model="dark" class="sr-only peer" />
 
-                        <div class="rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
-                            <!-- Dark mode switch -->
-                            <label class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none hover:bg-zinc-800"
-                                role="switch" :aria-checked="dark.toString()"
-                            >
-                                <i class="fi text-white" :class="dark ? 'fi-rr-moon' : 'fi-rr-sun'"></i>
-                                <span class="text-zinc-200">Dark mode</span>
+                            <span class="ml-auto relative bg-zinc-700 inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200">
+                                <span class="h-4 w-4 bg-white rounded-full shadow transform transition-transform duration-200"
+                                    :class="dark ? 'translate-x-5' : 'translate-x-1'"></span>
+                            </span>
+                        </label>
 
-                                <input type="checkbox" x-model="dark" class="sr-only peer" />
+                        <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
-                                <span class="ml-auto relative bg-zinc-700 inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200">
-                                    <span class="h-4 w-4 bg-white rounded-full shadow transform transition-transform duration-200"
-                                        :class="dark ? 'translate-x-5' : 'translate-x-1'"></span>
-                                </span>
-                            </label>
+                        <a href="{{ route('profile.overview.render') }}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
+                            <i class="fi fi-rr-user"></i>
+                            <span>{{ __('sidebar.profile_settings') }}</span>
+                        </a>
 
-                            <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
+                        <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
-                            <a href="{{ route('profile.overview.render') }}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
-                                <i class="fi fi-rr-user"></i>
-                                <span>Profile</span>
-                            </a>
-
-                            <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
-
-                            <a href="" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
-                                <i class="fi fi-rr-settings"></i>
-                                <span>Settings</span>
-                            </a>
-
-                            <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
-
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:text-red-600 hover:bg-zinc-800 cursor-pointer">
-                                    <i class="fi fi-rr-exit"></i>
-                                    <span>Log out</span>
-                                </button>
-                            </form>
-                        </div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:text-red-600 hover:bg-zinc-800 cursor-pointer">
+                                <i class="fi fi-rr-exit"></i>
+                                <span>{{ __('sidebar.logout') }}</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

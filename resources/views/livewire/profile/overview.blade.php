@@ -105,6 +105,38 @@
 
         <x-containers.divider height="0.5" />
 
+        {{-- Language --}}
+        <x-profile.profile-card>
+            <x-slot name="title">
+                {{ __('profile.titles.settings.language') }}
+            </x-slot>
+            <x-slot name="description">
+                {{ __('profile.descriptions.settings.language') }}
+            </x-slot>
+            <x-slot name="form">
+                <div class="grid grid-cols-3 gap-x-2 gap-y-4">
+                    <div class="col-span-1">
+                        <x-forms.select
+                            label="{{ __('profile.labels.language') }}"
+                            wire:model="language"
+                            :options="$languages->map(fn($label, $lang) => ['value' => $lang, 'label' => $label])->toArray()"
+                            required
+                        />
+                    </div>
+
+                    <div class="col-span-2"></div>
+                </div>
+
+                <div class="flex justify-end items-center gap-x-4">
+                    <x-buttons.primary-button type="submit" wire:click.prevent="saveLanguage" primary>
+                        {{ __('general.buttons.save') }}
+                    </x-buttons.primary-button>
+                </div>
+            </x-slot>
+        </x-profile.profile-card>
+
+        <x-containers.divider height="0.5" />
+
         {{-- Sessions --}}
         <x-profile.profile-card>
             <x-slot name="title">

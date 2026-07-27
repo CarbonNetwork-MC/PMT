@@ -15,6 +15,11 @@ return [
         'personal_information' => 'Personal Information',
         'profile' => 'Profile',
         'sessions' => 'Sessions',
+        'settings' => [
+            'general' => 'Settings',
+            'language' => 'Language',
+            'dark_mode' => 'Dark Mode',
+        ],
     ],
 
     'descriptions' => [
@@ -22,6 +27,11 @@ return [
         'personal_information' => 'Manage your personal information and profile settings.',
         'delete_account' => 'Permanently delete your account.',
         'sessions' => 'Manage and log out your active sessions on other browsers and devices.',
+
+        'settings' => [
+            'language' => 'Select your preferred language for the application.',
+            'dark_mode' => 'Toggle between light and dark mode for the application interface.',
+        ]
     ],
 
     'messages' => [
@@ -36,7 +46,9 @@ return [
     'labels' => [
         'confirm_password' => 'Confirm Password',
         'current_password' => 'Current Password',
+        'dark_mode' => 'Dark Mode',
         'email' => 'Email Address',
+        'language' => 'Language',
         'last_active' => 'Last Active',
         'new_password' => 'New Password',
         'username' => 'Username',
@@ -55,6 +67,7 @@ return [
         'profile_image_updated' => 'Successfully updated your profile image.',
         'profile_updated' => 'Successfully updated your profile information.',
         'sessions_logged_out' => 'Successfully logged out of other browser sessions.',
+        'settings_updated' => 'Successfully updated your settings. Refresh the page to see the changes take effect.',
     ],
 
     'placeholders' => [

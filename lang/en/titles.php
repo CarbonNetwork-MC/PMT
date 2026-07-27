@@ -48,6 +48,10 @@ return [
         'settings_notifications' => 'Profile Settings - Notifications',
     ],
 
+    'settings' => [
+        'general' => 'Settings',
+    ],
+
     'admin' => [
         'dashboard' => 'Admin | Dashboard',
         'roles_and_permissions' => [

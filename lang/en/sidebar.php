@@ -12,7 +12,9 @@ return [
     // ? Public
     'back_to_dashboard' => 'Back to Dashboard',
     'dashboard' => 'Dashboard',
+    'logout' => 'Log Out',
     'management' => 'Management',
+    'profile_settings' => 'Profile & Settings',
 
     // ? Projects
     'projects' => [

@@ -23,20 +23,26 @@ Route::middleware('guest')->group(function() {
 
 Route::middleware(['auth', 'locale'])->group(function() {
     // ? Logout
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('logout');
 
     // ? Dashboard
-    Route::get('/dashboard', \App\Livewire\Dashboard::class)->name('dashboard.render');
+    Route::get('/dashboard', \App\Livewire\Dashboard::class)
+        ->name('dashboard.render');
 
     // ? Profile
     Route::prefix('/profile')->group(function() {
-        Route::get('/', \App\Livewire\Profile\Overview::class)->name('profile.overview.render');
+        Route::get('/', \App\Livewire\Profile\Overview::class)
+            ->name('profile.overview.render');
     });
 
     // ? Projects
     Route::prefix('/projects')->group(function() {
-        Route::get('/', \App\Livewire\Projects\Projects::class)->name('projects.render');
-        Route::get('/new', \App\Livewire\Projects\NewProject::class)->name('projects.new.render');
+        Route::get('/', \App\Livewire\Projects\Projects::class)
+            ->name('projects.render');
+            
+        Route::get('/new', \App\Livewire\Projects\NewProject::class)
+            ->name('projects.new.render');
     
         Route::middleware(['project-view'])->group(function() {
             // ? Dashboard
