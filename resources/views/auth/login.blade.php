@@ -61,7 +61,98 @@
         </div>
     </div>
 
-    <div class="auth-background lg:hidden block">
-        mobile is not supported (yet)
+    <div class="auth-background lg:hidden min-h-dvh flex items-center justify-center p-6">
+        <div class="w-full max-w-md rounded-2xl bg-carbon-950/75 backdrop-blur-md p-8 shadow-2xl border border-white/10">
+
+            {{-- Branding --}}
+            <div class="flex justify-center mb-8">
+                <x-application-logo class="w-24 h-24 text-white" />
+            </div>
+
+            <h1 class="text-center text-3xl font-rw-black uppercase text-white mb-8">
+                {{ __('auth.form.login') }}
+            </h1>
+
+            <x-validation-errors class="mb-4" />
+
+            @session('status')
+                <div class="mb-4 text-sm font-medium text-green-400">
+                    {{ $value }}
+                </div>
+            @endsession
+
+            <form method="POST" action="{{ route('login.post') }}">
+                @csrf
+
+                <div class="mb-5">
+                    <label for="mobile-email"
+                        class="block mb-2 text-sm font-rw-semibold text-white">
+                        {{ __('auth.form.email') }}
+                    </label>
+
+                    <input
+                        id="mobile-email"
+                        name="email"
+                        type="email"
+                        placeholder="you@email.com"
+                        required
+                        class="w-full rounded-lg border border-gray-300 bg-gray-100 p-2.5 text-sm focus:border-green-500 focus:ring-green-500">
+                </div>
+
+                <div class="mb-5">
+                    <label for="mobile-password"
+                        class="block mb-2 text-sm font-rw-semibold text-white">
+                        {{ __('auth.form.password') }}
+                    </label>
+
+                    <input
+                        id="mobile-password"
+                        name="password"
+                        type="password"
+                        required
+                        class="w-full rounded-lg border border-gray-300 bg-gray-100 p-2.5 text-sm focus:border-green-500 focus:ring-green-500">
+                </div>
+
+                <div class="flex items-center mb-6">
+                    <input
+                        id="mobile-remember"
+                        name="remember"
+                        type="checkbox"
+                        class="h-4 w-4 rounded border-gray-300">
+
+                    <label for="mobile-remember"
+                        class="ml-2 text-sm text-white">
+                        {{ __('auth.form.remember_me') }}
+                    </label>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full rounded-lg bg-green-700 py-3 font-rw-semibold text-white hover:bg-green-800">
+                    {{ __('auth.form.login') }}
+                </button>
+
+                @if (Route::has('password.request'))
+                    <div class="mt-4 text-center">
+                        <a
+                            href="{{ route('password.request') }}"
+                            class="text-sm text-white/80 underline">
+                            {{ __('auth.form.forgot_password') }}
+                        </a>
+                    </div>
+                @endif
+
+                @if (config('app.allow_registration'))
+                    <p class="mt-6 text-center text-sm text-white">
+                        {{ __('auth.form.no_account') }}
+                        <a
+                            href="{{ route('register') }}"
+                            class="text-green-400 hover:underline">
+                            {{ __('auth.form.register') }}
+                        </a>
+                    </p>
+                @endif
+            </form>
+        </div>
     </div>
 @endsection
