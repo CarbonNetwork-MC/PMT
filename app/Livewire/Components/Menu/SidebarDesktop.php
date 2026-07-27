@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Livewire\Components;
+namespace App\Livewire\Components\Menu;
 
 use App\Models\Project;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class Sidebar extends Component
+class SidebarDesktop extends Component
 {
     public $user;
     public $userProfilePicture;
@@ -32,6 +32,6 @@ class Sidebar extends Component
 
     public function render()
     {
-        return view('livewire.components.sidebar');
+        return view('livewire.components.menu.sidebar-desktop');
     }
 }

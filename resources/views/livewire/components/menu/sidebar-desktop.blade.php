@@ -1,11 +1,6 @@
-<div x-data="sidebarState()" x-init="init()" @keydown.window.escape="isOpenMobile && closeMobile()" class="relative">
-    <!-- Mobile overlay -->
-    <div x-show="isOpenMobile" x-transition.opacity @click="closeMobile()"
-        class="fixed inset-0 z-40 bg-black/40 lg:hidden" aria-hidden="true"></div>
-
+<div x-data="sidebarState()" x-init="init()" class="relative">
     <!-- Sidebar panel -->
     <aside :class="[
-            (isOpenMobile || isDesktop) ? 'translate-x-0' : '-translate-x-full',
             isCollapsed ? 'lg:w-20' : 'lg:w-64'
         ]" 
         x-transition:enter="transition ease-out duration-200" 
@@ -14,7 +9,7 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-x-0" 
         x-transition:leave-end="-translate-x-full"
-        class="fixed lg:sticky top-0 z-20 lg:top-20 h-dvh shrink-0 bg-zinc-900/90 backdrop-blur border-r border-zinc-800 p-3 lg:p-4 will-change-transform transition-all duration-200 flex flex-col overflow-hidden"
+        class="sticky z-20 top-20 h-dvh shrink-0 bg-zinc-900/90 backdrop-blur border-r border-zinc-800 p-4 will-change-transform transition-all duration-200 flex flex-col overflow-hidden"
         aria-label="Sidebar"
     >
 
@@ -275,20 +270,6 @@
             </div>
         </div>
     </aside>
-
-    <!-- Mobile top bar -->
-    <div
-        class="lg:hidden sticky top-0 z-20 bg-white/80 dark:bg-zinc-900/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
-        <div class="flex items-center gap-2 p-3">
-            <button @click="openMobile()"
-                class="inline-flex items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 p-2 text-zinc-700 dark:text-zinc-200">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
-                    <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
-                </svg>
-            </button>
-            <span class="font-semibold text-zinc-800 dark:text-zinc-100">Menu</span>
-        </div>
-    </div>
 </div>
 
 <script>

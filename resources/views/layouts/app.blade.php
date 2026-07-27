@@ -42,14 +42,19 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased overflow-hidden">
-        <div class="min-h-screen bg-gray-200 dark:bg-gray-900 flex overflow-hidden">
-            <!-- Sidebar -->
-            <div class="h-screen">
-                @livewire('components.sidebar')
+        <div class="min-h-screen bg-gray-200 dark:bg-gray-900 flex flex-col lg:flex-row overflow-hidden">
+            <!-- Sidebar (Desktop) -->
+            <div class="hidden lg:block h-screen">
+                @livewire('components.menu.sidebar-desktop')
+            </div>
+
+            <!-- Sidebar (Mobile) -->
+            <div class="lg:hidden">
+                @livewire('components.menu.menu-mobile')
             </div>
 
             <!-- Main Content -->
-            <div class="w-full h-screen overflow-y-auto">
+            <div class="flex-1 min-w-0 h-screen overflow-y-auto">
                 <main class="p-4">
                     <!-- Breadcrumbs -->
                     {{ $breadcrumbs ?? '' }}
