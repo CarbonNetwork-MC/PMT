@@ -123,6 +123,7 @@ class Overview extends Component
 
     public function logoutOtherSessions() {
         $this->user->sessions()->where('id', '!=', session()->getId())->delete();
+        $this->sessions = $this->user->sessions()->orderBy('last_activity', 'desc')->get();
 
         Toaster::success(__('profile.toasts.sessions_logged_out'));
     }
