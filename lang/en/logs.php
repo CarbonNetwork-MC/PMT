@@ -58,6 +58,7 @@ return [
         'task_estimated_time_updated' => 'Estimated time for task <b>:task</b> was updated to <b>:estimated_time</b> in sprint <b>:sprint</b>.',
         'task_estimated_time_cleared' => 'Estimated time for task <b>:task</b> was cleared in sprint <b>:sprint</b>.',
         'task_order_updated' => 'Task <b>:task</b> was moved from <b>:from</b> to <b>:to</b> on card <b>:card</b> in sprint <b>:sprint</b>.',
+        'task_title_updated' => 'Task title was updated from <b>:title</b> to <b>:newTitle</b> on card <b>:card</b> in sprint <b>:sprint</b>.',
     ],
 
     'backlog' => [
@@ -81,6 +82,7 @@ return [
         'task_assignee_removed' => 'User <b>:user</b> was unassigned from task <b>:task</b> on card <b>:card</b> in backlog <b>:backlog</b>.',
         'task_assignee_removed_all' => 'All assignees were removed from task <b>:task</b> on card <b>:card</b> in backlog <b>:backlog</b>.',
         'task_order_updated' => 'Task <b>:task</b> was moved from <b>:from</b> to <b>:to</b> on card <b>:card</b> in backlog <b>:backlog</b>.',
+        'task_title_updated' => 'Task title was updated from <b>:title</b> to <b>:newTitle</b> on card <b>:card</b> in backlog <b>:backlog</b>.',
     ]
 
 ];

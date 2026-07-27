@@ -101,6 +101,8 @@ class TaskCard extends Component
     }
 
     public function updateTitle() {
+        $originalTitle = $this->task->description;
+
         $this->task->description = $this->taskTitle;
         $this->task->save();
 
@@ -114,7 +116,8 @@ class TaskCard extends Component
             'table' => 'backlog_tasks',
             'data' => json_encode(['description' => $this->taskTitle]),
             'description' => __('logs.backlog.task_title_updated', [
-                'task' => $this->taskTitle,
+                'task' => $originalTitle,
+                'newTitle' => $this->taskTitle,
                 'card' => $this->task->card->title,
                 'backlog' => $this->task->card->backlog->name
             ]),

@@ -108,6 +108,8 @@ class TaskCard extends Component
             'taskTitle' => ['required', 'string', 'max:255'],
         ]);
 
+        $originalTitle = $this->task->description;
+
         $this->task->update(['description' => $this->taskTitle]);
 
         Log::create([
@@ -123,7 +125,9 @@ class TaskCard extends Component
                 'description' => $this->taskTitle,
             ]),
             'description' => __('logs.board.task_title_updated', [
-                'task' => $this->taskTitle,
+                'title' => $originalTitle,
+                'newTitle' => $this->taskTitle,
+                'card' => $this->task->card->title,
                 'sprint' => $this->task->card->sprint ? $this->task->card->sprint->name : 'N/A',
             ]),
             'environment' => app()->environment(),
