@@ -10,7 +10,7 @@ return [
     */
 
     'titles' => [
-        
+        'dashboard' => 'Dashboard',
     ],
 
     'labels' => [
@@ -20,6 +20,9 @@ return [
         'members' => 'Members',
         'total_sprints' => 'Total Sprints',
         'owning' => 'Owning',
+
+        'projects' => 'Projects you are a member of',
+        'unique_users' => 'Unique users across all projects',
     ],
 
     'messages' => [
