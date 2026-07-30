@@ -59,7 +59,7 @@
                 <div class="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4">
                     <i class="fi fi-rr-diamond-exclamation text-red-700"></i>
                     <p class="font-medium text-red-700">
-                        {!! __('admin.titles.users.user_is_superadmin') !!}
+                        {!! __('admin.messages.users.user_is_superadmin') !!}
                     </p>
                 </div>
             @else
