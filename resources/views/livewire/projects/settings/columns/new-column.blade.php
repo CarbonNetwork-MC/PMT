@@ -55,7 +55,7 @@
                     <div class="col-span-1">
                         <x-forms.select
                             label="{{ __('settings.labels.color') }}"
-                            wire:model="colorId"
+                            wire:model.live="colorId"
                             :options="$colors->map(function($color) {
                                 return [
                                     'value' => $color->id,

@@ -25,6 +25,9 @@ class NewColumn extends Component
         $this->project = Project::where('uuid', $uuid)->firstOrFail();
         $this->colors = ColumnColor::all();
 
+        $this->color = $this->colors->first();
+        $this->colorId = $this->color->id;
+
         // Fill position with the next available position
         $this->position = $this->project->columns()->count() + 1;
     }
