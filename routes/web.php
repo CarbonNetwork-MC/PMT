@@ -30,6 +30,10 @@ Route::middleware(['auth', 'locale'])->group(function() {
     Route::get('/dashboard', \App\Livewire\Dashboard::class)
         ->name('dashboard.render');
 
+    // ? Bug Report
+    Route::get('/bug-report', \App\Livewire\BugReport::class)
+        ->name('bug-report.render');
+
     // ? Profile
     Route::prefix('/profile')->group(function() {
         Route::get('/', \App\Livewire\Profile\Overview::class)

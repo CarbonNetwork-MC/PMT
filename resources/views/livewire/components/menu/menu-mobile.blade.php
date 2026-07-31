@@ -248,15 +248,25 @@
                     </div>
                 </div>
 
+                <a
+                    href="{{ route('profile.overview.render') }}"
+                    class="flex items-center justify-center gap-2 rounded-xl
+                            bg-zinc-800 px-3 py-2.5 text-sm text-zinc-200
+                            transition hover:bg-zinc-700 mb-3"
+                >
+                    <i class="fi fi-rr-user flex items-center"></i>
+                    <span>{{ __('sidebar.profile_settings') }}</span>
+                </a>
+
                 <div class="grid grid-cols-2 gap-2">
                     <a
-                        href="{{ route('profile.overview.render') }}"
+                        href="{{ route('bug-report.render') }}"
                         class="flex items-center justify-center gap-2 rounded-xl
                                bg-zinc-800 px-3 py-2.5 text-sm text-zinc-200
                                transition hover:bg-zinc-700"
                     >
-                        <i class="fi fi-rr-user flex items-center"></i>
-                        <span>{{ __('sidebar.profile_settings') }}</span>
+                        <i class="fi fi-rr-bug flex items-center"></i>
+                        <span>{{ __('sidebar.bug_report') }}</span>
                     </a>
 
                     <form method="POST" action="{{ route('logout') }}">

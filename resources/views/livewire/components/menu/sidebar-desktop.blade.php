@@ -257,6 +257,13 @@
 
                         <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
+                        <a href="{{ route('bug-report.render') }}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
+                            <i class="fi fi-rr-bug"></i>
+                            <span>{{ __('sidebar.bug_report') }}</span>
+                        </a>
+
+                        <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
+
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"

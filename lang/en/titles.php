@@ -10,6 +10,7 @@ return [
     */
 
     'dashboard' => 'Dashboard',
+    'bug_report' => 'Bug Report',
 
     'projects' => [
         'projects' => 'Projects',

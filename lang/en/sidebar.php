@@ -11,6 +11,7 @@ return [
 
     // ? Public
     'back_to_dashboard' => 'Back to Dashboard',
+    'bug_report' => 'Bug Report',
     'dashboard' => 'Dashboard',
     'logout' => 'Log Out',
     'management' => 'Management',
