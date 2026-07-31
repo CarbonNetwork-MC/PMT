@@ -50,7 +50,3 @@ i.fi {
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
 }
-
-.dark input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-}

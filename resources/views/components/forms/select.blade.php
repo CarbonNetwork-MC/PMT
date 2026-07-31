@@ -39,9 +39,9 @@
         @required($required)
         @disabled($disabled)
         {{ $attributes->class([
-            'block w-full bg-gray-100 dark:bg-gray-900 border border-default-medium
-             text-black dark:text-white text-sm rounded-base focus:ring-brand
-             focus:border-brand shadow-xs placeholder:text-body',
+            'block w-full border border-gray-200
+             text-sm text-black rounded-base focus:ring-brand
+             focus:border-brand shadow-xs placeholder:text-gray-400',
             $sizeClasses,
         ]) }}
     >

@@ -36,8 +36,7 @@
         @if($disabled) disabled @endif
         {{ $attributes->class([
             'block w-full rounded-base text-sm shadow-xs ' . $sizeClasses,
-            'placeholder:text-gray-500 dark:placeholder:text-gray-600',
-            'dark:bg-gray-900 text-black dark:text-white',
+            'placeholder:text-gray-500',
             $disabled
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-gray-100',
