@@ -35,8 +35,13 @@
 
             <div class="flex flex-col gap-y-4">
                 <x-forms.text-input label="{{ __('bug-report.labels.title') }}" wire:model="title" required />
-                <x-forms.text-area label="{{ __('bug-report.labels.description') }}" wire:model="description" required />
-                <x-forms.text-input width="w-1/3" label="{{ __('bug-report.labels.page') }}" wire:model="page" required />
+                <x-forms.text-area label="{{ __('bug-report.labels.description') }}" wire:model="description" rows="10" required />
+                <x-forms.select label="{{ __('bug-report.labels.page') }}" wire:model="page" required :options="collect($pages)
+                    ->map(fn ($label, $value) => [
+                        'label' => $label,
+                        'value' => $value,
+                    ])
+                    ->values()" />
                 <div>
                     <x-forms.file-input label="{{ __('bug-report.labels.screenshots') }}" wire:model.live="screenshots" multiple />
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">

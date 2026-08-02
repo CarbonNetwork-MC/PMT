@@ -30,7 +30,7 @@ return [
     ],
 
     'toasts' => [
-        
+        'success' => 'Bug report submitted successfully!',
     ],
 
     'modals' => [

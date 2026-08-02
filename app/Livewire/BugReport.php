@@ -6,6 +6,7 @@ use App\Models\BugReport as BugReportModel;
 use App\Models\BugReportScreenshot;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Masmerise\Toaster\Toaster;
 
 class BugReport extends Component
 {
@@ -18,6 +19,18 @@ class BugReport extends Component
     public $page;
     public $screenshots;
 
+    public array $pages = [
+        'home' => 'Home',
+        'projects' => 'Projects',
+        'profile' => 'Profile',
+        'project_dashboard' => 'Project Dashboard',
+        'board' => 'Board',
+        'sprints' => 'Sprints',
+        'backlog' => 'Backlog',
+        'archive' => 'Archive',
+        'settings' => 'Settings',
+    ];
+
     public function mount() {
         $this->user = auth()->user();
     }
@@ -28,7 +41,7 @@ class BugReport extends Component
             'description' => 'required|string',
             'page' => 'nullable|string|max:255',
             'screenshots' => 'nullable|array',
-            'screenshots.*' => 'image|mimes:jpeg,png,jpg|max:2048', // Max size 2MB
+            'screenshots.*' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $bugReport = BugReportModel::create([
@@ -49,6 +62,10 @@ class BugReport extends Component
                 ]);
             }
         }
+
+        $this->reset(['title', 'description', 'page', 'screenshots']);
+
+        Toaster::success(__('bug-report.toasts.success'));
     }
 
     public function render()
