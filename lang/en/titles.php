@@ -63,8 +63,8 @@ return [
             'overview' => 'Admin | Roles and Permissions Overview',
         ],
         'users' => [
-            'edit_user' => 'Admin | Edit User',
-            'invite_user' => 'Admin | Invite User',
+            'edit' => 'Admin | Edit User',
+            'invite' => 'Admin | Invite User',
             'overview' => 'Admin | Users Overview',
         ],
     ]
