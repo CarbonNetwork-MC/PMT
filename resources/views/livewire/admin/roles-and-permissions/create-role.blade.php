@@ -24,7 +24,7 @@
     </x-slot>
     
     <x-containers.main>
-        <h1 class="font-bold text-lg">
+        <h1 class="font-bold text-lg dark:text-white">
             {{ __('admin.titles.create_role') }}
         </h1>
 
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <h1 class="font-bold mt-6">
+        <h1 class="font-bold mt-6 dark:text-white">
             {{ __('admin.titles.permissions') }}
         </h1>
 
@@ -55,7 +55,9 @@
                     @forelse ($allPermissions as $permission)
                         <label
                             for="permission_{{ $permission->uuid }}"
-                            class="flex items-center gap-3 rounded-lg border border-gray-300 p-3 cursor-pointer transition hover:border-blue-500 hover:bg-blue-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-100"
+                            class="flex items-center gap-3 rounded-lg border border-gray-300 
+                            p-3 cursor-pointer transition hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-800
+                            has-checked:border-blue-600 has-checked:bg-blue-100 dark:has-checked:bg-gray-700"
                         >
                             <input
                                 type="checkbox"
@@ -66,7 +68,7 @@
                             >
 
                             <div>
-                                <p class="font-medium">{{ $permission->display_name ?? $permission->name }}</p>
+                                <p class="font-medium dark:text-white">{{ $permission->display_name ?? $permission->name }}</p>
                                 <p class="text-sm text-gray-500">
                                     {{ $permission->description ?? __('admin.labels.no_description') }}
                                 </p>

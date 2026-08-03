@@ -24,7 +24,7 @@
     </x-slot>
 
     <x-containers.main>
-        <h1 class="font-bold text-lg">
+        <h1 class="font-bold text-lg dark:text-white">
             {{ __('admin.titles.create_permission') }}
         </h1>
 
