@@ -35,6 +35,19 @@ return [
             'overview' => 'Invite Codes Overview',
             'create' => 'Create Invite Code',
             'delete' => 'Delete Invite Code',
+        ],
+
+        // ? Settings
+        'settings' => [
+            'overview' => 'Settings Overview',
+            'sprint_id' => 'Sprint ID',
+        ]
+    ],
+
+    'descriptions' => [
+        // ? Settings
+        'settings' => [
+            'sprint_id' => 'The Sprint ID is used to identify the current sprint in the application. <br>It is used for various features and functionalities within the application.',
         ]
     ],
 
@@ -97,6 +110,11 @@ return [
             'code' => 'Code',
             'used' => 'Used',
             'used_by' => 'Used By',
+        ],
+
+        // ? Settings
+        'settings' => [
+            'sprint_id' => 'Sprint ID',
         ]
     ],
 
@@ -115,7 +133,7 @@ return [
         'invite_codes' => [
             'create' => 'Create Invite Code',
             'generate' => 'Generate Code',
-        ]
+        ],
     ],
 
     'toasts' => [

@@ -167,6 +167,26 @@
                         :label="__('sidebar.admin.invite_codes')"
                     />
                 @endif
+
+                {{-- Bug Reports --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-bug-reports') && $user->can('manage-bug-reports'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.bug-reports.render')"
+                        :active="request()->routeIs('admin.bug-reports.*')"
+                        icon="fi fi-rr-bug"
+                        :label="__('sidebar.admin.bug_reports')"
+                    />
+                @endif
+
+                {{-- Settings --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-settings') && $user->can('manage-settings'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.settings.render')"
+                        :active="request()->routeIs('admin.settings.*')"
+                        icon="fi fi-rr-module"
+                        :label="__('sidebar.admin.settings')"
+                    />
+                @endif
             </nav>
         @endif
 

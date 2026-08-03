@@ -30,9 +30,11 @@ return [
 
     // ? Admin
     'admin' => [
-        'users' => 'Users',
-        'roles_permissions' => 'Roles & Permissions',
+        'bug_reports' => 'Bug Reports',
         'invite_codes' => 'Invite Codes',
+        'roles_permissions' => 'Roles & Permissions',
+        'settings' => 'Settings',
+        'users' => 'Users',
     ],
 
 ];

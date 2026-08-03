@@ -67,6 +67,7 @@ return [
             'invite' => 'Admin | Invite User',
             'overview' => 'Admin | Users Overview',
         ],
+        'settings' => 'Admin | Settings Overview',
     ]
 
 ];

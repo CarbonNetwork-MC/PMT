@@ -142,6 +142,16 @@ Route::middleware(['auth', 'locale'])->group(function() {
         Route::get('/invite-codes', \App\Livewire\Admin\InviteCodes\Overview::class)
             ->middleware(['role:Superadmin|Admin', 'permission:manage-users'])
             ->name('admin.invite-codes.render');
+
+        // ? Bug Reports
+        Route::get('/bug-reports', \App\Livewire\Admin\BugReports\Overview::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-bug-reports'])
+            ->name('admin.bug-reports.render');
+
+        // ? Settings
+        Route::get('/settings', \App\Livewire\Admin\Settings\Overview::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-settings'])
+            ->name('admin.settings.render');
     });
 });
 
