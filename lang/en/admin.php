@@ -37,6 +37,14 @@ return [
             'delete' => 'Delete Invite Code',
         ],
 
+        // ? Bug Reports
+        'bug-reports' => [
+            'no_bug_reports' => 'No bug reports found.',
+            'overview' => 'Bug Reports Overview',
+            'reviewed_bugs' => 'Reviewed Bug Reports',
+            'unreviewed_bugs' => 'Unreviewed Bug Reports',
+        ],
+
         // ? Settings
         'settings' => [
             'overview' => 'Settings Overview',
@@ -81,7 +89,13 @@ return [
             'confirm_delete' => 'Are you sure you want to delete this invite code? This action cannot be undone.',
             'create_invite_code' => 'New users can create an account using this invite code. Once used, the code will be marked as used and cannot be reused.',
             'no_invite_codes' => 'No invite codes found.',
-        ]
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'no_unreviewed_bugs' => 'No unreviewed bug reports found.',
+            'no_reviewed_bugs' => 'No reviewed bug reports found.',
+        ],
     ],
 
     'labels' => [
@@ -112,6 +126,15 @@ return [
             'used_by' => 'Used By',
         ],
 
+        // ? Bug Reports
+        'bug-reports' => [
+            'description' => 'Description',
+            'page' => 'Page',
+            'user' => 'User',
+            'title' => 'Title',
+            'screenshots' => 'Screenshots',
+        ],
+
         // ? Settings
         'settings' => [
             'sprint_id' => 'Sprint ID',
@@ -133,6 +156,12 @@ return [
         'invite_codes' => [
             'create' => 'Create Invite Code',
             'generate' => 'Generate Code',
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'review_bug' => 'Review Bug',
+            'undo' => 'Undo',
         ],
     ],
 

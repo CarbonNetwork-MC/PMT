@@ -67,6 +67,9 @@ return [
             'invite' => 'Admin | Invite User',
             'overview' => 'Admin | Users Overview',
         ],
+        'bug-reports' => [
+            'overview' => 'Admin | Bug Reports Overview',
+        ],
         'settings' => 'Admin | Settings Overview',
     ]
 
