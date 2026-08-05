@@ -46,7 +46,7 @@ return [
             'review_report' => 'Review Bug Report',
             'reviewed_bugs' => 'Reviewed Bug Reports',
             'unreviewed_bugs' => 'Unreviewed Bug Reports',
-            
+
             'remove_report' => 'Remove Bug Report',
         ],
 
@@ -176,6 +176,7 @@ return [
             'review_bug' => 'Review Bug',
             'resolve_report' => 'Resolve Report',
             'undo' => 'Undo',
+            'view_report' => 'View Report',
         ],
     ],
 

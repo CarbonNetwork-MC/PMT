@@ -102,6 +102,9 @@
                         <x-tables.table-data>{{ $report->title }}</x-tables.table-data>
                         <x-tables.table-data>{{ $report->description }}</x-tables.table-data>
                         <x-tables.table-actions>
+                            <x-tables.primary-action href="{{ route('admin.bug-reports.view-report.render', ['reportId' => $report->id]) }}">
+                                {{ __('admin.buttons.bug-reports.view_report') }}
+                            </x-tables.primary-action>
                             <x-tables.danger-action wire:click="undoReviewBug('{{ $report->id }}')">
                                 {{ __('admin.buttons.bug-reports.undo') }}
                             </x-tables.danger-action>
