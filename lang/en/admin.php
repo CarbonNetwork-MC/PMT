@@ -39,10 +39,15 @@ return [
 
         // ? Bug Reports
         'bug-reports' => [
+            'create_card' => 'Create Card from Bug Report',
             'no_bug_reports' => 'No bug reports found.',
             'overview' => 'Bug Reports Overview',
+            'review' => 'Review Bug Report',
+            'review_report' => 'Review Bug Report',
             'reviewed_bugs' => 'Reviewed Bug Reports',
             'unreviewed_bugs' => 'Unreviewed Bug Reports',
+            
+            'remove_report' => 'Remove Bug Report',
         ],
 
         // ? Settings
@@ -95,6 +100,8 @@ return [
         'bug-reports' => [
             'no_unreviewed_bugs' => 'No unreviewed bug reports found.',
             'no_reviewed_bugs' => 'No reviewed bug reports found.',
+            'no_screenshots' => 'No screenshots available for this bug report.',
+            'remove_report_confirmation' => 'Are you sure you want to remove this bug report? This action cannot be undone.',
         ],
     ],
 
@@ -133,6 +140,10 @@ return [
             'user' => 'User',
             'title' => 'Title',
             'screenshots' => 'Screenshots',
+
+            'card_description' => 'Card Description',
+            'card_title' => 'Card Title',
+            'tasks' => 'Tasks',
         ],
 
         // ? Settings
@@ -160,7 +171,10 @@ return [
 
         // ? Bug Reports
         'bug-reports' => [
+            'add_task' => 'Add Task',
+            'remove_report' => 'Remove Report',
             'review_bug' => 'Review Bug',
+            'resolve_report' => 'Resolve Report',
             'undo' => 'Undo',
         ],
     ],
@@ -185,7 +199,13 @@ return [
         'invite_codes' => [
             'created' => 'Invite code created successfully.',
             'deleted' => 'Invite code deleted successfully.',
-        ]
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'report_deleted' => 'Bug report <b>:reportId</b> deleted successfully.',
+            'report_resolved' => 'Bug report <b>:reportId</b> resolved successfully.',
+        ],
     ],
 
     'placeholders' => [

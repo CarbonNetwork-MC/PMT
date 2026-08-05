@@ -69,6 +69,7 @@ return [
         ],
         'bug-reports' => [
             'overview' => 'Admin | Bug Reports Overview',
+            'review_report' => 'Admin | Review Bug Report',
         ],
         'settings' => 'Admin | Settings Overview',
     ]

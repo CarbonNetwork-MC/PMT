@@ -148,6 +148,10 @@ Route::middleware(['auth', 'locale'])->group(function() {
             ->middleware(['role:Superadmin|Admin', 'permission:manage-bug-reports'])
             ->name('admin.bug-reports.render');
 
+        Route::get('/bug-reports/review/{reportId}', \App\Livewire\Admin\BugReports\ReviewReport::class)
+            ->middleware(['role:Superadmin|Admin', 'permission:manage-bug-reports'])
+            ->name('admin.bug-reports.review-report.render');
+
         // ? Settings
         Route::get('/settings', \App\Livewire\Admin\Settings\Overview::class)
             ->middleware(['role:Superadmin|Admin', 'permission:manage-settings'])

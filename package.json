@@ -16,6 +16,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@fancyapps/ui": "^6.1.14",
         "flowbite": "^4.0.1"
     }
 }
