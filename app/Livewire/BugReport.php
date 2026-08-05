@@ -33,13 +33,15 @@ class BugReport extends Component
 
     public function mount() {
         $this->user = auth()->user();
+
+        $this->page = $this->pages['home'];
     }
 
     public function submitBugReport() {
         $this->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'page' => 'nullable|string|max:255',
+            'page' => 'required|string|max:255',
             'screenshots' => 'nullable|array',
             'screenshots.*' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);

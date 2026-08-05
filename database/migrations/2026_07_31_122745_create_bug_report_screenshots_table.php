@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bug_report_screenshots', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('bug_report_id');
-            $table->string('screenshot_path', 255);
+            $table->string('path', 255);
             $table->timestamps();
 
             $table->foreign('bug_report_id')->references('id')->on('bug_reports')->onUpdate('cascade')->onDelete('cascade');

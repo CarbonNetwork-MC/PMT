@@ -9,7 +9,7 @@ class BugReportScreenshot extends Model
 {
     protected $fillable = [
         'bug_report_id',
-        'screenshot_path',
+        'path',
     ];
 
     public function bugReport(): BelongsTo {
