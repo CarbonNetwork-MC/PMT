@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\BugReports;
 use App\Models\BugReport;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Masmerise\Toaster\Toaster;
 
 class Overview extends Component
 {
@@ -17,7 +18,11 @@ class Overview extends Component
     public string $reviewedSearch = '';
 
     public function undoReviewBug($reportId) {
+        $report = BugReport::where('id', $reportId)->first();
+        $report->is_resolved = false;
+        $report->save();
 
+        Toaster::success(__('admin.toasts.bug-reports.review_undone', ['reportId' => $reportId]));
     }
 
     public function render()

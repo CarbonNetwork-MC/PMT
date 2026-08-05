@@ -205,6 +205,7 @@ return [
         'bug-reports' => [
             'report_deleted' => 'Bug report <b>:reportId</b> deleted successfully.',
             'report_resolved' => 'Bug report <b>:reportId</b> resolved successfully.',
+            'review_undone' => 'Bug report <b>:reportId</b> review undone successfully.',
         ],
     ],
 
