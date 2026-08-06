@@ -35,6 +35,32 @@ return [
             'overview' => 'Invite Codes Overview',
             'create' => 'Create Invite Code',
             'delete' => 'Delete Invite Code',
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'create_card' => 'Create Card from Bug Report',
+            'no_bug_reports' => 'No bug reports found.',
+            'overview' => 'Bug Reports Overview',
+            'review' => 'Review Bug Report',
+            'review_report' => 'Review Bug Report',
+            'reviewed_bugs' => 'Reviewed Bug Reports',
+            'unreviewed_bugs' => 'Unreviewed Bug Reports',
+
+            'remove_report' => 'Remove Bug Report',
+        ],
+
+        // ? Settings
+        'settings' => [
+            'overview' => 'Settings Overview',
+            'sprint_id' => 'Sprint ID',
+        ]
+    ],
+
+    'descriptions' => [
+        // ? Settings
+        'settings' => [
+            'sprint_id' => 'The Sprint ID is used to identify the current sprint in the application. <br>It is used for various features and functionalities within the application.',
         ]
     ],
 
@@ -68,7 +94,15 @@ return [
             'confirm_delete' => 'Are you sure you want to delete this invite code? This action cannot be undone.',
             'create_invite_code' => 'New users can create an account using this invite code. Once used, the code will be marked as used and cannot be reused.',
             'no_invite_codes' => 'No invite codes found.',
-        ]
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'no_unreviewed_bugs' => 'No unreviewed bug reports found.',
+            'no_reviewed_bugs' => 'No reviewed bug reports found.',
+            'no_screenshots' => 'No screenshots available for this bug report.',
+            'remove_report_confirmation' => 'Are you sure you want to remove this bug report? This action cannot be undone.',
+        ],
     ],
 
     'labels' => [
@@ -97,6 +131,24 @@ return [
             'code' => 'Code',
             'used' => 'Used',
             'used_by' => 'Used By',
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'description' => 'Description',
+            'page' => 'Page',
+            'user' => 'User',
+            'title' => 'Title',
+            'screenshots' => 'Screenshots',
+
+            'card_description' => 'Card Description',
+            'card_title' => 'Card Title',
+            'tasks' => 'Tasks',
+        ],
+
+        // ? Settings
+        'settings' => [
+            'sprint_id' => 'Sprint ID',
         ]
     ],
 
@@ -115,7 +167,17 @@ return [
         'invite_codes' => [
             'create' => 'Create Invite Code',
             'generate' => 'Generate Code',
-        ]
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'add_task' => 'Add Task',
+            'remove_report' => 'Remove Report',
+            'review_bug' => 'Review Bug',
+            'resolve_report' => 'Resolve Report',
+            'undo' => 'Undo',
+            'view_report' => 'View Report',
+        ],
     ],
 
     'toasts' => [
@@ -138,7 +200,14 @@ return [
         'invite_codes' => [
             'created' => 'Invite code created successfully.',
             'deleted' => 'Invite code deleted successfully.',
-        ]
+        ],
+
+        // ? Bug Reports
+        'bug-reports' => [
+            'report_deleted' => 'Bug report <b>:reportId</b> deleted successfully.',
+            'report_resolved' => 'Bug report <b>:reportId</b> resolved successfully.',
+            'review_undone' => 'Bug report <b>:reportId</b> review undone successfully.',
+        ],
     ],
 
     'placeholders' => [

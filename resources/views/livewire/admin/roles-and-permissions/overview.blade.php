@@ -21,7 +21,7 @@
     {{-- Roles --}}
     <x-containers.main>
         <div class="flex justify-between">
-            <h1 class="font-bold text-lg">
+            <h1 class="font-bold text-lg dark:text-white">
                 {{ __('admin.titles.roles') }}
             </h1>
             <x-buttons.primary-button href="{{ route('admin.roles-and-permissions.create-role.render') }}" size="sm">
@@ -91,7 +91,7 @@
     {{-- Permissions --}}
     <x-containers.main class="mt-4">
         <div class="flex justify-between">
-            <h1 class="font-bold text-lg">
+            <h1 class="font-bold text-lg dark:text-white">
                 {{ __('admin.titles.permissions') }}
             </h1>
             <x-buttons.primary-button href="{{ route('admin.roles-and-permissions.create-permission.render') }}" size="sm">

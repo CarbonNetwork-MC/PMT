@@ -67,7 +67,8 @@
                     @forelse ($allPermissions as $permission)
                         <label
                             for="permission_{{ $permission['uuid'] }}"
-                            class="flex items-center gap-3 rounded-lg border bg-white border-gray-300 p-3 cursor-pointer transition hover:border-blue-500 hover:bg-blue-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-100"
+                            class="flex items-center gap-3 rounded-lg border bg-white dark:bg-gray-800 border-gray-300 p-3 cursor-pointer transition 
+                            hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-800 has-checked:border-blue-600 has-checked:bg-blue-100 dark:has-checked:bg-gray-700"
                             wire:key="permission_{{ $permission['uuid'] }}"
                         >
                             <input
@@ -116,7 +117,8 @@
                 @endif
                 <label
                     for="role_{{ $role['uuid'] }}"
-                    class="flex items-center gap-3 rounded-lg border bg-white border-gray-300 p-3 cursor-pointer transition hover:border-blue-500 hover:bg-blue-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-100"
+                    class="flex items-center gap-3 rounded-lg border bg-white dark:bg-gray-800 border-gray-300 p-3 cursor-pointer 
+                    transition hover:border-blue-500 hover:bg-blue-50 has-checked:border-blue-600 has-checked:bg-blue-100 dark:has-checked:bg-gray-700"
                     wire:key="role_{{ $role['uuid'] }}"
                 >
                     <input

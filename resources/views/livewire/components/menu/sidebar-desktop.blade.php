@@ -167,6 +167,26 @@
                         :label="__('sidebar.admin.invite_codes')"
                     />
                 @endif
+
+                {{-- Bug Reports --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-bug-reports') && $user->can('manage-bug-reports'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.bug-reports.render')"
+                        :active="request()->routeIs('admin.bug-reports.*')"
+                        icon="fi fi-rr-bug"
+                        :label="__('sidebar.admin.bug_reports')"
+                    />
+                @endif
+
+                {{-- Settings --}}
+                @if (\App\Helpers\CheckIfPermissionExists::check('manage-settings') && $user->can('manage-settings'))
+                    <x-sidebar.nav-item
+                        :href="route('admin.settings.render')"
+                        :active="request()->routeIs('admin.settings.*')"
+                        icon="fi fi-rr-module"
+                        :label="__('sidebar.admin.settings')"
+                    />
+                @endif
             </nav>
         @endif
 
@@ -253,6 +273,13 @@
                         <a href="{{ route('profile.overview.render') }}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
                             <i class="fi fi-rr-user"></i>
                             <span>{{ __('sidebar.profile_settings') }}</span>
+                        </a>
+
+                        <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
+
+                        <a href="{{ route('bug-report.render') }}" class="flex items-center gap-2 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800">
+                            <i class="fi fi-rr-bug"></i>
+                            <span>{{ __('sidebar.bug_report') }}</span>
                         </a>
 
                         <div class="border-t border-zinc-200 dark:border-zinc-800"></div>

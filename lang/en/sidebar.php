@@ -11,6 +11,7 @@ return [
 
     // ? Public
     'back_to_dashboard' => 'Back to Dashboard',
+    'bug_report' => 'Bug Report',
     'dashboard' => 'Dashboard',
     'logout' => 'Log Out',
     'management' => 'Management',
@@ -29,9 +30,11 @@ return [
 
     // ? Admin
     'admin' => [
-        'users' => 'Users',
-        'roles_permissions' => 'Roles & Permissions',
+        'bug_reports' => 'Bug Reports',
         'invite_codes' => 'Invite Codes',
+        'roles_permissions' => 'Roles & Permissions',
+        'settings' => 'Settings',
+        'users' => 'Users',
     ],
 
 ];
