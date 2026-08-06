@@ -2,394 +2,349 @@
 
 namespace App\Livewire\Projects\Sprints;
 
+use App\Helpers\CheckIfUserIsAdmin;
+use App\Helpers\CheckProjectPermissions;
+use App\Models\BacklogCard;
 use App\Models\Log;
-use App\Models\Card;
-use App\Models\Sprint;
+use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use App\Models\Backlog;
-use Illuminate\Support\Str;
+use Masmerise\Toaster\Toaster;
 
 class Overview extends Component
 {
-    public $uuid;
+    public $project;
     public $sprints;
-    public $archivedSprints;
-    public $backlogs;
-    
+
+    public $sprintCount;
     public $activeSprints;
-    public $doneSprints;
+    public $completedSprints;
+    public $archivedSprints;
+    public $statuses = [
+        ['value' => 'planned', 'disabled' => false],
+        ['value' => 'active', 'disabled' => false],
+        ['value' => 'completed', 'disabled' => true],
+    ];
+
+    public $name;
+    public $start_date;
+    public $end_date;
+    public $status;
+
+    public $isProjectAdminOrOwner = false;
+    public $isAppAdmin = false;
+
+    public $editingSprint;
+    public $deletingSprint;
+
+    public $sprintToComplete;
+    public $incompleteTasks;
+    public $completeSprintAction;
+
+    public $entityUuid;
+    public $entities;
     
-    public $id;
-    public $sprint;
+    public $showCompleteSprintModal = false;
 
-    public $search;
-    public $selectedSprint;
-    public $numberOfIncompleteCards;
-    
-    public $createSprintModal = false;
-    public $editSprintModal = false;
-    public $deleteSprintModal = false;
-    public $sprintNotDoneModal = false;
+    public $showEditModal = false;
+    public $showDeleteModal = false;
 
-    public $showArchivedSprints = false;
+    public function mount($uuid) {
+        $this->project = Project::where('uuid', $uuid)->firstOrFail();
+        $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
 
-    public $sprintIsDone = false;
-    public $sprintOrBacklog = 'sprint';
-    public $selectedSprintOrBacklog;
-    public $selectedSprintOrBacklogUuid;
+        $this->sprintCount = $this->sprints->count();
+        $this->activeSprints = $this->sprints->where('status', 'active')->where('is_archived', false)->count();
+        $this->completedSprints = $this->sprints->where('status', 'completed')->where('is_archived', false)->count();
+        $this->archivedSprints = $this->project->sprints()->where('is_archived', true)->count();
 
-    public $name, $start_date, $end_date, $status;
+        $this->isProjectAdminOrOwner = CheckProjectPermissions::isProjectAdminOrOwner(auth()->user(), $this->project);
+        $this->isAppAdmin = auth()->user()->can('manage-projects');
 
-    public function mount($uuid)
-    {
-        $this->uuid = $uuid;
-
-        $this->sprints = Sprint::where('project_id', $uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
-        $this->archivedSprints = Sprint::where('project_id', $uuid)->where('is_archived', 1)->with('cards')->orderBy('start_date')->get();
-        $this->backlogs = Backlog::where('project_id', $uuid)->get();
-
-        $this->activeSprints = Sprint::where('project_id', $this->uuid)->where('status', 'active')->get();
-        $this->doneSprints = Sprint::where('project_id', $this->uuid)->where('status', 'done')->get();
-
-        $this->selectedSprintOrBacklog = Sprint::where('project_id', $uuid)->where('status', 'active')->first();
+        $this->entities = $this->project->backlogs()->get();
+        $this->entityUuid = $this->entities->first()?->uuid;
+        $this->completeSprintAction = 'backlog';
     }
 
     public function updated($key, $value) {
-        if ($key == 'search') {
-            $this->archivedSprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 1)->where('name', 'like', '%' . $value . '%')->with('cards')->orderBy('start_date')->get();
+        if ($key === 'completeSprintAction') {
+            if ($value === 'sprint') {
+                $this->entities = $this->project->sprints()->where('is_archived', false)->where('status', '!=', 'completed')->where('uuid', '!=', $this->sprintToComplete?->uuid)->get();
+            } else {
+                $this->entities = $this->project->backlogs()->where('is_archived', false)->get();
+            }
+
+            $this->entityUuid = $this->entities->first()?->uuid;
         }
-        if ($key == 'selectedSprintOrBacklogUuid') {
-            $this->selectedSprintOrBacklog = Sprint::where('uuid', $value)->first();
-        }
     }
 
-    /**
-     * Create a new sprint
-     * 
-     * @return void
-     */
-    public function createSprint() {
-        // Validate the date
-        $data = $this->validate([
-            'name' => ['required', 'string'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date'],
-        ]);
-
-        $data['uuid'] = Str::uuid()->toString();
-        $data['project_id'] = $this->uuid;
-
-        // Create the sprint
-        $sprint = Sprint::create($data);
-
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $sprint->uuid,
-            'action' => 'create',
-            'data' => json_encode($data),
-            'table' => 'sprints',
-            'description' => 'Created sprint <b>' . $data['name'] . '</b>',
-        ]);
-
-        // Close the modal
-        $this->createSprintModal = false;
-
-        // Reset the variables
-        $this->name = null;
+    private function updateCounts() {
+        $this->sprintCount = $this->sprints->count();
+        $this->activeSprints = $this->sprints->where('status', 'active')->where('is_archived', false)->count();
+        $this->completedSprints = $this->sprints->where('status', 'completed')->where('is_archived', false)->count();
+        $this->archivedSprints = $this->project->sprints()->where('is_archived', true)->count();
     }
 
-    /**
-     * Set the sprint id to edit
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function editSprintSetId($id) {
-        $this->id = $id;
-        $this->editSprintModal = true;
-        $this->sprint = Sprint::find($id);
-
-        $this->name = $this->sprint->name;
-        $this->start_date = $this->sprint->start_date;
-        $this->end_date = $this->sprint->end_date;
-        $this->status = $this->sprint->status;
+    public function editSprint($uuid) {
+        $this->editingSprint = $this->sprints->where('uuid', $uuid)->firstOrFail();
+        $this->name = $this->editingSprint->name;
+        $this->start_date = $this->editingSprint->start_date?->format('Y-m-d');
+        $this->end_date = $this->editingSprint->end_date?->format('Y-m-d');
+        $this->status = $this->editingSprint->status;
+        $this->showEditModal = true;
     }
 
-    /**
-     * Update the sprint
-     * 
-     * @return void
-     */
     public function updateSprint() {
-        // Validate the data
-        $data = $this->validate([
-            'name' => ['required', 'string'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date'],
-            'status' => ['required', 'string'],
+        $this->editingSprint->update([
+            'name' => $this->name,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'status' => $this->status,
         ]);
 
-        // Find the sprint
-        $sprint = Sprint::find($this->id);
+        $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
+        $this->updateCounts();
+        $this->showEditModal = false;
 
-        // Update the sprint
-        $sprint = $sprint->update($data);
-
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
         Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $this->id,
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->editingSprint->uuid,
             'action' => 'update',
-            'data' => json_encode($data),
             'table' => 'sprints',
-            'description' => 'Updated sprint <b>' . $data['name'] . '</b>',
+            'data' => json_encode([
+                'name' => $this->editingSprint->name,
+                'start_date' => $this->editingSprint->start_date,
+                'end_date' => $this->editingSprint->end_date,
+                'status' => $this->editingSprint->status,
+            ]),
+            'description' => __('logs.sprints.updated', ['sprint' => $this->editingSprint->name]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
-        // Close the modal
-        $this->editSprintModal = false;
+        Toaster::success(__('sprints.toast.sprint-updated'));
     }
 
-    /**
-     * Set the sprint id to delete
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function deleteSprint($id) {
-        $this->id = $id;
-        $this->deleteSprintModal = true;
+    public function deleteSprint($uuid) {
+        $this->deletingSprint = $this->sprints->where('uuid', $uuid)->firstOrFail();
+        $this->showDeleteModal = true;
     }
 
-    /**
-     * Destroy the sprint
-     * 
-     * @return void
-     */
     public function destroySprint() {
-        // Find the sprint
-        $sprint = Sprint::find($this->id);
+        $sprintName = $this->deletingSprint->name;
 
-        // Delete the sprint
-        $sprint->delete();
+        $this->deletingSprint->delete();
 
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
+        $this->updateCounts();
+        $this->showDeleteModal = false;
 
-        // Update the archived sprints
-        $this->archivedSprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 1)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
         Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $this->id,
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $this->deletingSprint->uuid,
             'action' => 'delete',
-            'data' => json_encode($sprint),
             'table' => 'sprints',
-            'description' => 'Deleted sprint <b>' . $sprint->name . '</b>',
+            'data' => json_encode([
+                'name' => $this->deletingSprint->name,
+                'start_date' => $this->deletingSprint->start_date,
+                'end_date' => $this->deletingSprint->end_date,
+                'status' => $this->deletingSprint->status,
+            ]),
+            'description' => __('logs.sprints.deleted', [
+                'sprint' => $sprintName
+            ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
-        // Close the modal
-        $this->deleteSprintModal = false;
+        Toaster::success(__('sprints.toast.sprint-deleted'));
     }
 
-    /**
-     * Start the sprint
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function startSprint($id) {
-        // Find the sprint
-        $sprint = Sprint::find($id);
+    public function startSprint($uuid) {
+        $sprint = $this->sprints->where('uuid', $uuid)->firstOrFail();
+        $sprint->update(['status' => 'active']);
 
-        // Update the sprint
-        $sprint->update([
-            'status' => 'active',
-        ]);
+        $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
+        $this->updateCounts();
 
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
         Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $id,
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $sprint->uuid,
             'action' => 'update',
-            'data' => json_encode($sprint),
             'table' => 'sprints',
-            'description' => 'Started sprint <b>' . $sprint->name . '</b>',
+            'data' => json_encode([
+                'name' => $sprint->name,
+                'start_date' => $sprint->start_date,
+                'end_date' => $sprint->end_date,
+                'status' => $sprint->status,
+            ]),
+            'description' => __('logs.sprints.status_changed', ['sprint' => $sprint->name, 'status' => $sprint->status]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
+
+        Toaster::success(__('sprints.toast.start_sprint', ['name' => $sprint->name]));
     }
 
-    /**
-     * Initiate the sprint completion
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function initiateSprintCompletion($id) {
-        // Find the sprint
-        $this->selectedSprint = Sprint::where('uuid', $id)->with('cards')->first();
+    public function completeSprint($uuid) {
+        $sprint = $this->sprints->where('uuid', $uuid)->firstOrFail();
 
-        $this->numberOfIncompleteCards = 0;
+        // Get cards which are not in 'done' column
+        $incompleteTasks = $sprint->cards()
+            ->whereHas('column', function($query) {
+                $query->where('column_type', '!=', 'done');
+            })
+            ->get();
 
-        // Check if all cards have status 'done' or 'released'
-        foreach ($this->selectedSprint->cards as $card) {
-            if ($card->status != 'done' && $card->status != 'released') {
-                $this->sprintNotDoneModal = true;
+        if ($incompleteTasks->isNotEmpty()) {
+            $this->incompleteTasks = $incompleteTasks;
+        }
+            
+        $this->sprintToComplete = $sprint;
+        $this->showCompleteSprintModal = true;
+    }
 
-                $this->numberOfIncompleteCards++;
+    public function confirmCompleteSprint() {
+        $sprint = $this->sprintToComplete;
+
+        if ($this->incompleteTasks) {
+            if ($this->completeSprintAction === 'backlog') {
+                // Move cards to backlog
+                $this->incompleteTasks->each(function ($card) {
+                    $index = BacklogCard::where('backlog_uuid', $this->entityUuid)->max('card_index') + 1;
+
+                    // 1. Create a new BacklogCard with the same data as the sprint card
+                    $backlogCard = BacklogCard::create([
+                        'backlog_uuid' => $this->entityUuid,
+                        'title' => $card->title,
+                        'description' => $card->description,
+                        'approval_status' => $card->approval_status,
+                        'card_index' => $index,
+                    ]);
+
+                    // 2. Create BacklogCardAssignees for the new BacklogCard
+                    $card->assignees->each(function ($assignee) use ($backlogCard) {
+                        $backlogCard->assignees()->create([
+                            'user_uuid' => $assignee->user_uuid,
+                        ]);
+                    });
+
+                    // 3. Create BacklogTasks for the new BacklogCard
+                    $card->tasks->each(function ($task) use ($backlogCard) {
+                        $newTask = $backlogCard->tasks()->create([
+                            'description' => $task->description,
+                            'status' => $task->status,
+                            'task_index' => $task->task_index,
+                        ]);
+
+                        // 4. Create BacklogTaskAssignees for the new BacklogTask
+                        $task->assignees->each(function ($assignee) use ($newTask) {
+                            $newTask->assignees()->create([
+                                'user_uuid' => $assignee->user_uuid,
+                            ]);
+                        });
+                    });
+
+                    // 5. Delete the original sprint card
+                    $card->delete();
+                });
+            }
+
+            if ($this->completeSprintAction === 'sprint') {
+                $targetSprint = $this->project->sprints()->where('uuid', $this->entityUuid)->firstOrFail();
+
+                if ($targetSprint->status === 'completed') {
+                    Toaster::error(__('sprints.toast.sprint-completed-error', ['name' => $targetSprint->name]));
+                    return;
+                }
+
+                $this->incompleteTasks->each(function ($card) use ($targetSprint) {
+                    $index = $targetSprint->cards()->where('column_id', $card->column_id)->max('card_index') + 1 ?? 0;
+
+                    $card->update([
+                        'sprint_uuid' => $targetSprint->uuid,
+                        'card_index' => $index,
+                    ]);
+                });
             }
         }
 
-        // If all cards have status 'done' or 'released'
-        if ($this->sprintNotDoneModal === false) {
-            $this->sprintIsDone = true;
-            $this->completeSprint($id);
-        }
+        $this->finishSprintCompletion($sprint);
     }
 
-    /**
-     * Complete the sprint
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function completeSprint($id) {
-        // Find the sprint
-        $sprint = Sprint::where('uuid', $id)->with('cards')->first();
+    public function finishSprintCompletion($sprint) {
+        $sprint->update(['status' => 'completed']);
 
-        // Check if the sprint is done
-        if ($this->sprintIsDone === false) {
-            // Get all incomplete cards
-            $incompleteCards = Card::where('sprint_id', $sprint->uuid)->whereRaw('status != "done" AND status != "released"')->get();
+        $this->sprints = $this->project->sprints()
+            ->where('is_archived', false)
+            ->orderBy('created_at')
+            ->get();
 
-            // Update the cards
-            foreach ($incompleteCards as $card) {
-                $card->update([
-                    'sprint_id' => $this->selectedSprintOrBacklog->uuid,
-                ]);
-            }
-        }
+        $this->updateCounts();
 
-        // Update the sprint
-        $sprint->update([
-            'status' => 'done',
-        ]);
-
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
         Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $id,
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $sprint->uuid,
             'action' => 'update',
-            'data' => json_encode($sprint),
             'table' => 'sprints',
-            'description' => 'Completed sprint <b>' . $sprint->name . '</b>',
+            'data' => json_encode([
+                'name' => $sprint->name,
+                'start_date' => $sprint->start_date,
+                'end_date' => $sprint->end_date,
+                'status' => $sprint->status,
+            ]),
+            'description' => __('logs.sprints.status_changed', [
+                'sprint' => $sprint->name, 
+                'status' => $sprint->status
+            ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
 
-        // Close the modal
-        $this->sprintNotDoneModal = false;
+        $this->showCompleteSprintModal = false;
 
-        // Reset the variables
-        $this->numberOfIncompleteCards = 0;
-        $this->sprintIsDone = false;
+        Toaster::success(__('sprints.toast.complete_sprint', [
+            'name' => $sprint->name
+        ]));
     }
 
-    /**
-     * Archive the sprint
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function archiveSprint($id) {
-        // Find the sprint
-        $sprint = Sprint::find($id);
-
-        // Update the sprint
+    public function archiveSprint($uuid) {
+        $sprint = $this->sprints->where('uuid', $uuid)->firstOrFail();
         $sprint->update([
-            'is_archived' => 1,
+            'is_archived' => true,
             'archived_at' => now(),
+            'archived_by' => auth()->user()->uuid,
         ]);
 
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
+        $this->sprints = $this->project->sprints()->where('is_archived', false)->orderBy('created_at')->get();
+        $this->updateCounts();
 
-        // Update the archived sprints
-        $this->archivedSprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 1)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
         Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $id,
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'sprint_uuid' => $sprint->uuid,
             'action' => 'update',
-            'data' => json_encode($sprint),
             'table' => 'sprints',
-            'description' => 'Archived sprint <b>' . $sprint->name . '</b>',
+            'data' => json_encode([
+                'name' => $sprint->name,
+                'start_date' => $sprint->start_date,
+                'end_date' => $sprint->end_date,
+                'status' => $sprint->status,
+            ]),
+            'description' => __('logs.sprints.archived', [
+                'sprint' => $sprint->name
+            ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
         ]);
+
+        Toaster::success(__('sprints.toast.archive_sprint', ['name' => $sprint->name]));
     }
-
-    /**
-     * Restore the sprint
-     * 
-     * @param string $id
-     * 
-     * @return void
-     */
-    public function restoreSprint($id) {
-        // Find the sprint
-        $sprint = Sprint::find($id);
-
-        // Update the sprint
-        $sprint->update([
-            'is_archived' => 0,
-            'archived_at' => null,
-        ]);
-
-        // Update the sprints
-        $this->sprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 0)->with('cards')->orderBy('start_date')->get();
-
-        // Update the archived sprints
-        $this->archivedSprints = Sprint::where('project_id', $this->uuid)->where('is_archived', 1)->with('cards')->orderBy('start_date')->get();
-
-        // Create a new Log
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'sprint_id' => $id,
-            'action' => 'update',
-            'data' => json_encode($sprint),
-            'table' => 'sprints',
-            'description' => 'Restored sprint <b>' . $sprint->name . '</b>',
-        ]);
-    }
-
-    /**
-     * Render the component
-     * 
-     * @return \Illuminate\View\View
-     */
+    
     public function render()
     {
         return view('livewire.projects.sprints.overview');

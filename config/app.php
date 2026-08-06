@@ -84,6 +84,8 @@ return [
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
+    'available_locales' => explode(',', env('APP_AVAILABLE_LOCALES', 'en')),
+
     /*
     |--------------------------------------------------------------------------
     | Encryption Key
@@ -101,7 +103,7 @@ return [
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', env('APP_PREVIOUS_KEYS', ''))
+            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
 
@@ -122,5 +124,16 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Registration
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether new users are allowed to register
+    |
+    */
+
+    'allow_registration' => env('ALLOW_REGISTRATION', true),
 
 ];

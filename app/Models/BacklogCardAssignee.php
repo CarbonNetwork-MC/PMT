@@ -2,26 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BacklogCardAssignee extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'backlog_card_id', 
-        'user_id'
+        'backlog_card_id',
+        'user_uuid',
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'uuid');
+    public function backlogCard(): BelongsTo {
+        return $this->belongsTo(BacklogCard::class, 'backlog_card_id');
     }
 
-    public function card(): BelongsTo
-    {
-        return $this->belongsTo(BacklogCard::class);
+    public function user(): BelongsTo {
+        return $this->belongsTo(User::class, 'user_uuid', 'uuid');
     }
 }

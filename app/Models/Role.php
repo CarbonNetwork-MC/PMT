@@ -1,17 +1,13 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Models\Role as SpatieRole;
 
-class Role extends Model
+class Role extends SpatieRole
 {
     use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'short_name',
-        'permissions',
-    ];
+    use HasUuids;
+    protected $primaryKey = 'uuid';
 }

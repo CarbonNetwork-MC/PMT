@@ -4,111 +4,81 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sprints Language Lines
+    | Projects Language Lines - English
     |--------------------------------------------------------------------------
-    |
     |
     */
 
-    'sprint' => 'Sprint',
-    'sprints' => 'Sprints',
-    'archived_sprints' => 'Archived Sprints',
+    'titles' => [
+        'new-sprint' => 'New Sprint',
+        'sprint-overview' => 'Sprint Overview',
+    ],
 
-    'show_sprints' => 'Show Sprints',
-    'show_archived_sprints' => 'Show Archived Sprints',
-
-    // Title
-    'create_sprint' => 'Create Sprint',
-    'edit_sprint' => 'Edit Sprint',
-
-    'no_sprints_found' => 'No active sprints found for this project.',
-
-    // Labels
-    'name' => 'Name',
-    'start_date' => 'Start Date',
-    'end_date' => 'End Date',
-    'archived_at' => 'Archived At',
-    'dates' => 'Start/End Date',
-    'status' => 'Status',
-    'days' => 'Days',
     
-    'days_left' => 'Days Left',
-    'days_to_start' => 'Days to Start',
-    'days_overdue' => 'Days Overdue',
-    'done' => 'Done',
-    'active' => 'Active',
-    'inactive' => 'Inactive',
-    'cards' => 'Cards',
-    'card' => 'Card',
-    'cards_total' => 'Total Cards',
-    'tasks' => 'Tasks',
-    'task' => 'Task',
-    
-    'actions' => 'Actions',
-    'select_destination' => 'Select Destination',
-    'select_project' => 'Select Project',
-    'backlog' => 'Backlog',
-    'select_backlog' => 'Select Backlog',
-    'select_sprint' => 'Select Sprint',
-    'change_approval_status' => 'Change Approval Status',
-    'convert_to_card' => 'Convert to Card',
+    'labels' => [
+        'action_for_incomplete_tasks' => 'Action for Incomplete Tasks',
+        'active-sprints' => 'Active Sprints',
+        'archived-sprints' => 'Archived Sprints',
+        'completed-sprints' => 'Completed Sprints',
+        'select_action' => 'Select Action',
+        'select_entity' => 'Select Backlog / Sprint',
+        'sprints' => 'Sprints',
 
-    'users' => 'Users',
-    'no_users_assigned' => 'No users assigned',
-    'no_users_found' => 'No users?',
+        'name' => 'Name',
+        'start_date' => 'Start Date',
+        'end_date' => 'End Date',
+        'status' => 'Status',
+        'select_status' => 'Select Status',
 
-    'todo' => 'To Do',
-    'doing' => 'Doing',
-    'testing' => 'Testing',
-    'done' => 'Done',
-    'released' => 'Released',
+        'cards' => 'Cards',
+        'days_to_start' => 'Days to Start',
+        'days_left' => 'Days Left',
+        'done' => 'Done',
+        'duration' => 'Duration',
+    ],
 
-    'no_description' => 'This card has no description.',
+    'buttons' => [
+        'archive_sprint' => 'Archive Sprint',
+        'complete_sprint' => 'Complete Sprint',
+        'delete_sprint' => 'Delete Sprint',
+        'edit_sprint' => 'Edit Sprint',
+        'new_sprint' => 'New Sprint',
+        'start_sprint' => 'Start Sprint',
+    ],
 
-    'archive' => 'Archive',
-    'unarchive' => 'Unarchive',
+    'messages' => [
+        'no_sprints' => 'No sprints found. Create your first sprint to get started!',
+    ],
 
-    'search' => 'Search',
+    'toast' => [
+        'archive_sprint' => 'Sprint <b>:name</b> archived',
+        'complete_sprint' => 'Sprint <b>:name</b> completed',
+        'start_sprint' => 'Sprint <b>:name</b> started',
 
-    'no_archived_sprints_found' => 'No archived sprints found for this project.',
+        'sprint-created' => 'Sprint created successfully!',
+        'sprint-completed-error' => 'Cannot move tasks to sprint <b>:name</b> because it is already completed.',
+        'sprint-deleted' => 'Sprint deleted successfully!',
+        'sprint-updated' => 'Sprint updated successfully!',
+    ],
 
-    // Tooltips
-    'approval_status_approved' => 'This card is approved',
-    'approval_status_needs_work' => 'This card needs work',
-    'approval_status_rejected' => 'This card is rejected',
+    'modals' => [
+        'complete_sprint_title' => 'Complete Sprint - :name',
+        'complete_sprint_message' => 'Are you sure you want to complete the sprint <b>:name</b>?',
+        'incomplete_tasks_warning' => 'The following tasks are not completed:',
+        'edit_sprint_title' => 'Edit Sprint - :name',
+        'delete_sprint_title' => 'Delete Sprint - :name',
+        'delete_sprint_message' => 'Are you sure you want to delete the sprint <b>:name</b>? This action cannot be undone.',
+    ],
 
-    'tooltip-description' => 'This card has a description',
+    'statuses' => [
+        'planned' => 'Planned',
+        'active' => 'Active',
+        'completed' => 'Completed',
+    ],
 
-    'tooltip-tasks-done' => 'All tasks are done',
-    'tooltip-tasks-doing' => 'Tasks are in progress',
-    'tooltip-tasks-none' => 'No task is in progress',
-
-    // Buttons
-    'create' => 'Create',
-    'update' => 'Update',
-    'cancel' => 'Cancel',
-    
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-
-    'start' => 'Start',
-    'complete' => 'Complete',
-
-    'assign_me' => 'Assign Me',
-    'move_to' => 'Move to',
-    'make_copy' => 'Make a Copy',
-
-    // Delete Dialog
-    'dialog_delete_title_card' => 'Delete Card',
-    'dialog_delete_text_card' => 'Are you sure you want to delete this card?',
-
-    'dialog_delete_title_task' => 'Delete Task',
-    'dialog_delete_text_task' => 'Are you sure you want to delete this task?',
-
-    'dialog_delete_title_sprint' => 'Delete Sprint',
-    'dialog_delete_text_sprint' => 'Are you sure you want to delete this sprint?',
-
-    'dialog_title_move_cards' => 'Complete Sprint',
-    'dialog_text_move_cards' => 'You are about to complete sprint <b>:name</b>. <br>There are <b>:count</b> incomplete cards. Choose a destination for these cards.',
+    'actions' => [
+        'move_to_backlog' => 'Move to Backlog',
+        'move_to_sprint' => 'Move to another Sprint',
+    ],
 
 ];

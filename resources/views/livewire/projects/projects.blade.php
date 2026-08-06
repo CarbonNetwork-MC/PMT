@@ -1,59 +1,54 @@
 <div>
-    <div class="flex justify-end items-center mb-6">
-        <button wire:click="$toggle('createProjectModal')" class="flex items-center px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 ml-2">
-            <i class="fi fi-sr-plus"></i>
-            <span class="ml-2">{{ __('projects.create_project') }}</span>
-        </button>
-    </div>
+    {{-- Page Title --}}
+    @section('title', __('titles.projects.projects'))
 
-    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4">
-        @foreach ($projects as $project)
-            <a href="{{ route('projects.overview.render', ['uuid' => $project->uuid]) }}" class="col-span-1 block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+    {{-- Breadcrumbs --}}
+    <x-slot name="breadcrumbs">
+        <x-breadcrumbs :items="[
+            [
+                'icon' => 'fi fi-rs-house-chimney',
+                'url' => route('dashboard.render'),
+                'label' => '',
+            ],
+            [
+                'icon' => '',
+                'url' => route('projects.render'),
+                'label' => __('sidebar.projects.title'),
+            ]
+        ]" />
+    </x-slot>
 
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $project->name }}</h5>
-                <div class="flex gap-x-4">
-                    <div class="flex">
-                        <i class="fi fi-sr-running text-xl dark:text-white"></i>                  
-                        <p class="ml-2 text-gray-800 dark:text-white">{{ $project->sprints->count() }}</p>                    
-                    </div>
-                    <div class="flex">
-                        <i class="fi fi-sr-users-alt dark:text-white"></i>
-                        <p class="ml-2 text-gray-800 dark:text-white">{{ $project->members->count() }}</p>
-                    </div>
-                </div>
-            </a>
-        @endforeach
-    </div>
+    <x-containers.main>
+        <div class="flex justify-between">
+            <div class="">
+                <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ __('sidebar.projects.title') }}</h1>
+                <p class="mt-2 text-gray-800 dark:text-gray-300">{{ __('projects.messages.projects') }}</p>
+                <p class="mt-2 text-gray-800 dark:text-gray-300">{!! __('projects.messages.project-count', ['count' => $projectCount]) !!}{{ $projectCount > 1 ? 's' : '' }}.</p>
+            </div>
+            <div class="flex items-end">
+                <x-buttons.primary-button href="{{ route('projects.new.render') }}">
+                    {{ __('projects.titles.new') }}
+                </x-buttons.primary-button>
+            </div>
+        </div>
+    </x-containers.main>
 
-    {{-- Create Project Modal --}}
-    <x-big-modal wire:model="createProjectModal">
-        <x-slot name="title">
-            {{ __('projects.create_project') }}
-        </x-slot>
-
-        <x-slot name="content">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 p-4">
-                <div class="col-span-1">
-                    <x-label for="name" value="{{ __('projects.name') }}" />
-                    <x-input id="name" type="text" class="mt-1 block w-full" wire:model.defer="name" />
-                    <x-input-error for="name" class="mt-2" />
-                </div>
-                <div class="col-span-1"></div>
-                <div class="col-span-3">
-                    <x-label for="description" value="{{ __('projects.description') }}" />
-                    <x-textarea id="description" class="mt-1 block w-full" wire:model.defer="description" />
-                    <x-input-error for="description" class="mt-2" />
+    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
+        @forelse ($projects as $project)
+            @php
+                $memberCount = $project->members 
+                    ? count($project->members)
+                    : 0;
+                $memberCount = $project->owner ? $memberCount + 1 : $memberCount;
+            @endphp
+            <x-project.project-card :project="$project" :memberCount="$memberCount" />
+        @empty
+            <div class="col-span-full">
+                <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <h2 class="text-centertext-2xl font-semibold text-gray-800 dark:text-gray-200">{{ __('projects.messages.no-projects') }}</h2>
+                    <p class="mt-2 text-centertext-gray-600 dark:text-gray-400">{{ __('projects.messages.no-projects-message') }}</p>
                 </div>
             </div>
-        </x-slot>
-
-        <x-slot name="footer">
-            <x-primary-button wire:click="createProject" wire:loading.attr="disabled">
-                {{ __('projects.create') }}
-            </x-primary-button>
-            <x-secondary-button wire:click="$toggle('createProjectModal')" wire:loading.attr="disabled">
-                {{ __('projects.cancel') }}
-            </x-secondary-button>
-        </x-slot>
-    </x-big-modal>
+        @endforelse
+    </div>
 </div>
