@@ -64,6 +64,7 @@ class Overview extends Component
         $this->user->save();
 
         $this->currentProfileImage = asset('storage/' . $path);
+        $this->dispatch('reloadUser');
 
         Toaster::success(__('profile.toasts.profile_image_updated'));
     }
