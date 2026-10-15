@@ -4,20 +4,63 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | General Language Lines
+    | General Language Lines - English
     |--------------------------------------------------------------------------
     |
     */
 
-    'overview' => 'Overview',
-    'sprints' => 'Sprints',
-    'backlogs' => 'Backlogs',
-    'members' => 'Members',
-    'owning' => 'Owning',
-    'activity' => 'Activity',
+    'true' => 'True',
+    'false' => 'False',
 
-    'cards' => 'Cards',
+    'yes' => 'Yes',
+    'no' => 'No',
 
-    'load_more' => 'Load more',
+    'see_more' => 'See more',
+    
+    // Placeholders
+    'placeholders' => [
+        'search' => 'Search...',
+        'select_option' => 'Select an option',
+    ],
 
+    // Buttons
+    'buttons' => [
+        'add' => 'Add',
+        'assign' => 'Assign',
+        'cancel' => 'Cancel',
+        'close' => 'Close',
+        'confirm' => 'Confirm',
+        'create' => 'Create',
+        'delete' => 'Delete',
+        'edit' => 'Edit',
+        'remove' => 'Remove',
+        'save' => 'Save',
+        'select' => 'Select',
+        'update' => 'Update',
+        'view' => 'View',
+
+        'collapse_all' => 'Collapse All',
+        'expand_all' => 'Expand All',
+    ],
+
+    // Labels
+    'labels' => [
+        'name' => 'Name',
+        'email' => 'Email',
+        'created_at' => 'Created At',
+        'updated_at' => 'Updated At',
+        'id' => 'ID',
+        'none' => 'None',
+        'processing' => 'Processing...',
+    ],
+
+    // Messages
+    'messages' => [
+        'required_fields' => 'Required fields'
+    ],
+
+    // Toasts
+    'toasts' => [
+        'unauthorized' => 'You are not authorized to perform this action.',
+    ]
 ];

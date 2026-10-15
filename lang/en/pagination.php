@@ -16,4 +16,5 @@ return [
     'previous' => '&laquo; Previous',
     'next' => 'Next &raquo;',
 
+    'page_info' => 'Showing <b>:first</b> to <b>:last</b> of <b>:total</b> results',
 ];

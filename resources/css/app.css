@@ -1,47 +1,52 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import "flowbite/src/themes/default";
 
-[x-cloak] {
-    display: none;
+@plugin "flowbite/plugin";
+
+/* Laravel + Livewire */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/**/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* Project */
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* Flowbite */
+@source '../../node_modules/flowbite/**/*.js';
+
+/* Toaster */
+@source '../../vendor/masmerise/livewire-toaster/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-carbon-50:  #F6F6F6;
+    --color-carbon-100: #E7E7E7;
+    --color-carbon-200: #D1D1D1;
+    --color-carbon-300: #B0B0B0;
+    --color-carbon-400: #888888;
+    --color-carbon-500: #6D6D6D;
+    --color-carbon-600: #5D5D5D;
+    --color-carbon-700: #4F4F4F;
+    --color-carbon-800: #454545;
+    --color-carbon-900: #3D3D3D;
+    --color-carbon-950: #252525;
 }
 
-.fi {
+@custom-variant dark (&:where(.dark, .dark *));
+
+[x-cloak] {
+    display: none !important;
+}
+
+i.fi {
     display: flex;
     align-items: center;
 }
 
-.-left-41 {
-    left: -10.25rem;
-}
-
-.login-background {
-    width: 100vw !important;
-    height: 100vh !important;
-    background-image: url('/resources/images/login-background.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position-y: -10em;
-}
-
-/* width */
-::-webkit-scrollbar {
-    width: 0.65rem;
-}
-  
-/* Track */
-::-webkit-scrollbar-track {
-box-shadow: inset 0 0 5px grey; 
-border-radius: 10px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-background: #d1d5db; 
-border-radius: 10px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-background: #9ca3af; 
+/* Custom Scrollbar */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
 }

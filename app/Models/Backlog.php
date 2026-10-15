@@ -3,34 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Backlog extends Model
 {
-    use HasFactory;
-
     protected $primaryKey = 'uuid';
-    public $incrementing = false;
     protected $keyType = 'string';
-
+    public $incrementing = false;
     protected $fillable = [
         'uuid',
-        'project_id',
+        'project_uuid',
         'name',
-        'description',
-        'status',
-        'priority',
     ];
 
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(Project::class);
+    public function project(): BelongsTo {
+        return $this->belongsTo(Project::class, 'project_uuid', 'uuid');
     }
 
-    public function cards(): HasMany 
-    {
-        return $this->hasMany(BacklogCard::class, 'backlog_id', 'uuid');
+    public function cards(): HasMany {
+        return $this->hasMany(BacklogCard::class, 'backlog_uuid', 'uuid');
     }
 }

@@ -2,140 +2,103 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Log;
 use App\Models\Project;
-use Livewire\Component;
 use App\Models\ProjectMember;
+use App\Models\ProjectRole;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class Admin extends Component
 {
-    public $uuid;
-
+    public $project;
     public $projectMembers;
-    public $projectId;
 
+    public $newOwnerId;
     public $newOwner;
 
-    public $changeOwnerModal = false;
-    public $deleteProjectModal = false;
+    public $showChangeOwnerModal = false;
+    public $showDeleteProjectModal = false;
 
-    public function mount($uuid)
-    {
-        $this->uuid = $uuid;
-
-        $this->projectMembers = ProjectMember::where('project_id', $this->uuid)->with('user')->with('role')->get();
+    public function mount($uuid) {
+        $this->project = Project::where('uuid', $uuid)->firstOrFail();
+        $this->projectMembers = ProjectMember::where('project_uuid', $this->project->uuid)
+            ->with(['user', 'role'])
+            ->orderBy('project_role_id')
+            ->join('users', 'project_members.user_uuid', '=', 'users.uuid')
+            ->orderBy('users.name')
+            ->select('project_members.*')
+            ->get();
+        
+        $this->newOwner = $this->projectMembers->first()?->user;
+        $this->newOwnerId = $this->newOwner?->uuid;
     }
 
-    /**
-     * Change the owner of the project
-     * 
-     * @return \Illuminate\Http\RedirectResponse
-     */
+    public function updated($key, $value) {
+        if ($key === 'newOwnerId') {
+            $this->newOwner = User::where('uuid', $value)->first();
+        }
+    }
+
     public function changeOwner() {
-        // Find the project
-        $project = Project::where('uuid', $this->uuid)->first();
+        if (!$this->newOwner) {
+            Toaster::error(__('settings.toast.no_other_members'));
+            return;
+        }
 
-        // Update the owner
-        $project->owner_id = $this->newOwner;
-        $project->save();
+        $this->showChangeOwnerModal = true;
+    }
 
-        // Update the project members
-        ProjectMember::where('project_id', $this->uuid)->where('user_id', $this->newOwner)->update(['role_id' => 3]);
-        ProjectMember::where('project_id', $this->uuid)->where('user_id', auth()->user()->uuid)->update(['role_id' => 2]);
+    public function confirmChangeOwner() {
+        $oldOwner = $this->project->owner;
 
-        // Create a new Log
-        Log::create([
-            'user_id' => auth()->user()->uuid,
-            'project_id' => $this->uuid,
-            'action' => 'update',
-            'data' => json_encode(['newOwner' => $this->newOwner, 'oldOwner' => auth()->user()->uuid]),
-            'table' => 'projects',
-            'description' => 'Changed the owner of the project',
+        // Update project owner
+        $this->project->owner_uuid = $this->newOwner->uuid;
+        $this->project->save();
+
+        // Add old owner as project member with admin role
+        $adminRole = ProjectRole::where('slug', 'admin')->first();
+
+        ProjectMember::create([
+            'project_uuid' => $this->project->uuid,
+            'user_uuid' => $oldOwner->uuid,
+            'project_role_id' => $adminRole->id,
         ]);
 
-        // Toast
-        $this->dispatch('changedOwner', ['message' => 'The owner of the project has been changed.']);
+        // Remove new owner from project members
+        ProjectMember::where('project_uuid', $this->project->uuid)
+            ->where('user_uuid', $this->newOwner->uuid)
+            ->delete();
 
-        // Close the modal
-        $this->changeOwnerModal = false;
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'update',
+            'table' => 'projects',
+            'data' => json_encode([
+                'old_owner' => $oldOwner->name,
+                'new_owner' => $this->newOwner->name,
+            ]),
+            'description' => __('logs.project.owner_changed', [
+                'oldOwner' => $oldOwner->name,
+                'newOwner' => $this->newOwner->name,
+            ]),
+            'environment' => app()->environment(),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
+        ]);
 
-        // Redirect to the general settings
-        return redirect()->route('projects.settings.overall.render', ['uuid' => $this->uuid]);
+        return redirect()->route('projects.settings.general.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.owner_changed', ['newOwner' => $this->newOwner->name]));
     }
 
-    /**
-     * Initialize the deletion of the project
-     * 
-     * @param string $projectId
-     * 
-     * @return void
-     */
-    public function initializeProjectDeletion($projectId) {
-        $this->deleteProjectModal = true;
-        $this->projectId = $projectId;
+    public function confirmDeleteProject() {
+        $this->project->delete();
+
+        return redirect()->route('projects.render')->success(__('settings.toast.project_deleted'));
     }
 
-    /**
-     * Delete the project
-     * 
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function deleteProject() {
-        // Find the project
-        $project = Project::where('uuid', $this->projectId)->with(['members.user', 'logs', 'sprints.cards.assignees.user', 'sprints.cards.tasks.assignees.user', 'backlogs.cards.assignees.user', 'backlogs.cards.tasks.assignees.user'])->first();
-
-        // Delete the project members
-        $project->members()->delete();
-
-        // Delete the logs
-        $project->logs()->delete();
-
-        // Delete the sprint cards with their assignees
-        $sprints = $project->sprints;
-        foreach ($sprints as $sprint) {
-            $cards = $sprint->cards;
-            foreach ($cards as $card) {
-                $tasks = $card->tasks;
-                foreach ($tasks as $task) {
-                    $task->assignees()->delete();
-                }
-                $card->tasks()->delete();
-                $card->assignees()->delete();
-            }
-            $sprint->cards()->delete();
-        }
-
-        $project->sprints()->delete();
-
-        // Delete the backlog cards with their assignees
-        $backlogs = $project->backlogs;
-        foreach ($backlogs as $backlog) {
-            $cards = $backlog->cards;
-            foreach ($cards as $card) {
-                $tasks = $card->tasks;
-                foreach ($tasks as $task) {
-                    $task->assignees()->delete();
-                }
-                $card->tasks()->delete();
-                $card->assignees()->delete();
-            }
-            $backlog->cards()->delete();
-        }
-
-        $project->backlogs()->delete();
-
-        // Delete the project
-        $project->delete();
-
-        // Redirect to the projects overview
-        return redirect()->route('projects.projects.render');
-    }
-
-    /**
-     * Render the livewire component
-     * 
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.projects.settings.admin');

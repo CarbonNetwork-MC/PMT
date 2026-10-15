@@ -2,192 +2,220 @@
 
 namespace App\Livewire\Projects\Settings;
 
+use App\Helpers\CheckIfUserIsAdmin;
 use App\Models\Log;
-use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectMember;
-use App\Models\ProjectMemberRole;
+use App\Models\ProjectRole;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class Members extends Component
 {
-    public $uuid;
     public $project;
-
-    public $userRole;
-
-    public $users;
+    public $members;
+    public $allMembers;
     public $roles;
+    public $users;
 
-    public $projectMembers;
+    public $search = '';
 
-    public $memberId;
-    public $emails, $role_id = 1;
-    public $search;
+    public $isProjectOwner;
+    public $isProjectAdmin;
+    public $isAppAdmin;
 
-    public $addMemberModal = false;
-    public $deleteMemberModal = false;
+    public $userToModify;
+    public $newRole;
 
-    public function mount($uuid)
-    {
-        $this->uuid = $uuid;
-        $this->project = Project::where('uuid', $uuid)->first();
+    public $newMemberUuid;
+    public $newMemberRole;
 
-        $this->userRole = ProjectMember::where('project_id', $this->project->uuid)->with('role')
-            ->where('user_id', auth()->user()->uuid)->first()->role->id;
+    public $showChangeRoleModal = false;
+    public $showAddMemberModal = false;
+    public $showRemoveMemberModal = false;
 
-        $this->users = User::all();
-        $this->roles = ProjectMemberRole::all();
+    public function mount($uuid) {
+        $this->project = Project::where('uuid', $uuid)->firstOrFail();
+        $members = ProjectMember::where('project_uuid', $this->project->uuid)
+            ->with(['user', 'role'])
+            ->orderBy('project_role_id')
+            ->get()
+            ->map(function ($m) {
+                return [
+                    'uuid' => $m->user_uuid,
+                    'user' => $m->user->name,
+                    'role' => $m->role->name,
+                    'is_owner' => false,
+                ];
+            });
 
-        $this->projectMembers = ProjectMember::where('project_id', $this->project->uuid)->with('user')->with('role')->get();
+        $owner = [
+            'uuid' => $this->project->owner->uuid,
+            'user' => $this->project->owner->name,
+            'role' => 'Owner',
+            'is_owner' => true,
+        ];
+
+        $this->allMembers = collect([$owner])->merge($members);
+        $this->members = $this->allMembers->map(function ($m) {
+            $m['visible'] = true;
+            return $m;
+        });
+
+        $this->roles = ProjectRole::where('slug', '!=', 'owner')->get();
+        $this->newMemberRole = $this->roles->first()->id;
+        $this->users = $this->getUsers();
+
+        $this->isProjectOwner = auth()->user()->uuid === $this->project->owner_uuid;
+        $this->isProjectAdmin = $this->project->members()
+            ->where('user_uuid', auth()->user()->uuid)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Admin');
+            })
+            ->exists();
+        $this->isAppAdmin = auth()->user()->can('manage-projects');
     }
 
-    /**
-     * Update the search query
-     * 
-     * @param string $key
-     * @param string $value
-     * 
-     * @return void
-     */
     public function updated($key, $value) {
         if ($key === 'search') {
-            $this->projectMembers = ProjectMember::where('project_id', $this->project->uuid)
-                ->whereHas('user', function($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%');
-                })->get();
-        }  
+            $search = strtolower($value);
+
+            $this->members = empty($search)
+                ? $this->allMembers
+                : $this->allMembers->filter(
+                    fn ($m) => str_contains(strtolower($m['user']), $search)
+                );
+        }
     }
 
-    /**
-     * Add members to the project
-     * 
-     * @return void
-     */
+    private function getUsers() {
+        return User::select(['uuid', 'name'])
+            ->whereNotIn('uuid', function ($query) {
+                $query->select('user_uuid')
+                    ->from('project_members')
+                    ->where('project_uuid', $this->project->uuid);
+            })
+            ->where('uuid', '!=', $this->project->owner_uuid)
+            ->limit(20)
+            ->get();
+    }
+
+    public function changeRole($uuid) {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
+        $this->showChangeRoleModal = true;
+        $this->userToModify = $this->members->where('uuid', $uuid)->first();
+        $this->newRole = ProjectRole::where('name', $this->userToModify['role'])->first();
+    }
+
+    public function confirmChangeRole() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
+        }
+
+        $member = ProjectMember::where('project_uuid', $this->project->uuid)
+            ->where('user_uuid', $this->userToModify['uuid'])
+            ->first();
+
+        $member->project_role_id = $this->newRole->id;
+        $member->save();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'update',
+            'table' => 'project_members',
+            'data' => json_encode([
+                'user_uuid' => $member->user_uuid,
+                'project_role_id' => $member->project_role_id,
+            ]),
+            'description' => __('logs.project_members.role_changed', ['user' => $this->userToModify['user'], 'role' => $this->newRole->name]),
+            'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
+        ]);
+
+        $this->showChangeRoleModal = false;
+
+        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.role_changed', [
+            'name' => $this->userToModify['user'], 
+            'role' => $this->newRole->name
+        ]));
+    }
+
     public function addMember() {
-        $emails = explode(',', $this->emails);
-
-        foreach ($emails as $email) {
-            $user = User::where('email', $email)->first();
-            if ($user) {
-
-                // Check if the user is already a member
-                $member = ProjectMember::where('project_id', $this->project->uuid)
-                    ->where('user_id', $user->id)->first();
-                if (!$member) {
-                    // Add the user as a member
-                    ProjectMember::create([
-                        'project_id' => $this->project->uuid,
-                        'user_id' => $user->uuid,
-                        'role_id' => $this->role_id
-                    ]);
-
-                    // Create a new Log
-                    Log::create([
-                        'user_id' => auth()->user()->uuid,
-                        'project_id' => $this->project->uuid,
-                        'action' => 'create',
-                        'table' => 'project_members',
-                        'data' => json_encode(['email' => $email, 'role_id' => $this->role_id]),
-                        'description' => 'Added <b>' . $email . '</b> to the project',
-                        'environment' => config('app.env')
-                    ]);
-                }
-            }
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
         }
 
-        // Toast
-        $this->dispatch('memberAdded', ['message' => 'Members added successfully!']);
+        $member = ProjectMember::create([
+            'project_uuid' => $this->project->uuid,
+            'user_uuid' => $this->newMemberUuid,
+            'project_role_id' => $this->newMemberRole,
+        ]);
 
-        // Refresh project members
-        $this->projectMembers = ProjectMember::where('project_id', $this->project->uuid)->with('user')->get();
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'create',
+            'table' => 'project_members',
+            'data' => json_encode([
+                'user_uuid' => $member->user_uuid,
+                'project_role_id' => $member->project_role_id,
+            ]),
+            'description' => __('logs.project_members.added', ['user' => $member->user->name, 'role' => $member->role->name]),
+            'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
+        ]);
 
-        // Close the modal
-        $this->addMemberModal = false;
+        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.member_added', ['name' => $member->user->name]));
     }
 
-    /**
-     * Update the role of a project member
-     * 
-     * @param string $memberId
-     * @param int $roleId
-     * 
-     * @return void
-     */
-    public function updateRole($memberId, $roleId) {
-        $member = ProjectMember::find($memberId);
-        if ($member) {
-            // Update the role
-            $member->role_id = $roleId;
-            $member->save();
-
-            // Create a new Log
-            Log::create([
-                'user_id' => auth()->user()->uuid,
-                'project_id' => $this->project->uuid,
-                'sprint_id' => null,
-                'card_id' => null,
-                'task_id' => null,
-                'action' => 'update',
-                'table' => 'project_members',
-                'data' => json_encode(['role_id' => $roleId]),
-                'description' => 'Updated the role of <b>' . $member->user->name . '</b>',
-            ]);
-
-            // Toast
-            $this->dispatch('roleUpdated', ['message' => 'Role updated successfully!']);
+    public function removeMember($uuid) {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
         }
+
+        $this->showRemoveMemberModal = true;
+        $this->userToModify = $this->members->where('uuid', $uuid)->first();
     }
 
-    /**
-     * Initialize the removal of a member
-     * 
-     * @param string $memberId
-     * 
-     * @return void
-     */
-    public function initializeRemoveMember($memberId) {
-        $this->memberId = $memberId;
-        $this->deleteMemberModal = true;
-    }
-
-    /**
-     * Remove a member from a project
-     * 
-     * @return void
-     */
-    public function removeMember() {
-        $member = ProjectMember::find($this->memberId);
-        if ($member) {
-            // Delete the member
-            $member->delete();
-
-            // Create a new Log
-            Log::create([
-                'user_id' => auth()->user()->uuid,
-                'project_id' => $this->project->uuid,
-                'action' => 'delete',
-                'data' => json_encode(['member' => $member]),
-                'table' => 'project_members',
-                'description' => 'Removed <b>' . $member->user->name . '</b> from the project',
-            ]);
-
-            // Toast
-            $this->dispatch('memberRemoved', ['message' => 'Member removed successfully!']);
-
-            // Refresh project members
-            $this->projectMembers = ProjectMember::where('project_id', $this->project->uuid)->with('user')->get();
-
-            // Close the modal
-            $this->deleteMemberModal = false;
+    public function confirmRemoveMember() {
+        if (!$this->isProjectOwner && !$this->isProjectAdmin && !$this->isAppAdmin) {
+            Toaster::error(__('general.toasts.unauthorized'));
+            return;
         }
+
+        $member = ProjectMember::where('project_uuid', $this->project->uuid)
+            ->where('user_uuid', $this->userToModify['uuid'])
+            ->first();
+
+        $member->delete();
+
+        Log::create([
+            'user_uuid' => auth()->user()->uuid,
+            'project_uuid' => $this->project->uuid,
+            'action' => 'delete',
+            'table' => 'project_members',
+            'data' => json_encode([
+                'user_uuid' => $member->user_uuid,
+                'project_role_id' => $member->project_role_id,
+            ]),
+            'description' => __('logs.project_members.removed', ['user' => $this->userToModify['user']]),
+            'environment' => config('app.env'),
+            'by_admin' => CheckIfUserIsAdmin::check(Auth::user(), $this->project->uuid)
+        ]);
+
+        return redirect()->route('projects.settings.members.render', ['uuid' => $this->project->uuid])->success(__('settings.toast.member_removed', ['name' => $this->userToModify['user']]));
     }
 
-    /**
-     * Render the component
-     * 
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.projects.settings.members');

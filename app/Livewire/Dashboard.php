@@ -2,21 +2,29 @@
 
 namespace App\Livewire;
 
-use App\Models\User;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
-    public $user;
+    public $projectsCount = 0;
+    public $uniqueUsersCount = 0;
 
-    public function mount()
-    {
-        $this->user = auth()->user();
+    public $projects;
 
-        // Clear the selected project session
-        if (session()->has('selected_project')) {
-            session()->forget('selected_project');
-        }
+    public function mount() {
+        $this->projectsCount = auth()->user()->projects()->count();
+        $this->uniqueUsersCount = auth()->user()->projects()->with('members')->get()->pluck('members')->flatten()->unique('user_uuid')->count();
+
+        // Get projects the user is a member of (or owns), sort them by their most recent log and limit to 4
+        $this->projects = auth()->user()
+            ->projects()
+            ->with('latestLog.sprint')
+            ->withMax('logs', 'created_at')
+            ->orderByDesc('logs_max_created_at')
+            ->limit(4)
+            ->get();
+
+        // $project->latestLog?->sprint
     }
 
     public function render()
