@@ -43,7 +43,7 @@
             />
         @empty
             <x-containers.main class="col-span-1 lg:col-span-2 xl:col-span-4 text-center">
-                {{ __('dashboard.labels.no_projects') }}
+                {{ __('dashboard.messages.no_projects') }}
             </x-containers.main>
         @endforelse
     </div>
