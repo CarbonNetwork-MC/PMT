@@ -78,7 +78,7 @@ class Overview extends Component
         $projectsWhereAdmin = $user->projectsWhereAdmin()->get();
 
         $this->projects = $ownedProjects->merge($projectsWhereAdmin)->unique('uuid');
-        $this->selectedProject = $this->projects->first();
+        $this->selectedProject = $this->projects->where('uuid', $this->project->uuid)->first();
         $this->selectedProjectUuid = $this->selectedProject ? $this->selectedProject->uuid : null;
 
         $this->entities = $this->selectedProject ? $this->selectedProject->sprints->where('is_archived', false)->whereIn('status', ['planned', 'active']) : collect();

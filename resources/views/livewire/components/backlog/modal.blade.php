@@ -284,7 +284,7 @@
                                     <x-forms.select 
                                         wire:key="projects-{{ $selectedProjectUuid }}"
                                         :options="$projects->map(fn($project) => ['value' => $project->uuid, 'label' => $project->name])->values()->toArray()"
-                                        wire:model="selectedProjectUuid"
+                                        wire:model.live="selectedProjectUuid"
                                     />
 
                                     <x-forms.select
@@ -292,7 +292,7 @@
                                             ['value' => 'sprint', 'label' => __('board.labels.sprints')],
                                             ['value' => 'backlog', 'label' => __('board.labels.backlogs')]
                                         ]"
-                                        wire:model="sprintOrBacklog"
+                                        wire:model.live="sprintOrBacklog"
                                     />
 
                                     <x-forms.select

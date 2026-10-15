@@ -77,7 +77,7 @@ class Modal extends Component
 
         $this->projects = $ownedProjects->merge($projectsWhereAdmin)->unique('uuid');
 
-        $this->selectedProject = $this->projects->first();
+        $this->selectedProject = $this->projects->where('uuid', $this->card->sprint->project->uuid)->first();
         $this->selectedProjectUuid = $this->selectedProject ? $this->selectedProject->uuid : null;
         $this->column = $this->selectedProject ? $this->selectedProject->columns()->first()->id : null;
 
