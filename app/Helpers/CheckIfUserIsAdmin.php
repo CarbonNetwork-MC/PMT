@@ -17,9 +17,11 @@ class CheckIfUserIsAdmin
         $project = Project::where('uuid', $projectUuid)->first();
         if (!$project) return false;
 
-        if ($project->owner_uuid === $user->uuid) return true;
-        if ($project->members()->where('user_uuid', $user->uuid)->exists()) return true;
-        if ($user->can('manage-projects')) return true;
+        $isProjectOwner = $project->owner_uuid === $user->uuid;
+        $isProjectMember = $project->members()->where('user_uuid', $user->uuid)->exists();
+        $hasManageProjectsPermission = $user->can('manage-projects');
+
+        if ((!$isProjectOwner && !$isProjectMember) && $hasManageProjectsPermission) return true;
 
         return false;
     }
