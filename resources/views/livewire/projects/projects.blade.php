@@ -33,7 +33,7 @@
         </div>
     </x-containers.main>
 
-    <div class="grid grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-4 mt-4">
         @forelse ($projects as $project)
             @php
                 $memberCount = $project->members 
